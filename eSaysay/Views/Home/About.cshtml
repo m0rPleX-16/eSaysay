@@ -1,4 +1,87 @@
-﻿@page
-@model eSaysay.Views.Home.AboutModel
-@{
+﻿@{
+    ViewData["Title"] = "About";
 }
+
+<main class="main">
+    <div class="page-title" data-aos="fade">
+        <div class="heading">
+            <div class="container text-center">
+                <h1>About eSaysay</h1>
+                <p>Your gateway to mastering new languages through AI-driven learning.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Us Section -->
+    <section id="about-us" class="section about-us">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/img/about-2.jpg" class="img-fluid" alt="About eSaysay">
+                </div>
+                <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Empowering Language Learners</h3>
+                    <p class="fst-italic">
+                        eSaysay is an advanced language learning platform that leverages AI and adaptive learning to help users master new languages efficiently. Our innovative approach ensures an engaging and personalized experience for all learners.
+                    </p>
+                    <ul>
+                        <li><i class="bi bi-check-circle"></i> Adaptive Learning Paths tailored to your progress.</li>
+                        <li><i class="bi bi-check-circle"></i> AI-powered pronunciation and speech assessment.</li>
+                        <li><i class="bi bi-check-circle"></i> Interactive lessons covering vocabulary, grammar, and real-life conversations.</li>
+                        <li><i class="bi bi-check-circle"></i> Progress tracking and performance analytics.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Mission -->
+    <section id="mission" class="section mission light-background">
+        <div class="container" data-aos="fade-up">
+            <div class="row align-items-center">
+                <div class="col-lg-6 content">
+                    <h3>Our Mission</h3>
+                    <p>
+                        Our mission is to break language barriers and provide a seamless learning experience through innovative technology. We strive to make language learning accessible, interactive, and effective for everyone.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="~/assets/img/course-1.jpg" class="img-fluid" alt="Our Mission">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Counts Section -->
+    <section id="counts" class="section counts light-background">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="row gy-4 text-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item">
+                        <span data-purecounter-start="0" data-purecounter-end="5000" data-purecounter-duration="1" class="purecounter"></span>
+                        <p>Active Learners</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item">
+                        <span data-purecounter-start="0" data-purecounter-end="100" data-purecounter-duration="1" class="purecounter"></span>
+                        <p>Courses Offered</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item">
+                        <span data-purecounter-start="0" data-purecounter-end="50" data-purecounter-duration="1" class="purecounter"></span>
+                        <p>Language Experts</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item">
+                        <span data-purecounter-start="0" data-purecounter-end="30" data-purecounter-duration="1" class="purecounter"></span>
+                        <p>Supported Languages</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
