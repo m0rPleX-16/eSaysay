@@ -13,23 +13,26 @@ body {
 }
 
 .main-content {
-    margin-left: 220px;
-    padding: 90px 20px 20px 20px;
+    margin-left: 220px; 
+    padding: 20px 20px 20px 20px; 
     transition: margin-left 0.4s ease;
 }
 
 .sidebar.collapsed ~ .main-content {
-    margin-left: 115px;
+    margin-left: 115px; 
 }
 
 .lesson-section {
     margin-bottom: 40px;
+    background: none;
+    padding: 0;
+    border; none;
 }
 
 .carousel {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     align-items: center;
     overflow: hidden;
     padding: 10px;
@@ -38,16 +41,16 @@ body {
 }
 
 .lessons-title {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
+    width: 100%; 
+    text-align: left; 
+    margin-bottom: 10px; 
 }
 
 .lesson-cards {
     display: flex;
     gap: 20px;
     transition: transform 0.4s ease;
-    padding: 10px 50px;
+    padding: 10px 50px; 
 }
 
 .lesson-card {
@@ -73,23 +76,49 @@ body {
     z-index: 1;
 }
 
-    .carousel-control.prev {
-        left: 10px;
-        outline: none;
-    }
+.carousel-control.prev {
+    left: 10px;
+    outline: none;
+}
 
-    .carousel-control.next {
-        right: 10px;
-        outline: none;
-    }
+.carousel-control.next {
+    right: 10px;
+    outline: none;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    background-color: transparent;
+    transition: margin-left 0.4s ease;
+}
+
+.sidebar.collapsed ~ .footer {
+    margin-left: 115px;
+}
+
+.footer-container {
+    text-align: center;
+    background-color: transparent;
+}
 
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
-        padding-top: 96px;
+        padding-top: 96px; 
     }
 
     .sidebar.collapsed ~ .main-content {
+        margin-left: 0;
+    }
+
+    .footer {
+        margin-left: 0;
+    }
+
+    .sidebar.collapsed ~ .footer {
         margin-left: 0;
     }
 

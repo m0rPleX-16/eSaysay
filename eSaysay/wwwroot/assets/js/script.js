@@ -2,10 +2,12 @@
     const toggler = document.querySelector('.sidebar-toggler');
     const sidebar = document.querySelector('.sidebar');
     const mainContent = document.querySelector('.main-content');
+    const footer = document.querySelector('.footer');
 
     toggler.addEventListener('click', function () {
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('collapsed');
+        footer.classList.toggle('collapsed');
     });
 
     const carousels = document.querySelectorAll('.carousel');

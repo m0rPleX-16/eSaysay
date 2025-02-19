@@ -1,54 +1,81 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
+<!-- Dashboard Content of User-->
 
-<div class="container-fluid">
-    <div class="row">
+    @await Html.PartialAsync("_Sidebar")
 
-        <!-- Main Content -->
-        <div class="col-md-10 p-4">
-            <h1>Welcome to Your Dashboard</h1>
-            <p>This is your main panel where you can manage your learning progress.</p>
-
-            <!-- Beginner Lessons Section -->
-            <section class="lesson-section mt-4">
-                <h4 class="lesson-title">Beginner Lessons</h4>
-                <div class="row">
-                    <div class="col text-right">
-                        <h5>0/5</h5>
-                    </div>
-                </div>
-                <div class="lesson-cards d-flex overflow-auto">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        <div class="card m-2 p-3">
-                            <h3>Lesson @i</h3>
-                            <p>Introduction to basic phrases</p>
-                            <button class="btn btn-primary" onclick="location.href='#'">Start Lesson</button>
-                        </div>
-                    }
-                </div>
-            </section>
-
-            <!-- Intermediate Lessons Section -->
-            <section class="lesson-section mt-4">
-                <h4 class="lesson-title">Intermediate Lessons</h4>
-                <div class="row">
-                    <div class="col text-right">
-                        <h5>0/2</h5>
-                    </div>
-                </div>
-                <div class="lesson-cards d-flex overflow-auto">
-                    @for (int i = 1; i <= 2; i++)
-                    {
-                        <div class="card m-2 p-3">
-                            <h3>Lesson @i</h3>
-                            <p>Intermediate phrases</p>
-                            <button class="btn btn-primary" onclick="location.href='#'">Start Lesson</button>
-                        </div>
-                    }
-                </div>
-            </section>
-        </div>
+    <main class="main-content">
+    <div>
+        <h1>Welcome to Your Dashboard</h1>
+        <p>This is your main panel where you can manage your learning progress.</p>
     </div>
-</div>
+        <section class="lesson-section">
+            <div class="carousel">
+                <div class="lessons-title row">
+                    <div class="col text-left">
+                        <h4 class="lesson-title mt-3">Beginner Lessons</h4>
+                    </div>
+                    <div class="col text-right">
+                        <h5 class="mt-3">0/5</h5>
+                    </div>
+                </div>
+                <button class="carousel-control prev">&#10094;</button>
+                <div class="lesson-cards">
+                    <div class="lesson-card">
+                        <h3>Lesson 1</h3>
+                        <p>Introduction to basic phrases</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                    <div class="lesson-card">
+                        <h3>Lesson 2</h3>
+                        <p>Basic greetings</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                    <div class="lesson-card">
+                        <h3>Lesson 3</h3>
+                        <p>Basic greetings</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                    <div class="lesson-card">
+                        <h3>Lesson 4</h3>
+                        <p>Basic greetings</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                    <div class="lesson-card">
+                        <h3>Lesson 5</h3>
+                        <p>Basic greetings</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                </div>
+                <button class="carousel-control next">&#10095;</button>
+            </div>
+        </section>
+        <section class="lesson-section">
+            <div class="carousel">
+                <div class="lessons-title row">
+                    <div class="col text-left">
+                        <h4 class="lesson-title mt-3">Intermediate Lessons</h4>
+                    </div>
+                    <div class="col text-right">
+                        <h5 class="mt-3">0/2</h5>
+                    </div>
+                </div>
+                <button class="carousel-control prev">&#10094;</button>
+                <div class="lesson-cards">
+                    <div class="lesson-card">
+                        <h3>Lesson 1</h3>
+                        <p>Intermediate phrases</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                    <div class="lesson-card">
+                        <h3>Lesson 2</h3>
+                        <p>Conversational practice</p>
+                        <button onclick="location.href='#'">Start Lesson</button>
+                    </div>
+                </div>
+                <button class="carousel-control next">&#10095;</button>
+            </div>
+        </section>
+        <!-- Add more sections for advanced lessons if needed -->
+    </main>
