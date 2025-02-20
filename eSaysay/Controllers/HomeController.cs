@@ -15,22 +15,22 @@ namespace eSaysay.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("~/Views/User/Home/Index.cshtml");
         }
 
         public IActionResult About()
         {
-            return View();
+            return View("~/Views/User/Home/About.cshtml");
         }
 
         public IActionResult Privacy()
         {
-            return View();
+            return View("~/Views/User/Home/Privacy.cshtml");
         }
 
         public IActionResult Contact()
         {
-            return View();
+            return View("~/Views/User/Home/Contact.cshtml");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
