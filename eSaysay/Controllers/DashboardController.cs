@@ -8,12 +8,12 @@ namespace eSaysay.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View("~/Views/User/Dashboard/Index.cshtml");
         }
 
         public IActionResult ListeningExercise()
         {
-            return View("~/Views/exercises/listening_exercise.cshtml");
+            return View("~/Views/User/Exercises/listening_exercise.cshtml");
         }
     }
 }

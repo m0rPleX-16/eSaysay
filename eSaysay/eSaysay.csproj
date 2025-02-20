@@ -449,7 +449,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Exercises\" />
+    <Folder Include="Views\User\Exercises\" />
   </ItemGroup>
 
 </Project>
