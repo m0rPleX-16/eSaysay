@@ -1,0 +1,158 @@
+﻿/* Importing Google font, Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+.sidebar {
+    width: 200px;
+    position: fixed;
+    margin: 16px;
+    border-radius: 16px;
+    background: #FEF1E1;
+    height: calc(100vh - 124px);
+    transition: 0.4s ease;
+}
+
+#sidebar-title{
+    font-size: 0.8rem;
+    padding: 0px;
+    margin: 0px;
+    cursor: auto;
+    transition: opacity 0.4s ease;
+
+}
+
+.sidebar.collapsed #sidebar-title {
+    opacity: 0;
+    pointer-events: none; 
+}
+
+
+    .sidebar.collapsed {
+        width: 85px;
+    }
+
+.sidebar-header {
+    position: relative;
+    display: flex;
+    padding: 25px 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .sidebar-header .header-logo img {
+        width: 46px;
+        height: 46px;
+        display: block;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+    .sidebar-header .toggler {
+        position: absolute;
+        right: 20px;
+        height: 35px;
+        width: 35px;
+        border: none;
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 8px;
+        background: #DFB757;
+        transition: 0.4s ease;
+    }
+
+.sidebar.collapsed .sidebar-header .toggler {
+    transform: translate(-4px, 65px);
+}
+
+.sidebar-header .toggler:hover {
+    background: #FFDE8D;
+}
+
+.sidebar-header .toggler span {
+    font-size: 1.7rem;
+    transition: transform 0.4s ease;
+}
+
+.sidebar.collapsed .sidebar-header .toggler span {
+    transform: rotate(180deg);
+}
+
+.sidebar-nav .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 4px;
+    padding: 0 15px;
+    flex-direction: column;
+    transform: translateY(60px); /*position of sidebar links*/
+    transition: 0.4s ease;
+}
+
+.sidebar.collapsed .sidebar-nav .primary-nav {
+    transform: translateY(80px); /*position of sidebar links when sidebar collapses*/
+}
+
+.sidebar-nav .nav-link {
+    color: #000;
+    display: flex;
+    gap: 12px;
+    white-space: nowrap;
+    border-radius: 8px;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    transition: 0.4s ease;
+}
+
+    .sidebar-nav .nav-link:hover {
+        color: #000;
+        background: #FFDE8D;
+    }
+
+    .sidebar-nav .nav-link .nav-label {
+        transition: opacity 0.4s ease;
+    }
+
+.sidebar.collapsed .sidebar-nav .nav-link .nav-label  {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-nav .nav-item {
+    position: relative;
+}
+
+    .sidebar-nav .nav-item:hover .nav-tooltip {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(50%);
+        transition: 0.4s ease;
+    }
+
+.sidebar-nav .secondary-nav {
+    position: absolute;
+    bottom: 80px;
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+        .sidebar.collapsed {
+            width: 100%;
+        }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar.collapsed ~ .main-content {
+        margin-left: 0;
+    }
+}
