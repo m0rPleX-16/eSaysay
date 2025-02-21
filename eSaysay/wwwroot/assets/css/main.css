@@ -526,7 +526,7 @@ h6 {
 .footer-hero {
     color: var(--default-color);
     background-color: var(--background-color);
-    font-size: 14px;
+    font-size: 14px;    
     padding-bottom: 50px;
     position: relative;
 }
