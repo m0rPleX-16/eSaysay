@@ -36,37 +36,16 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 
-<body class="index-page">
+<body class="index-page @(ViewData["PageClass"])">
 
     @if (User.Identity.IsAuthenticated)
     {
-        <header id="header" class="header d-flex align-items-center sticky-top">
-            <div class="container-fluid container-xl position-relative d-flex align-items-center">
-                <a asp-controller="Dashboard" asp-action="Index" class="logo d-flex align-items-center me-auto">
-                    <img src="~/assets/img/eSaysay-logo.png" alt="eSaysay-logo">
-                    <h1 class="sitename">eSaysay</h1>
-                </a>
-
-                <nav id="navmenu" class="navmenu">
-                    <ul>
-                        <li><a asp-controller="Dashboard" asp-action="Index" class="active">Dashboard</a></li>
-                        <li><a asp-controller="Dashboard" asp-action="Profile">Profile</a></li>
-                        <li><a asp-controller="Dashboard" asp-action="Settings">Settings</a></li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-                        </li>
-                    </ul>
-                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-                </nav>
-                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button type="submit" class="btn-getstarted border-0">Logout</button>
-                </form>
-            </div>
-        </header>
+        @await Html.PartialAsync("_NavbarAuthenticated")
 
         <main class="main">
             @RenderBody()
         </main>
+
 
         <footer id="footer" class="footer-dash">
            <div class="footer-container">
@@ -78,29 +57,11 @@
 
         <!-- Preloader -->
         <div id="preloader"></div>
-
+     
     }
     else
     {
-        <header id="header" class="header d-flex align-items-center sticky-top">
-            <div class="container-fluid container-xl position-relative d-flex align-items-center">
-                <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center me-auto">
-                    <img src="~/assets/img/eSaysay-logo.png" alt="eSaysay-logo">
-                    <h1 class="sitename">eSaysay</h1>
-                </a>
-
-                <nav id="navmenu" class="navmenu">
-                    <ul>
-                        <li><a asp-controller="Home" asp-action="Index" class="active">Home</a></li>
-                        <li><a asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    </ul>
-                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-                </nav>
-                <a class="btn-getstarted" asp-area="Identity" asp-page="/Account/Register">Get Started</a>
-                <a class="btn-getstarted" asp-area="Identity" asp-page="/Account/Login">Login</a>
-            </div>
-        </header>
+        @await Html.PartialAsync("_NavbarUnauthenticated")
 
         <main class="main">
             @RenderBody()

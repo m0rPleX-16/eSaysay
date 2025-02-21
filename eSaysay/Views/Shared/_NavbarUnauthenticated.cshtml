@@ -1,0 +1,20 @@
+﻿
+<header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+        <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center me-auto">
+            <img src="~/assets/img/eSaysay-logo.png" alt="eSaysay-logo">
+            <h1 class="sitename">eSaysay</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+                <li><a asp-controller="Home" asp-action="About">About</a></li>
+                <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+        <a class="btn-getstarted" asp-area="Identity" asp-page="/Account/Register">Get Started</a>
+        <a class="btn-getstarted" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </div>
+</header>

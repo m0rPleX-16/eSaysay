@@ -15,5 +15,11 @@ namespace eSaysay.Controllers
         {
             return View("~/Views/User/Exercises/listening_exercise.cshtml");
         }
+        public IActionResult exitListeningExercise()
+        {
+            return View("~/Views/User/Dashboard/Index.cshtml");
+        }
+
+
     }
 }
