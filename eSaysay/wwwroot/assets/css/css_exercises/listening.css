@@ -1,54 +1,97 @@
 ﻿
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+/* ---------------------- main body ------------------- */
+.listening-page {
+    font-family: Poppins, sans-serif;
     padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    background-color: #FEF1E1;
 }
 
-.main {
-    background: none;
+.container.listening-exercise{
+    margin-top: 30px;
 }
+
+/* ------------ header w close button --------------------- */
 
 .header-listening {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    justify-content: center;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
     background: none;
     outline: none;
 }
 
+.header-listening .close-button-listening {
+    position: relative;
+    display: flex;
+    border: none;
+    height: 35px;
+    width: 35px;
+    color: #000;
+    background: none;
+    align-items: center;
+    justify-content:center;
+    transition: 0.4s ease;
+}
+
+.close-button-listening:hover {
+    background-color: #DFB757;
+    border-radius: 64px;
+    transition: 0.4s ease;
+}
+
+/* ------------------------------ header w PROGRESS BAR ------------------------------------ */
+
 .progress-bar {
     flex-grow: 1;
     height: 20px;
-    background-color: red;
-    border-radius: 10px;
+    background-color: #A75F37;
+    border-radius: 36px;
     margin: 0 10px;
     overflow: hidden;
 }
 
 .progress-bar-inner {
     height: 100%;
-    width: 50%; /* Adjust this value dynamically */
-    background-color: #28a745;
+    width: 40%;
+    background-color: #DFB757;
     border-radius: 10px;
 }
 
-.title {
+/* ------------------------- question or title -------------------------- */
+
+.title-question {
     padding: 20px;
     font-size: 24px;
     font-weight: bold;
 }
 
+/* ------------------------- audio button -------------------------- */
+
 .audio-container {
     display: flex;
     justify-content: center;
-    margin: 20px 0;
+    margin: 20px;
 }
+
+    .audio-container .button {
+        display: flex;
+        padding: 20px;
+        border: none;
+        border-radius: 24px;
+        background-color: #DFB757;
+        justify-content: center;
+    }
+
+        .audio-container .button:hover {
+            background-color: #FFDE8D;
+        }
+
+/* ------------------------- answers -------------------------- */
 
 .answer-grid {
     display: grid;
@@ -71,12 +114,13 @@ body {
             background-color: #0056b3;
         }
 
+        /*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
+
 .footer {
     display: flex;
     justify-content: flex-end;
     padding: 20px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #ddd;
+    background: none;
 }
 
     .footer button {

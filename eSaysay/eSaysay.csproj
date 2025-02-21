@@ -450,6 +450,7 @@
 
   <ItemGroup>
     <Folder Include="Views\User\Exercises\" />
+    <Folder Include="wwwroot\assets\audio\" />
   </ItemGroup>
 
 </Project>
