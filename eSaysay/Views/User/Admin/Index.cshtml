@@ -2,189 +2,47 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<!-- Page Content -->
-<div id="content">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button type="button" id="sidebarCollapse" class="btn btn-info">
-            <i class="fas fa-align-left"></i>
-        </button>
-        <a class="navbar-brand" href="#">Admin Dashboard</a>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Summary Cards -->
-            <div class="col-md-3">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-header">Users</div>
-                    <div class="card-body">
-                        <h5 class="card-title">150</h5>
-                        <p class="card-text">Total registered users.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-header">Posts</div>
-                    <div class="card-body">
-                        <h5 class="card-title">320</h5>
-                        <p class="card-text">Total posts created.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-warning mb-3">
-                    <div class="card-header">Comments</div>
-                    <div class="card-body">
-                        <h5 class="card-title">1,200</h5>
-                        <p class="card-text">Total comments made.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-header">Reports</div>
-                    <div class="card-body">
-                        <h5 class="card-title">15</h5>
-                        <p class="card-text">Pending reports.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Graphs Section -->
-        <div class="row">
-            <!-- User Growth Chart -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">User Growth</div>
-                    <div class="card-body">
-                        <canvas id="userGrowthChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Posts & Comments Chart -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">Posts & Comments Statistics</div>
-                    <div class="card-body">
-                        <canvas id="postsCommentsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- System Logs -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">Recent Activities</div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item">User JohnDoe created a new post. <span class="text-muted">5 mins ago</span></li>
-                            <li class="list-group-item">Admin updated user roles. <span class="text-muted">20 mins ago</span></li>
-                            <li class="list-group-item">System backup completed. <span class="text-muted">1 hour ago</span></li>
-                            <li class="list-group-item">User JaneDoe commented on a post. <span class="text-muted">2 hours ago</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Server Status -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">Server Status</div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <li class="list-group-item"><span class="text-success">✔</span> Server Running</li>
-                            <li class="list-group-item"><span class="text-success">✔</span> Database Connected</li>
-                            <li class="list-group-item"><span class="text-warning">⚠</span> High CPU Usage</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Storage Usage -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">Storage Usage</div>
-                    <div class="card-body">
-                        <canvas id="storageChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<!-- Main Content -->
+<div class="admin-dashboard-body flex-grow-1 d-flex flex-column">
+    <!-- Top Bar -->
+    <div class="admin-dashboard-topbar">
+        <span id="admin-dashboard-sidebar-toggle"><i class="bi bi-list" style="font-size: 1.5rem;"></i></span>
+        <h2>Administrator Dashboard</h2>
+        <span>Hello, Admin!</span>
+        <span id="datetime"></span>
     </div>
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // User Growth Chart
-    var ctx1 = document.getElementById('userGrowthChart').getContext('2d');
-    var userGrowthChart = new Chart(ctx1, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'New Users',
-                data: [10, 20, 30, 40, 50, 60],
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+<!-- Page Content -->
+<main class="admin-dashboard-content flex-grow-1 p-3">
+    <!-- Stats Boxes -->
+    <section class="admin-dashboard-stats-boxes">
+        <div class="admin-dashboard-stats-box">
+            <h3>50</h3>
+            <span>Learners</span>
+        </div>
+        <div class="admin-dashboard-stats-box">
+            <h3>39%</h3>
+            <span>Avg. User Progress</span>
+        </div>
+        <div class="admin-dashboard-stats-box">
+            <h3>3:2</h3>
+            <span>Completed vs. Unfinished</span>
+        </div>
+    </section>
 
-    // Posts & Comments Chart
-    var ctx2 = document.getElementById('postsCommentsChart').getContext('2d');
-    var postsCommentsChart = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [
-                {
-                    label: 'Posts',
-                    data: [5, 10, 15, 20, 25, 30],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2
-                },
-                {
-                    label: 'Comments',
-                    data: [8, 16, 24, 32, 40, 48],
-                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true
-        }
-    });
-
-    // Storage Usage Chart
-    var ctx3 = document.getElementById('storageChart').getContext('2d');
-    var storageChart = new Chart(ctx3, {
-        type: 'doughnut',
-        data: {
-            labels: ['Used Space', 'Free Space'],
-            datasets: [{
-                data: [70, 30],
-                backgroundColor: ['#FF6384', '#36A2EB']
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
+    <div class="admin-dashboard-stats-boxes mt-4">
+        <div class="admin-dashboard-stats-box">
+            <h3>Time Consumed</h3>
+            <span>Overall usage stats</span>
+        </div>
+        <div class="admin-dashboard-stats-box">
+            <h3>Finished Lessons</h3>
+            <span>Frequency of lesson completions</span>
+        </div>
+        <div class="admin-dashboard-stats-box">
+            <h3>Export to PDF</h3>
+            <span>Download progress reports</span>
+        </div>
+    </div>
+</main>

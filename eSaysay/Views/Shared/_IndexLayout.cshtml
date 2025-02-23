@@ -32,6 +32,7 @@
     <link href="~/assets/css/main.css" rel="stylesheet">
     <link href="~/assets/css/sidebar.css" rel="stylesheet">
     <link href="~/assets/css/dashboard.css" rel="stylesheet">
+    <link href="~/assets/css/admin.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/listening.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
@@ -41,11 +42,9 @@
     @if (User.IsInRole("Admin"))
     {
         <main class="main">
-            <div class="wrapper">
+            <div class="content">
                 <!-- Sidebar -->
-                <nav id="sidebar" class="active">
-                    @await Html.PartialAsync("_AdminSidebar")
-                </nav>
+                @await Html.PartialAsync("_AdminSidebar")
                 @RenderBody()
             </div>
         </main>
@@ -58,73 +57,20 @@
 
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <!-- Chart.js -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            // User Growth Chart
-            var ctx1 = document.getElementById('userGrowthChart').getContext('2d');
-            var userGrowthChart = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'New Users',
-                        data: [10, 20, 30, 40, 50, 60],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Posts & Comments Chart
-            var ctx2 = document.getElementById('postsCommentsChart').getContext('2d');
-            var postsCommentsChart = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [
-                        {
-                            label: 'Posts',
-                            data: [5, 10, 15, 20, 25, 30],
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Comments',
-                            data: [8, 16, 24, 32, 40, 48],
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Storage Usage Chart
-            var ctx3 = document.getElementById('storageChart').getContext('2d');
-            var storageChart = new Chart(ctx3, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Used Space', 'Free Space'],
-                    datasets: [{
-                        data: [70, 30],
-                        backgroundColor: ['#FF6384', '#36A2EB']
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
+            function updateDateTime() {
+              const now = new Date();
+              const dateTimeEl = document.getElementById('datetime');
+              dateTimeEl.textContent = now.toLocaleString();
+            }
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+        </script>
+        <script>
+            document.getElementById('sidebar-toggle').addEventListener('click', function () {
+              document.getElementById('adminSidebar').classList.toggle('open');
             });
         </script>
-
     }
     else if (User.IsInRole("Student"))
     {
