@@ -10,7 +10,6 @@
 body {
     min-height: 100vh;
     background: #d3b16c;
-    overflow-x: hidden;
 }
 
 .main-content {
