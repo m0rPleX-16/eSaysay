@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace eSaysay.Areas.Admin.Views.Dashboard
+namespace eSaysay.Views.Shared
 {
-    public class IndexModel : PageModel
+    public class _AdminSidebarModel : PageModel
     {
         public void OnGet()
         {

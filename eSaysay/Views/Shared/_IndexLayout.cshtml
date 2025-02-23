@@ -27,7 +27,7 @@
     <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
     <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
     <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  
+
     <!-- Main CSS File -->
     <link href="~/assets/css/main.css" rel="stylesheet">
     <link href="~/assets/css/sidebar.css" rel="stylesheet">
@@ -38,7 +38,95 @@
 
 <body class="index-page @(ViewData["PageClass"])">
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.IsInRole("Admin"))
+    {
+        <main class="main">
+            <div class="wrapper">
+                <!-- Sidebar -->
+                <nav id="sidebar" class="active">
+                    @await Html.PartialAsync("_AdminSidebar")
+                </nav>
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer id="footer" class="footer-dash">
+            <div class="footer-container">
+                <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
+            </div>
+        </footer>
+
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // User Growth Chart
+            var ctx1 = document.getElementById('userGrowthChart').getContext('2d');
+            var userGrowthChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Users',
+                        data: [10, 20, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // Posts & Comments Chart
+            var ctx2 = document.getElementById('postsCommentsChart').getContext('2d');
+            var postsCommentsChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Posts',
+                            data: [5, 10, 15, 20, 25, 30],
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Comments',
+                            data: [8, 16, 24, 32, 40, 48],
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // Storage Usage Chart
+            var ctx3 = document.getElementById('storageChart').getContext('2d');
+            var storageChart = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Used Space', 'Free Space'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: ['#FF6384', '#36A2EB']
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        </script>
+
+    }
+    else if (User.IsInRole("Student"))
     {
         @await Html.PartialAsync("_NavbarAuthenticated")
 
@@ -46,18 +134,16 @@
             @RenderBody()
         </main>
 
-
         <footer id="footer" class="footer-dash">
-           <div class="footer-container">
+            <div class="footer-container">
                 <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
-           </div>
+            </div>
         </footer>
 
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
         <!-- Preloader -->
         <div id="preloader"></div>
-     
     }
     else
     {
@@ -67,7 +153,7 @@
             @RenderBody()
         </main>
 
-        <footer id="footer-hero" class="footer-hero position-relative light-background" >
+        <footer id="footer-hero" class="footer-hero position-relative light-background">
             <div class="container footer-top">
                 <div class="row gy-4">
                     <div class="col-lg-4 col-md-6 footer-about">
@@ -94,6 +180,7 @@
                             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                             <li><a asp-controller="Home" asp-action="About">About Us</a></li>
                             <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                            <li><a asp-area="Identity" asp-page="/Account/AdminLogin">Go to Admin</a></li>
                         </ul>
                     </div>
 
@@ -120,7 +207,7 @@
             <div class="container copyright text-center mt-4">
                 <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
                 <div class="credits">
-                    Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> | Customized for <strong>eSaysay</strong>
+                    Designed by <a href="https://openai.com/">OpenAi</a> | Customized for <strong>eSaysay</strong>
                 </div>
             </div>
 
