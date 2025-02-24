@@ -1,0 +1,67 @@
+﻿.login-page {
+    background-color: #FEF1E1;
+}
+
+.login-page .container .login-style {
+    border-top-left-radius: 36px;
+    border-bottom-left-radius: 36px;
+}
+
+    .login-page .container .login-inputs {
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+    }
+
+.login-style {
+    background-color: #DFB757;
+}
+
+    .login-style .text-center h1{
+        color: white;
+    }
+
+.login-inputs .text-center h2 {
+    color: #5D4940;
+}
+
+.email-input input {
+    border-radius: 36px;
+    border-width: 1px;
+    color: #5D4940;
+}
+
+.password-input input {
+    border-radius: 36px;
+    color: #5D4940;
+}
+
+.form-control:focus {
+    color: #5D4940;
+    border-color: #DFB757;
+    box-shadow: 0 0 0 0.2rem #DFB757;
+    outline: none !important;
+}
+
+#togglePassword:hover {
+    color: #DFB757;
+}
+
+.form-check-input:active {
+    background-color: #DFB757;
+}
+.form-check-input:focus {
+    background-color: #DFB757;
+}
+
+.btn-login-page {
+    border-radius: 36px;
+    color: #5D4940;
+    font-weight: 600;
+    background-color: #DFB757;
+}
+    .btn-login-page:hover {
+        border-radius: 36px;
+        color: #5D4940;
+        font-weight: 600;
+        background-color: #FFDE8D;
+    }

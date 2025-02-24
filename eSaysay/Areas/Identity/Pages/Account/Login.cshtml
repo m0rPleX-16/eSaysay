@@ -4,65 +4,81 @@
 @{
     ViewData["Title"] = "Log in";
 }
+<div class="login-page">
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="row w-100">
-        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center text-white rounded-start" style="background-color: #A75F37;">
-            <div class="text-center">
-                <h1 class="fw-bold text-white">Welcome Back!</h1>
-                <p class="lead">Log in to continue learning with eSaysay.</p>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-8 mx-auto p-4 shadow rounded bg-white" style="font-family: var(--default-font);">
-            <div class="text-center mb-4">
-                <h2 class="fw-bold" style="color: var(--heading-color);">Login</h2>
-                <p>Access your account</p>
-            </div>
-            <form id="account" method="post" asp-route-returnUrl="@Url.Action("Index", "Dashboard")">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" required />
-                    <label asp-for="Input.Email">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" type="password" class="form-control" placeholder="Password" required />
-                    <label asp-for="Input.Password">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" asp-for="Input.RememberMe" />
-                    <label class="form-check-label" asp-for="Input.RememberMe">
-                        Remember me
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 py-2" style="background: var(--accent-color); border: none;">Log in</button>
-                <div class="text-center mt-3">
-                    <a asp-page="./ForgotPassword" class="text-decoration-none">Forgot password?</a>
-                </div>
-                <div class="text-center mt-2">
-                    <span>New here?</span> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">Sign up</a>
-                </div>
-            </form>
-            <hr class="my-4">
-            @if (Model.ExternalLogins?.Count > 0)
-            {
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="row w-100">
+            <div class="login-style col-lg-6 d-none d-lg-flex align-items-center justify-content-center ">
                 <div class="text-center">
-                    <p>Or login with</p>
-                    @foreach (var provider in Model.ExternalLogins!)
-                    {
-                        <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-primary me-2" name="provider" value="@provider.Name" style="border-color: var(--accent-color); color: var(--accent-color);">
-                                @provider.DisplayName
-                            </button>
-                        </form>
-                    }
+                    <h1 class="fw-bold">Welcome Back!</h1>
+                    <p class="lead">Log in to continue learning with eSaysay.</p>
                 </div>
-            }
+            </div>
+            <div class="login-inputs col-lg-6 col-md-8 mx-auto p-4 shadow bg-white" style="font-family: var(--default-font);">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">Login</h2>
+                </div>
+                <form id="account" method="post" asp-route-returnUrl="@Url.Action("Index", "Dashboard")">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-floating mb-3 email-input">
+                        <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" required />
+                        <label asp-for="Input.Email">Email</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 position-relative password-input">
+                        <input asp-for="Input.Password" type="password" class="form-control" placeholder="Password" required id="password" />
+                        <label asp-for="Input.Password">Password</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        <button type="button" id="togglePassword" class="btn btn-outline-secondary position-absolute end-0 top-50 translate-middle-y" style="border: none; background: none;">
+                            <i class="bi bi-eye"></i> <!-- Bootstrap Icons (eye icon) -->
+                        </button>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        <label class="form-check-label" asp-for="Input.RememberMe">
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-login-page w-100 py-2">Log in</button>
+                    <div class="text-center mt-3">
+                        <a asp-page="./ForgotPassword" class="text-decoration-none">Forgot password?</a>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span>New here?</span> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">Sign up</a>
+                    </div>
+                </form>
+                <hr class="my-4">
+                @if (Model.ExternalLogins?.Count > 0)
+                {
+                    <div class="text-center">
+                        <p>Or login with</p>
+                        @foreach (var provider in Model.ExternalLogins!)
+                        {
+                            <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-primary me-2" name="provider" value="@provider.Name" style="border-color: var(--accent-color); color: var(--accent-color);">
+                                    @provider.DisplayName
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle eye icon
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    </script>
 }

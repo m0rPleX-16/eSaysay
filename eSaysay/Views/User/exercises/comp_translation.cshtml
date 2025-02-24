@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Complete Exercise";
+    ViewData["PageClass"] = "complete-page";
+}
+<div class="container complete-exercise">
+
+    <div class="header-complete">
+        <a asp-controller="Dashboard" asp-action="exitCompleteExercise" class="btn close-button-complete">
+            <span class="material-symbols-rounded">
+                close
+            </span>
+        </a>
+        <div class="progress-bar">
+            <div class="progress-bar-inner "></div>
+        </div>
+    </div>
+
+
+    <div class="title title-question">
+        <!-- fill in the blank QUESTIONS -->
+        Complete the translation
+    </div>
+    <center>
+        <div class="container complete-content">
+            <h6> Hallo! Tee oder ______ ? </h6>
+        </div>
+    </center>
+</div>
+
+<div class="container answer-grid">
+    <button onclick="selectAnswer(1)">bitte</button>
+    <button onclick="selectAnswer(2)">Brot</button>
+    <button onclick="selectAnswer(3)">nein</button>
+    <button onclick="selectAnswer(4)">Kaffee</button>
+</div>
+
+<div class="footer">
+    <button class="skip" onclick="skip()">Skip</button>
+    <button class="check" onclick="checkAnswer()">Check</button>
+</div>
+

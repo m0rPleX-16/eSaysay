@@ -2,14 +2,15 @@
     ViewData["Title"] = "Dashboard";
 }
 <!-- Dashboard Content of User-->
+<div class="user-dashboard">
 
     @await Html.PartialAsync("_Sidebar")
 
-    <main class="main-content">
-    <div>
-        <h1>Welcome to Your Dashboard</h1>
-        <p>This is your main panel where you can manage your learning progress.</p>
-    </div>
+    <main class="main-content user-dashboard">
+        <div>
+            <h1>Welcome to Your Dashboard</h1>
+            <p>This is your main panel where you can manage your learning progress.</p>
+        </div>
         <section class="lesson-section">
             <div class="carousel">
                 <div class="lessons-title row">
@@ -29,18 +30,19 @@
                     </div>
                     <div class="lesson-card">
                         <h3>Lesson 2</h3>
-                        <p>Basic greetings</p>
-                        <button onclick="location.href='#'">Start Lesson</button>
+                        <p>Correct Translation</p>
+                        <a asp-controller="Dashboard" asp-action="CorrectTranslation" class="btn btn-primary">Start</a>
+ 
                     </div>
                     <div class="lesson-card">
                         <h3>Lesson 3</h3>
-                        <p>Basic greetings</p>
-                        <button onclick="location.href='#'">Start Lesson</button>
+                        <p>Complete d transl</p>
+                        <a asp-controller="Dashboard" asp-action="CompleteTranslation" class="btn btn-primary">Start</a>
                     </div>
                     <div class="lesson-card">
                         <h3>Lesson 4</h3>
-                        <p>Basic greetings</p>
-                        <button onclick="location.href='#'">Start Lesson</button>
+                        <p>match the right pair</p>
+                        <a asp-controller="Dashboard" asp-action="PairingExercise" class="btn btn-primary">Start</a>
                     </div>
                     <div class="lesson-card">
                         <h3>Lesson 5</h3>
@@ -79,3 +81,12 @@
         </section>
         <!-- Add more sections for advanced lessons if needed -->
     </main>
+
+    <footer id="footer" class="footer-dash">
+        <div class="footer-container">
+            <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
+        </div>
+    </footer>
+
+</div>
+   
