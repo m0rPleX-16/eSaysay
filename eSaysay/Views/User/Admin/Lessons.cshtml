@@ -1,0 +1,146 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using eSaysay.Models.Entities;
+
+@model List<Lesson>
+
+@{
+    ViewData["Title"] = "Manage Lessons";
+}
+
+<h2>Manage Lessons</h2>
+
+<!-- Button to Open Add Lesson Modal -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+    Add Lesson
+</button>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Lesson Type</th>
+            <th>Difficulty</th>
+            <th>Language</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lesson in Model)
+        {
+            <tr>
+                <td>@lesson.Title</td>
+                <td>@lesson.LessonType</td>
+                <td>@lesson.DifficultyLevel</td>
+                <td>@lesson.Language.LanguageName</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editLessonModal-@lesson.LessonID">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteLessonModal-@lesson.LessonID">Archive</button>
+                </td>
+            </tr>
+
+            <!-- Edit Lesson Modal -->
+            <div class="modal fade" id="editLessonModal-@lesson.LessonID" tabindex="-1" aria-labelledby="editLessonLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-action="EditLesson" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Lesson</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="LessonID" value="@lesson.LessonID" />
+
+                                <label>Title:</label>
+                                <input type="text" name="Title" class="form-control" value="@lesson.Title" required />
+
+                                <label>Lesson Type:</label>
+                                <select name="LessonType" class="form-control">
+                                    <option selected>@lesson.LessonType</option>
+                                    <option>Video</option>
+                                    <option>Text</option>
+                                    <option>Quiz</option>
+                                </select>
+
+                                <label>Difficulty:</label>
+                                <select name="DifficultyLevel" class="form-control">
+                                    <option selected>@lesson.DifficultyLevel</option>
+                                    <option>Beginner</option>
+                                    <option>Intermediate</option>
+                                    <option>Advanced</option>
+                                </select>
+
+                                <label>Description:</label>
+                                <textarea name="Description" class="form-control">@lesson.Description</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Save Changes</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archive (Delete) Lesson Modal -->
+            <div class="modal fade" id="deleteLessonModal-@lesson.LessonID" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-action="ArchiveLesson" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Archive Lesson</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to archive <strong>@lesson.Title</strong>?</p>
+                                <input type="hidden" name="LessonID" value="@lesson.LessonID" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">Yes, Archive</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+
+<!-- Add Lesson Modal -->
+<div class="modal fade" id="addLessonModal" tabindex="-1" aria-labelledby="addLessonLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateLesson" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Lesson</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Title:</label>
+                    <input type="text" name="Title" class="form-control" required />
+
+                    <label>Lesson Type:</label>
+                    <select name="LessonType" class="form-control">
+                        <option>Video</option>
+                        <option>Text</option>
+                        <option>Quiz</option>
+                    </select>
+
+                    <label>Difficulty Level:</label>
+                    <select name="DifficultyLevel" class="form-control">
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+
+                    <label>Description:</label>
+                    <textarea name="Description" class="form-control"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

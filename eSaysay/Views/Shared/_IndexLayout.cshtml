@@ -27,12 +27,13 @@
     <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
     <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
     <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  
+
     <!-- Main CSS File -->
     <link href="~/assets/css/login.css" rel="stylesheet">
     <link href="~/assets/css/main.css" rel="stylesheet">
     <link href="~/assets/css/sidebar.css" rel="stylesheet">
     <link href="~/assets/css/dashboard.css" rel="stylesheet">
+    <link href="~/assets/css/admin.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/listening.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/corr_translation.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/comp_translation.css" rel="stylesheet">
@@ -42,14 +43,47 @@
 
 <body class="index-page @(ViewData["PageClass"])">
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.IsInRole("Admin"))
+    {
+        <main class="main">
+            <div class="content">
+                <!-- Sidebar -->
+                @await Html.PartialAsync("_AdminSidebar")
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer id="footer" class="footer-dash">
+            <div class="footer-container">
+                <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
+            </div>
+        </footer>
+
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+        <script>
+            function updateDateTime() {
+              const now = new Date();
+              const dateTimeEl = document.getElementById('datetime');
+              dateTimeEl.textContent = now.toLocaleString();
+            }
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+        </script>
+        <script>
+            document.getElementById('sidebar-toggle').addEventListener('click', function () {
+              document.getElementById('adminSidebar').classList.toggle('open');
+            });
+        </script>
+    }
+    else if (User.IsInRole("Student"))
     {
         @await Html.PartialAsync("_NavbarAuthenticated")
 
         <main class="main">
             @RenderBody()
         </main>
-
+  
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
         <!-- Preloader -->
@@ -63,7 +97,7 @@
             @RenderBody()
         </main>
 
-        <footer id="footer-hero" class="footer-hero position-relative light-background" >
+        <footer id="footer-hero" class="footer-hero position-relative light-background">
             <div class="container footer-top">
                 <div class="row gy-4">
                     <div class="col-lg-4 col-md-6 footer-about">
@@ -90,6 +124,7 @@
                             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                             <li><a asp-controller="Home" asp-action="About">About Us</a></li>
                             <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                            <li><a asp-area="Identity" asp-page="/Account/AdminLogin">Go to Admin</a></li>
                         </ul>
                     </div>
 
@@ -116,7 +151,7 @@
             <div class="container copyright text-center mt-4">
                 <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
                 <div class="credits">
-                    Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> | Customized for <strong>eSaysay</strong>
+                    Designed by <a href="https://openai.com/">OpenAi</a> | Customized for <strong>eSaysay</strong>
                 </div>
             </div>
 

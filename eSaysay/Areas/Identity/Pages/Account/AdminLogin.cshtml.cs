@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -17,19 +17,19 @@ using Microsoft.Extensions.Logging;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
-    public class LoginModel : PageModel
+    public class AdminLoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager; 
-        private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<AdminLoginModel> _logger;
 
-        public LoginModel(
+        public AdminLoginModel(
             SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, 
-            ILogger<LoginModel> logger)
+            UserManager<IdentityUser> userManager,
+            ILogger<AdminLoginModel> logger)
         {
             _signInManager = signInManager;
-            _userManager = userManager; 
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -108,7 +108,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("~/Admin/Dashboard");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
@@ -117,7 +117,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("Admin logged in.");
 
                     // Retrieve the user
                     var user = await _userManager.FindByEmailAsync(Input.Email);
@@ -126,11 +126,12 @@ namespace eSaysay.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "User not found.");
                         return Page();
                     }
-                    var isStudent = await _userManager.IsInRoleAsync(user, "Student");
-                    if (!isStudent)
+
+                    var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                    if (!isAdmin)
                     {
                         await _signInManager.SignOutAsync();
-                        ModelState.AddModelError(string.Empty, "Access denied. You are not a student.");
+                        ModelState.AddModelError(string.Empty, "Access denied. You are not an admin.");
                         return Page();
                     }
                     return LocalRedirect(returnUrl);

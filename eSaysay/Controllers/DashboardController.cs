@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace eSaysay.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Student")]
     public class DashboardController : Controller
     {
         public IActionResult Index()
