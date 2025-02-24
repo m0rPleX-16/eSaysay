@@ -1,4 +1,142 @@
-﻿@page
-@model eSaysay.Views.User.Admin.ExercisesModel
-@{
-}
+﻿@using Microsoft.AspNetCore.Identity;
+@using eSaysay.Models.Entities;
+
+@model List<InteractiveExercise>
+
+<h2>Manage Exercises</h2>
+
+<!-- Button to Open Add Exercise Modal -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+    Add Exercise
+</button>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Exercise Content</th>
+            <th>Lesson</th>
+            <th>Type</th>
+            <th>Difficulty</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var exercise in Model)
+        {
+            <tr>
+                <td>@exercise.Content</td>
+                <td>@exercise.Lesson.Title</td>
+                <td>@exercise.ExerciseType</td>
+                <td>@exercise.DifficultyLevel</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteExerciseModal-@exercise.ExerciseID">Archive</button>
+                </td>
+            </tr>
+
+            <!-- Edit Exercise Modal -->
+            <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-action="EditExercise" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Exercise</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+
+                                <label>Content:</label>
+                                <input type="text" name="Content" class="form-control" value="@exercise.Content" required />
+
+                                <label>Exercise Type:</label>
+                                <select name="ExerciseType" class="form-control">
+                                    <option selected>@exercise.ExerciseType</option>
+                                    <option>Multiple Choice</option>
+                                    <option>Fill in the Blank</option>
+                                    <option>Speaking Challenge</option>
+                                </select>
+
+                                <label>Difficulty Level:</label>
+                                <select name="DifficultyLevel" class="form-control">
+                                    <option selected>@exercise.DifficultyLevel</option>
+                                    <option>Easy</option>
+                                    <option>Medium</option>
+                                    <option>Hard</option>
+                                </select>
+
+                                <label>Lesson:</label>
+                                <input type="text" name="LessonID" class="form-control" value="@exercise.LessonID" required />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Save Changes</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archive (Delete) Exercise Modal -->
+            <div class="modal fade" id="deleteExerciseModal-@exercise.ExerciseID" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-action="ArchiveExercise" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Archive Exercise</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to archive <strong>@exercise.Content</strong>?</p>
+                                <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">Yes, Archive</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+
+<!-- Add Exercise Modal -->
+<div class="modal fade" id="addExerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateExercise" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Exercise</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Content:</label>
+                    <input type="text" name="Content" class="form-control" required />
+
+                    <label>Exercise Type:</label>
+                    <select name="ExerciseType" class="form-control">
+                        <option>Multiple Choice</option>
+                        <option>Fill in the Blank</option>
+                        <option>Speaking Challenge</option>
+                    </select>
+
+                    <label>Difficulty Level:</label>
+                    <select name="DifficultyLevel" class="form-control">
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+                    </select>
+
+                    <label>Lesson ID:</label>
+                    <input type="text" name="LessonID" class="form-control" required />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
