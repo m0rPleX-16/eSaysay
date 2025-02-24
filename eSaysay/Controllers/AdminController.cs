@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Linq;
 using eSaysay.Models;
+using System.Diagnostics;
 
 namespace eSaysay.Controllers
 {
@@ -9,11 +13,16 @@ namespace eSaysay.Controllers
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AdminController(ILogger<AdminController> logger)
+        public AdminController(ILogger<AdminController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
+
         public IActionResult Index()
         {
             return View("~/Views/User/Admin/Index.cshtml");
@@ -24,6 +33,7 @@ namespace eSaysay.Controllers
         }
         public IActionResult Exercises()
         {
+
             return View("~/Views/User/Admin/Exercises.cshtml");
         }
         public IActionResult Lessons()
@@ -38,10 +48,74 @@ namespace eSaysay.Controllers
         {
             return View("~/Views/User/Admin/Progress.cshtml");
         }
-        public IActionResult Students()
+
+        public async Task<IActionResult> Students()
         {
-            return View("~/Views/User/Admin/Students.cshtml");
+            var users = await _userManager.Users.ToListAsync();
+
+            var students = new List<IdentityUser>();
+            foreach (var user in users)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Student"))
+                {
+                    students.Add(user);
+                }
+            }
+
+            return View("~/Views/User/Admin/Students.cshtml", students);
         }
+        [HttpPost]
+        public async Task<IActionResult> EditStudent(string Id, string Email)
+        {
+            if (string.IsNullOrEmpty(Id) || string.IsNullOrEmpty(Email))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.Email = Email;
+            user.UserName = Email;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Students");
+            }
+
+            return BadRequest("Failed to update user.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ArchiveStudent(string Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTime.MaxValue;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Students");
+            }
+
+            return BadRequest("Failed to archive user.");
+        }
+
 
         public IActionResult Settings()
         {
