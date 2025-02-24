@@ -247,6 +247,7 @@
   <ItemGroup>
     <Folder Include="Views\User\Exercises\" />
     <Folder Include="wwwroot\assets\audio\" />
+    <Folder Include="wwwroot\assets\database\" />
   </ItemGroup>
 
 </Project>
