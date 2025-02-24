@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Correct Translation Exercise";
+    ViewData["PageClass"] = "correct-translation-page";
+}
+<div class="container correct-exercise">
+
+    <div class="header-correct">
+        <a asp-controller="Dashboard" asp-action="exitCorrectExercise" class="btn close-button-correct">
+            <span class="material-symbols-rounded">
+                close
+            </span>
+        </a>
+        <div class="progress-bar">
+            <div class="progress-bar-inner "></div>
+        </div>
+    </div>
+
+
+    <div class="title title-question">
+        <!-- LISTENING QUESTIONS -->
+       Select the correct translation
+    </div>
+    <center>
+        <div class="container correct-content">
+            <h6> Coffee </h6>
+        </div>
+    </center>
+</div>
+
+<div class="container answer-grid">
+    <button onclick="selectAnswer(1)">hallo</button>
+    <button onclick="selectAnswer(2)">Milch</button>
+    <button onclick="selectAnswer(3)">Kaffe</button>
+    <button onclick="selectAnswer(4)">und</button>
+</div>
+
+<div class="footer">
+    <button class="skip" onclick="skip()">Skip</button>
+    <button class="check" onclick="checkAnswer()">Check</button>
+</div>
+
+

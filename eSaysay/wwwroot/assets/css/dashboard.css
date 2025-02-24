@@ -9,13 +9,17 @@
 
 body {
     min-height: 100vh;
-    background: #d3b16c;
+}
+
+.user-dashboard {
+    background-color: #E4D2BB;
 }
 
 .main-content {
-    margin-left: 220px; 
-    padding: 20px 20px 20px 20px; 
+    margin-left: 220px;
+    padding: 20px 20px 20px 20px;
     transition: margin-left 0.4s ease;
+    
 }
 
 .sidebar.collapsed ~ .main-content {
@@ -26,7 +30,7 @@ body {
     margin-bottom: 40px;
     background: none;
     padding: 0;
-    border; none;
+    border: none;
 }
 
 .carousel {
@@ -92,11 +96,6 @@ body {
     align-items: center;
     padding: 2px;
     background-color: transparent;
-    transition: margin-left 0.4s ease;
-}
-
-.sidebar.collapsed ~ .footer-dash {
-    margin-left: 115px;
 }
 
 .footer-container {

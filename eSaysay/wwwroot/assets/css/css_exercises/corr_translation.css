@@ -1,6 +1,6 @@
 ﻿
 /* ---------------------- main body ------------------- */
-.listening-page {
+.correct-translation-page {
     font-family: Poppins, sans-serif;
     padding: 0;
     display: flex;
@@ -9,13 +9,13 @@
     background-color: #FEF1E1;
 }
 
-.container.listening-exercise{
+.container.correct-exercise {
     margin-top: 30px;
 }
 
 /* ------------ header w close button --------------------- */
 
-.header-listening {
+.header-correct {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -25,20 +25,20 @@
     outline: none;
 }
 
-.header-listening .close-button-listening {
-    position: relative;
-    display: flex;
-    border: none;
-    height: 35px;
-    width: 35px;
-    color: #000;
-    background: none;
-    align-items: center;
-    justify-content:center;
-    transition: 0.4s ease;
-}
+    .header-correct .close-button-correct {
+        position: relative;
+        display: flex;
+        border: none;
+        height: 35px;
+        width: 35px;
+        color: #000;
+        background: none;
+        align-items: center;
+        justify-content: center;
+        transition: 0.4s ease;
+    }
 
-.close-button-listening:hover {
+.close-button-correct:hover {
     background-color: #DFB757;
     border-radius: 64px;
     transition: 0.4s ease;
@@ -70,7 +70,7 @@
     font-weight: bold;
 }
 
-.container .listening-content {
+.container .correct-content {
     display: inline-block;
     align-items: center;
     justify-content: center;
@@ -82,31 +82,10 @@
     text-align: center;
 }
 
-    .container .listening-content h6 {
+    .container .correct-content h6 {
         text-align: center;
         margin: 0;
     }
-
-/* ------------------------- audio button -------------------------- */
-
-.audio-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
-}
-
-    .audio-container .button {
-        display: flex;
-        padding: 20px;
-        border: none;
-        border-radius: 24px;
-        background-color: #DFB757;
-        justify-content: center;
-    }
-
-        .audio-container .button:hover {
-            background-color: #FFDE8D;
-        }
 
 /* ------------------------- answers -------------------------- */
 
@@ -131,7 +110,7 @@
             background-color: #0056b3;
         }
 
-        /*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
+/*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
 
 .footer {
     display: flex;

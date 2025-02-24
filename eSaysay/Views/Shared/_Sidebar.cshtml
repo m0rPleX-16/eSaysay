@@ -9,6 +9,11 @@
                 chevron_left
             </span>
         </button>
+        <button class="toggler menu-toggler">
+            <span class="material-symbols-rounded">
+                menu
+            </span>
+        </button>
     </header>
 
     <nav class="sidebar-nav">
@@ -37,12 +42,32 @@
         </ul>
         <!--Secondary bottom nav-->
         <ul class="nav-list secondary-nav">
-            <li class="class-item">
-                <a href="#" class="nav-link">
+          @*   <li class="class-item"> *@
+                <form class="class-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="btn-logout nav-link">
+                        <span class="nav-icon material-symbols-rounded"> logout </span>
+                        <span class="nav-label">Logout</span>
+                    </button>
+                </form>
+              @*   <form class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="btn">
+                        
+                        <span class="nav-icon material-symbols-rounded"> logout </span>
+                        <span class="nav-label">Logout</span>
+                  
+                    </button>
+                </form> *@
+
+             
+                    
+               @*  <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
                     <span class="nav-icon material-symbols-rounded"> logout </span>
                     <span class="nav-label">Logout</span>
-                </a>
-            </li>
+                </a> *@
+                @*  <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="btn-getstarted border-0">Logout</button>
+                </form> *@
+       @*      </li> *@
         </ul>
     </nav>
 </aside>

@@ -1,6 +1,5 @@
-﻿
-/* ---------------------- main body ------------------- */
-.listening-page {
+﻿/* ---------------------- main body ------------------- */
+.pairing-page {
     font-family: Poppins, sans-serif;
     padding: 0;
     display: flex;
@@ -9,13 +8,12 @@
     background-color: #FEF1E1;
 }
 
-.container.listening-exercise{
+.container.pairing-exercise {
     margin-top: 30px;
 }
 
 /* ------------ header w close button --------------------- */
-
-.header-listening {
+.header-pairing {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -25,27 +23,26 @@
     outline: none;
 }
 
-.header-listening .close-button-listening {
-    position: relative;
-    display: flex;
-    border: none;
-    height: 35px;
-    width: 35px;
-    color: #000;
-    background: none;
-    align-items: center;
-    justify-content:center;
-    transition: 0.4s ease;
-}
+    .header-pairing .close-button-pairing {
+        position: relative;
+        display: flex;
+        border: none;
+        height: 35px;
+        width: 35px;
+        color: #000;
+        background: none;
+        align-items: center;
+        justify-content: center;
+        transition: 0.4s ease;
+    }
 
-.close-button-listening:hover {
+.close-button-pairing:hover {
     background-color: #DFB757;
     border-radius: 64px;
     transition: 0.4s ease;
 }
 
 /* ------------------------------ header w PROGRESS BAR ------------------------------------ */
-
 .progress-bar {
     flex-grow: 1;
     height: 20px;
@@ -63,61 +60,27 @@
 }
 
 /* ------------------------- question or title -------------------------- */
-
 .title-question {
     padding: 20px;
     font-size: 24px;
     font-weight: bold;
 }
 
-.container .listening-content {
-    display: inline-block;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 16px;
-    border-radius: 36px;
-    width: auto;
-    height: auto;
-    text-align: center;
-}
-
-    .container .listening-content h6 {
-        text-align: center;
-        margin: 0;
-    }
-
-/* ------------------------- audio button -------------------------- */
-
-.audio-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
-}
-
-    .audio-container .button {
-        display: flex;
-        padding: 20px;
-        border: none;
-        border-radius: 24px;
-        background-color: #DFB757;
-        justify-content: center;
-    }
-
-        .audio-container .button:hover {
-            background-color: #FFDE8D;
-        }
-
 /* ------------------------- answers -------------------------- */
-
-.answer-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+.pairing-answer {
+    display: flex;
+    justify-content: center; /* Center the columns */
+    gap: 40px; /* Space between the two columns */
     padding: 20px;
 }
 
-    .answer-grid button {
+.answer-column {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between buttons (rows) */
+}
+
+    .answer-column button {
         padding: 15px;
         font-size: 18px;
         border: none;
@@ -125,14 +88,15 @@
         background-color: #007bff;
         color: white;
         cursor: pointer;
+        width: 200px; /* Fixed width for buttons */
+        text-align: center;
     }
 
-        .answer-grid button:hover {
+        .answer-column button:hover {
             background-color: #0056b3;
         }
 
-        /*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
-
+/*------------FOOTER OF LISTENING EXERCISE -------------------------------*/
 .footer {
     display: flex;
     justify-content: flex-end;

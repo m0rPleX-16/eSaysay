@@ -222,9 +222,9 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-    color: var(--default-color);
+    color: #272727;
     background-color: var(--background-color);
-    padding: 15px 0;
+    padding: 1px 0;
     transition: all 0.5s;
     z-index: 997;
 }
@@ -234,24 +234,43 @@ h6 {
     }
 
         .header .logo img {
-            max-height: 36px;
+            max-height: 48px;
             margin-right: 8px;
         }
 
         .header .logo h1 {
             font-weight: 700;
-            font-size: 30px;
+            font-size: 24px;
             margin: 0;
             letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--accent-color);
+            color: #DFB757;
         }
+
+        .header .btn-login{
+            margin: 12px;
+        }
+
+            .header .btn-login,
+            .header .btn-login:focus {
+                color: #272727;
+                font-size: 15px;
+                font-weight: 600;
+                padding: 6px 20px;
+                margin: 0 0 0 0;
+                border-radius: 50px;
+            }
+
+                .header .btn-login:hover,
+                .header .btn-login:focus:hover {
+                    color: #DFB757;
+                }
 
     .header .btn-getstarted,
     .header .btn-getstarted:focus {
         color: var(--contrast-color);
-        background: var(--accent-color);
+        background: #DFB757;
         font-size: 14px;
+        font-weight: 600;
         padding: 8px 25px;
         margin: 0 0 0 30px;
         border-radius: 50px;
@@ -261,7 +280,7 @@ h6 {
         .header .btn-getstarted:hover,
         .header .btn-getstarted:focus:hover {
             color: var(--contrast-color);
-            background: color-mix(in srgb, var(--accent-color), transparent 15%);
+            background: #FFDE8D;
         }
 
 @media (max-width: 1200px) {
@@ -270,6 +289,11 @@ h6 {
     }
 
     .header .btn-getstarted {
+        order: 2;
+        margin: 0 15px 0 0;
+        padding: 6px 15px;
+    }
+    .header .btn-login {
         order: 2;
         margin: 0 15px 0 0;
         padding: 6px 15px;
@@ -289,8 +313,17 @@ h6 {
 --------------------------------------------------------------*/
 /* Navmenu - Desktop */
 @media (min-width: 1200px) {
+
+    .header .container-fluid.container-xl {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; 
+    }
+
     .navmenu {
-        padding: 0;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center; 
     }
 
         .navmenu ul {
@@ -303,11 +336,12 @@ h6 {
 
         .navmenu li {
             position: relative;
+
         }
 
         .navmenu a,
         .navmenu a:focus {
-            color: var(--nav-color);
+            color: #272727;
             padding: 18px 15px;
             font-size: 16px;
             font-family: var(--nav-font);
@@ -334,7 +368,7 @@ h6 {
         .navmenu li:hover > a,
         .navmenu .active,
         .navmenu .active:focus {
-            color: var(--nav-hover-color);
+            color: #DFB757;
         }
 
         .navmenu .dropdown ul {
@@ -922,7 +956,7 @@ section,
         font-size: 15px;
         letter-spacing: 1px;
         display: inline-block;
-        padding: 8px 35px 10px 35px;
+        padding: 10px 35px 10px 35px;
         border-radius: 50px;
         transition: 0.4s;
         margin-top: 30px;
@@ -931,8 +965,8 @@ section,
     }
 
         .hero .btn-get-started:hover {
-            background: var(--accent-color);
-            border: 2px solid var(--accent-color);
+            background: #DFB757;
+            border: 2px solid #DFB757;
         }
 
 @media (max-width: 768px) {
