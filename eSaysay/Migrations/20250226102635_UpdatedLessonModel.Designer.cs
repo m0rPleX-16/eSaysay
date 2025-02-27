@@ -9,11 +9,11 @@ using eSaysay.Data;
 
 #nullable disable
 
-namespace eSaysay.Data.Migrations
+namespace eSaysay.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250223125935_AddedSecurityLogsandInteractiveExercise")]
-    partial class AddedSecurityLogsandInteractiveExercise
+    [Migration("20250226102635_UpdatedLessonModel")]
+    partial class UpdatedLessonModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,6 +227,96 @@ namespace eSaysay.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("eSaysay.Models.Entities.AdaptiveLearning", b =>
+                {
+                    b.Property<int>("AdaptiveID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdaptiveID"));
+
+                    b.Property<int>("CurrentLevel")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecommendedLessons")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(MAX)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AdaptiveID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("AdaptiveLearning");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.Analytics", b =>
+                {
+                    b.Property<int>("AnalyticsID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnalyticsID"));
+
+                    b.Property<double>("AverageScore")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LessonCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeSpent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AnalyticsID");
+
+                    b.HasIndex("LessonCompleted");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Analytics");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.Badge", b =>
+                {
+                    b.Property<int>("BadgeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BadgeID"));
+
+                    b.Property<string>("BadgeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Criteria")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("BadgeID");
+
+                    b.ToTable("Badges");
+                });
+
             modelBuilder.Entity("eSaysay.Models.Entities.InteractiveExercise", b =>
                 {
                     b.Property<int>("ExerciseID")
@@ -273,17 +363,7 @@ namespace eSaysay.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LanguageID"));
 
-                    b.Property<string>("DifficultyLevel")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("LanguageName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Region")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -300,10 +380,6 @@ namespace eSaysay.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LessonID"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -333,11 +409,9 @@ namespace eSaysay.Data.Migrations
 
                     b.HasKey("LessonID");
 
-                    b.HasIndex("CreatedBy");
-
                     b.HasIndex("LanguageID");
 
-                    b.ToTable("Lesson");
+                    b.ToTable("Lessons");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SecurityLog", b =>
@@ -370,6 +444,144 @@ namespace eSaysay.Data.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("SecurityLog");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.SpeechAssessment", b =>
+                {
+                    b.Property<int>("AssessmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssessmentID"));
+
+                    b.Property<double>("AccuracyScore")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("AttemptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExerciseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserRecording")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("AssessmentID");
+
+                    b.HasIndex("ExerciseID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("SpeechAssessment");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserBadge", b =>
+                {
+                    b.Property<int>("UserBadgeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserBadgeID"));
+
+                    b.Property<int>("BadgeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateEarned")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserBadgeID");
+
+                    b.HasIndex("BadgeID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserBadges");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserProgress", b =>
+                {
+                    b.Property<int>("ProgressID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgressID"));
+
+                    b.Property<string>("CompletionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("LastAccessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LessonID")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TimeSpent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProgressID");
+
+                    b.HasIndex("LessonID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserProgress");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserResponse", b =>
+                {
+                    b.Property<int>("ResponseID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResponseID"));
+
+                    b.Property<DateTime>("AttemptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExerciseID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(MAX)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ResponseID");
+
+                    b.HasIndex("ExerciseID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserResponse");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -423,6 +635,36 @@ namespace eSaysay.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("eSaysay.Models.Entities.AdaptiveLearning", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.Analytics", b =>
+                {
+                    b.HasOne("eSaysay.Models.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonCompleted")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("eSaysay.Models.Entities.InteractiveExercise", b =>
                 {
                     b.HasOne("eSaysay.Models.Entities.Lesson", "Lesson")
@@ -436,19 +678,11 @@ namespace eSaysay.Data.Migrations
 
             modelBuilder.Entity("eSaysay.Models.Entities.Lesson", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("eSaysay.Models.Entities.Language", "Language")
                         .WithMany()
                         .HasForeignKey("LanguageID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Language");
                 });
@@ -460,6 +694,82 @@ namespace eSaysay.Data.Migrations
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.SpeechAssessment", b =>
+                {
+                    b.HasOne("eSaysay.Models.Entities.InteractiveExercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserBadge", b =>
+                {
+                    b.HasOne("eSaysay.Models.Entities.Badge", "Badge")
+                        .WithMany()
+                        .HasForeignKey("BadgeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Badge");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserProgress", b =>
+                {
+                    b.HasOne("eSaysay.Models.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eSaysay.Models.Entities.UserResponse", b =>
+                {
+                    b.HasOne("eSaysay.Models.Entities.InteractiveExercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
 
                     b.Navigation("User");
                 });

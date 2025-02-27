@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace eSaysay.Models.Entities
 {
@@ -8,8 +8,11 @@ namespace eSaysay.Models.Entities
     {
         [Key]
         public int LessonID { get; set; }
-
+        
+        [Required]
         public int LanguageID { get; set; }
+
+        [ForeignKey("LanguageID")]
         public Language Language { get; set; }
 
         [Required]
@@ -23,11 +26,9 @@ namespace eSaysay.Models.Entities
         [MaxLength(50)]
         public string LessonType { get; set; }
 
+        [Required]
         [MaxLength(20)]
         public string DifficultyLevel { get; set; }
-
-        public string CreatedBy { get; set; }
-        public IdentityUser CreatedByUser { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
     }

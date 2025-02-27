@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using eSaysay.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+using eSaysay.Data;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
@@ -22,15 +25,19 @@ namespace eSaysay.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<AdminLoginModel> _logger;
+        private readonly ApplicationDbContext _context;
 
         public AdminLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            ILogger<AdminLoginModel> logger)
+            ILogger<AdminLoginModel> logger,
+            ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _context = context;
+
         }
 
         /// <summary>
@@ -127,6 +134,17 @@ namespace eSaysay.Areas.Identity.Pages.Account
                         return Page();
                     }
 
+                    var securityLog = new SecurityLog
+                    {
+                        UserID = user.Id,
+                        Event = "Admin Logged in",
+                        Timestamp = DateTime.UtcNow,
+                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                    };
+
+                    _context.SecurityLog.Add(securityLog);
+                    await _context.SaveChangesAsync();
+
                     var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
                     if (!isAdmin)
                     {
@@ -143,6 +161,17 @@ namespace eSaysay.Areas.Identity.Pages.Account
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
+
+                    var securityLog = new SecurityLog
+                    {
+                        UserID = Input.Email,
+                        Event = "User Account Locked",
+                        Timestamp = DateTime.UtcNow,
+                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                    };
+                    _context.SecurityLog.Add(securityLog);
+                    await _context.SaveChangesAsync();
+
                     return RedirectToPage("./Lockout");
                 }
                 else

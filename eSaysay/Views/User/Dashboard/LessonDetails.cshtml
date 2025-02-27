@@ -1,0 +1,66 @@
+﻿@model eSaysay.Models.Entities.Lesson
+
+@{
+    ViewData["Title"] = @Model.Title;
+}
+
+<div class="container lesson-details">
+    <h2>@Model.Title</h2>
+    <p>@Model.Description</p>
+
+    <button id="start-exercise-btn" class="btn btn-primary" data-lesson-id="@Model.LessonID">
+        Start Exercise
+    </button>
+
+    <div class="container complete-exercise">
+
+        <div class="header-complete">
+            <a asp-controller="Dashboard" asp-action="exitCompleteExercise" class="btn close-button-complete">
+                <span class="material-symbols-rounded">
+                    close
+                </span>
+            </a>
+            <div class="progress-bar">
+                <div class="progress-bar-inner "></div>
+            </div>
+        </div>
+
+
+        <div class="title title-question">
+            <!-- fill in the blank QUESTIONS -->
+            Complete the translation
+        </div>
+        <center>
+            <div class="container complete-content">
+                <h6> Hallo! Tee oder ______ ? </h6>
+            </div>
+        </center>
+    </div>
+
+    <div class="container answer-grid">
+        <button onclick="selectAnswer(1)">bitte</button>
+        <button onclick="selectAnswer(2)">Brot</button>
+        <button onclick="selectAnswer(3)">nein</button>
+        <button onclick="selectAnswer(4)">Kaffee</button>
+    </div>
+
+    <div class="footer">
+        <button class="skip" onclick="skip()">Skip</button>
+        <button class="check" onclick="checkAnswer()">Check</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById("start-exercise-btn").addEventListener("click", function() {
+        let lessonId = this.getAttribute("data-lesson-id");
+
+        fetch(`/Dashboard/GetExercise?lessonId=${lessonId}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("exercise-section").innerHTML = data;
+                document.getElementById("exercise-section").style.display = "block";
+                this.style.display = "none";
+            })
+            .catch(error => console.error("Error loading exercise:", error));
+    });
+</script>

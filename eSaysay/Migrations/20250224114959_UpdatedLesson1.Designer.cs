@@ -9,11 +9,11 @@ using eSaysay.Data;
 
 #nullable disable
 
-namespace eSaysay.Data.Migrations
+namespace eSaysay.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250223134707_CompletedAllOftheSchemas")]
-    partial class CompletedAllOftheSchemas
+    [Migration("20250224114959_UpdatedLesson1")]
+    partial class UpdatedLesson1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -363,17 +363,7 @@ namespace eSaysay.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LanguageID"));
 
-                    b.Property<string>("DifficultyLevel")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("LanguageName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Region")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -430,7 +420,7 @@ namespace eSaysay.Data.Migrations
 
                     b.HasIndex("LanguageID");
 
-                    b.ToTable("Lesson");
+                    b.ToTable("Lessons");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SecurityLog", b =>

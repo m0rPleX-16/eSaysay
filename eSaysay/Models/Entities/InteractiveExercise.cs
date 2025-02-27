@@ -9,7 +9,7 @@ namespace eSaysay.Models.Entities
         [Key]
         public int ExerciseID { get; set; }
 
-        [ForeignKey("Lesson")]
+        [ForeignKey("LessonID")]
         public int LessonID { get; set; }
         public Lesson Lesson { get; set; }
 
