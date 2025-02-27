@@ -225,7 +225,7 @@ h6 {
 .header {
     color: #272727;
     background-color: var(--background-color);
-    padding: 1px 0;
+    padding: 12px 0;
     transition: all 0.5s;
     z-index: 997;
 }
@@ -244,7 +244,7 @@ h6 {
             font-size: 24px;
             margin: 0;
             letter-spacing: 1px;
-            color: #DFB757;
+            color: #1C3548;
         }
 
         .header .btn-login{
@@ -253,7 +253,7 @@ h6 {
 
             .header .btn-login,
             .header .btn-login:focus {
-                color: #272727;
+                color: #1C3548;
                 font-size: 15px;
                 font-weight: 600;
                 padding: 6px 20px;
@@ -268,20 +268,20 @@ h6 {
 
     .header .btn-getstarted,
     .header .btn-getstarted:focus {
-        color: var(--contrast-color);
-        background: #DFB757;
+        color: var(--default-color);
         font-size: 14px;
         font-weight: 600;
-        padding: 8px 25px;
+        padding: 8px 35px 10px 35px;
         margin: 0 0 0 30px;
         border-radius: 50px;
-        transition: 0.3s;
+        border: 2px solid gray;
+        transition: 0.4s;
     }
 
         .header .btn-getstarted:hover,
         .header .btn-getstarted:focus:hover {
-            color: var(--contrast-color);
-            background: #FFDE8D;
+            background: #DFB757;
+            border: 2px solid #DFB757;
         }
 
 @media (max-width: 1200px) {
@@ -342,7 +342,7 @@ h6 {
 
         .navmenu a,
         .navmenu a:focus {
-            color: #272727;
+            color: #1C3548;
             padding: 18px 15px;
             font-size: 16px;
             font-family: var(--nav-font);
@@ -961,13 +961,13 @@ section,
         border-radius: 50px;
         transition: 0.4s;
         margin-top: 30px;
-        border: 2px solid var(--default-color);
-        color: var(--default-color);
+        color: #1C3548;
+        background: #DFB757;
     }
 
         .hero .btn-get-started:hover {
-            background: #DFB757;
-            border: 2px solid #DFB757;
+            color: #1C3548;
+            background: #FFDE8D;
         }
 
 @media (max-width: 768px) {

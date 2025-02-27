@@ -7,6 +7,7 @@
     @await Html.PartialAsync("_Sidebar")
 
     <main class="main-content user-dashboard">
+        @await Html.PartialAsync("_NavbarAuthenticated")
         <div>
             <h1>Welcome to Your Dashboard</h1>
             <p>This is your main panel where you can manage your learning progress.</p>
@@ -32,7 +33,6 @@
                         <h3>Lesson 2</h3>
                         <p>Correct Translation</p>
                         <a asp-controller="Dashboard" asp-action="CorrectTranslation" class="btn btn-primary">Start</a>
- 
                     </div>
                     <div class="lesson-card">
                         <h3>Lesson 3</h3>
@@ -89,4 +89,3 @@
     </footer>
 
 </div>
-   
