@@ -16,7 +16,7 @@ namespace eSaysay.Data
         public DbSet<SecurityLog> SecurityLog { get; set; }
         public DbSet<Badge> Badges { get; set; }
         public DbSet<Language> Language { get; set; }
-        public DbSet<Lesson> Lesson { get; set; }
+        public DbSet<Lesson> Lessons { get; set; }
         public DbSet<InteractiveExercise> InteractiveExercises { get; set; }
         public DbSet<SpeechAssessment> SpeechAssessment { get; set; }
         public DbSet<UserBadge> UserBadges { get; set; }

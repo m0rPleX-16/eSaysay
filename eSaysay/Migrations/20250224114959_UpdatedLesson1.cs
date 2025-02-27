@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace eSaysay.Data.Migrations
+namespace eSaysay.Migrations
 {
     /// <inheritdoc />
-    public partial class IdentityDetails : Migration
+    public partial class UpdatedLesson1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

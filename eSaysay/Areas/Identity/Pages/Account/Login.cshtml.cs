@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using eSaysay.Data;
+using eSaysay.Models.Entities;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
@@ -22,15 +24,18 @@ namespace eSaysay.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager; 
         private readonly ILogger<LoginModel> _logger;
+        private readonly ApplicationDbContext _context;
 
         public LoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager, 
-            ILogger<LoginModel> logger)
+            ILogger<LoginModel> logger,
+            ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager; 
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -126,6 +131,17 @@ namespace eSaysay.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "User not found.");
                         return Page();
                     }
+                    var securityLog = new SecurityLog
+                    {
+                        UserID = user.Id,
+                        Event = "Student Logged in",
+                        Timestamp = DateTime.UtcNow,
+                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                    };
+
+                    _context.SecurityLog.Add(securityLog);
+                    await _context.SaveChangesAsync();
+
                     var isStudent = await _userManager.IsInRoleAsync(user, "Student");
                     if (!isStudent)
                     {
@@ -142,6 +158,18 @@ namespace eSaysay.Areas.Identity.Pages.Account
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
+
+                    var securityLog = new SecurityLog
+                    {
+                        UserID = Input.Email,
+                        Event = "User Account Locked",
+                        Timestamp = DateTime.UtcNow,
+                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                    };
+                    _context.SecurityLog.Add(securityLog);
+                    await _context.SaveChangesAsync();
+
+
                     return RedirectToPage("./Lockout");
                 }
                 else

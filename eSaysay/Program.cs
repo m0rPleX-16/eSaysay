@@ -1,4 +1,5 @@
 using eSaysay.Data;
+using eSaysay.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<SecurityLogService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -38,8 +42,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())
 {

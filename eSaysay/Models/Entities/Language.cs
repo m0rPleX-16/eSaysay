@@ -11,12 +11,6 @@ namespace eSaysay.Models.Entities
         [MaxLength(50)]
         public string LanguageName { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(50)]
-        public string DifficultyLevel { get; set; } = string.Empty;
-
-        [Required]
-        [MaxLength(50)]
-        public string Region { get; set; } = string.Empty;
+        public DateTime DateCreated { get; set; } = DateTime.Now;
     }
 }
