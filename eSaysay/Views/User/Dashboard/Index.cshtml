@@ -7,23 +7,11 @@
     @await Html.PartialAsync("_Sidebar")
 
     <main class="main-content user-dashboard">
+        @await Html.PartialAsync("_NavbarAuthenticated")
         <div>
             <h1>Welcome to Your Dashboard</h1>
             <p>This is your main panel where you can manage your learning progress.</p>
         </div>
-
-        <!-- Beginner Lessons Section -->
-        @if (ViewBag.BeginnerLessons != null && ViewBag.BeginnerLessons.Count > 0)
-        {
-            <section class="lesson-section">
-                <div class="carousel">
-                    <div class="lessons-title row">
-                        <div class="col text-left">
-                            <h4 class="lesson-title mt-3">Beginner Lessons</h4>
-                        </div>
-                        <div class="col text-right">
-                            <h5 class="mt-3">@ViewBag.BeginnerLessons.Count / 5</h5>
-                        </div>
                     </div>
                     <button class="carousel-control prev">&#10094;</button>
                     <div class="lesson-cards">
