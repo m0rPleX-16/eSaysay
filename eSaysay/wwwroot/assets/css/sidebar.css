@@ -7,7 +7,7 @@
     margin: 16px;
     border-radius: 16px;
     background: #FEF1E1;
-    height: calc(100vh - 124px);
+    height: calc(100vh - 40px);
     transition: 0.4s ease;
 }
 

@@ -30,6 +30,7 @@
 
     <!-- Main CSS File -->
     <link href="~/assets/css/login.css" rel="stylesheet">
+    <link href="~/assets/css/register.css" rel="stylesheet">
     <link href="~/assets/css/main.css" rel="stylesheet">
     <link href="~/assets/css/sidebar.css" rel="stylesheet">
     <link href="~/assets/css/dashboard.css" rel="stylesheet">
@@ -78,7 +79,7 @@
     }
     else if (User.IsInRole("Student"))
     {
-        @await Html.PartialAsync("_NavbarAuthenticated")
+      @*   @await Html.PartialAsync("_NavbarAuthenticated") *@
 
         <main class="main">
             @RenderBody()

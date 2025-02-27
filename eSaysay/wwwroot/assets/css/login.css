@@ -1,5 +1,11 @@
 ﻿.login-page {
-    background-color: #FEF1E1;
+    margin-top: 1px;
+    background-color: #E0D3C5;
+}
+
+.login-page .container {
+    padding: 100px;
+    max-width: 1200px;
 }
 
 .login-page .container .login-style {
@@ -11,14 +17,15 @@
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
     }
-
+    
 .login-style {
-    background-color: #DFB757;
+    background-color: grey;
 }
 
-    .login-style .text-center h1{
+    .login-style .text-center h1, .login-style .text-center .lead {
         color: white;
     }
+
 
 .login-inputs .text-center h2 {
     color: #5D4940;
@@ -30,8 +37,16 @@
     color: #5D4940;
 }
 
+.email-input label {
+    color: #5D4940;
+}
+
 .password-input input {
     border-radius: 36px;
+    color: #5D4940;
+}
+
+.password-input label {
     color: #5D4940;
 }
 
@@ -64,4 +79,21 @@
         color: #5D4940;
         font-weight: 600;
         background-color: #FFDE8D;
+    }
+
+.login-inputs .text-center a {
+    color: #8F7B72;
+    font-weight: 600;
+    font-style: italic;
+}
+    .login-inputs .text-center a:hover {
+        color: #DFB757;
+    }
+
+
+
+    @media (max-width: 768px) {
+        .login-page .container .login-inputs {
+            border-radius: 36px;
+        }
     }

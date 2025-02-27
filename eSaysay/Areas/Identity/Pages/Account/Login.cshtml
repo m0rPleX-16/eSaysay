@@ -6,17 +6,17 @@
 }
 <div class="login-page">
 
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="container d-flex justify-content-center align-items-center">
         <div class="row w-100">
-            <div class="login-style col-lg-6 d-none d-lg-flex align-items-center justify-content-center ">
+            <div class="col-lg-6 login-style d-none d-lg-flex align-items-center justify-content-center">
                 <div class="text-center">
                     <h1 class="fw-bold">Welcome Back!</h1>
                     <p class="lead">Log in to continue learning with eSaysay.</p>
                 </div>
             </div>
-            <div class="login-inputs col-lg-6 col-md-8 mx-auto p-4 shadow bg-white" style="font-family: var(--default-font);">
+            <div class="col-lg-6 login-inputs col-md-8 mx-auto p-4 bg-white" style="font-family: var(--default-font);">
                 <div class="text-center mb-4">
-                    <h2 class="fw-bold">Login</h2>
+                    <h2 class="fw-bold mt-1">Login</h2>
                 </div>
                 <form id="account" method="post" asp-route-returnUrl="@Url.Action("Index", "Dashboard")">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -39,15 +39,17 @@
                             Remember me
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-login-page w-100 py-2">Log in</button>
+                    <button type="submit" class="btn btn-login-page w-100 py-2 mb-3">Log in</button>
+
                     <div class="text-center mt-3">
                         <a asp-page="./ForgotPassword" class="text-decoration-none">Forgot password?</a>
                     </div>
+                    <hr class="my-1">
                     <div class="text-center mt-2">
                         <span>New here?</span> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">Sign up</a>
                     </div>
                 </form>
-                <hr class="my-4">
+                
                 @if (Model.ExternalLogins?.Count > 0)
                 {
                     <div class="text-center">
