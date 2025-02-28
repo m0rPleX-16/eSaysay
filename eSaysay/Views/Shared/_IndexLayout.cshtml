@@ -72,10 +72,12 @@
             updateDateTime();
         </script>
         <script>
-            document.getElementById('sidebar-toggle').addEventListener('click', function () {
-              document.getElementById('adminSidebar').classList.toggle('open');
+            document.getElementById("admin-dashboard-sidebar-toggle").addEventListener("click", function() {
+                document.getElementById("admin-dashboard-sidebar").classList.toggle("closed");
+                document.querySelector(".admin-dashboard-main").classList.toggle("shifted");
             });
         </script>
+
     }
     else if (User.IsInRole("Student"))
     {
@@ -87,8 +89,6 @@
   
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <!-- Preloader -->
-        <div id="preloader"></div>
     }
     else
     {

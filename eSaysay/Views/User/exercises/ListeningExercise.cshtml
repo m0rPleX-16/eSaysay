@@ -1,0 +1,31 @@
+﻿@model eSaysay.Models.Entities.InteractiveExercise
+@{
+    ViewData["Title"] = "Listening Exercise";
+    ViewData["PageClass"] = "ListeningExercise-Page";
+}
+<div class="container listening-exercise">
+    <div class="header-listening">
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-listening">✖</a>
+        <div class="progress-bar"><div class="progress-bar-inner"></div></div>
+    </div>
+
+    <div class="title title-question">What does this sound make?</div>
+    <center><div class="container listening-content"><h6>@Model.Content</h6></div></center>
+
+    <div class="audio-container">
+        <audio id="audio-player" src="~/assets/audio/sample.mp3"></audio>
+        <button class="button" onclick="playAudio()">🔊</button>
+    </div>
+
+    <div class="container answer-grid">
+        <button onclick="selectAnswer(1)">Answer 1</button>
+        <button onclick="selectAnswer(2)">Answer 2</button>
+        <button onclick="selectAnswer(3)">Answer 3</button>
+        <button onclick="selectAnswer(4)">Answer 4</button>
+    </div>
+
+    <div class="footer">
+        <button class="skip" onclick="skip()">Skip</button>
+        <button class="check" onclick="checkAnswer()">Check</button>
+    </div>
+</div>

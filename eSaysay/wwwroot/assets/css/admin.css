@@ -1,5 +1,4 @@
-﻿
-/* Sidebar Styles for Admin Dashboard */
+﻿/* Sidebar Styles */
 .admin-dashboard-sidebar {
     position: fixed;
     top: 0;
@@ -8,52 +7,39 @@
     width: 250px;
     background: #fff;
     border-right: 1px solid #dee2e6;
-    transition: all 0.3s ease;
     padding-top: 1rem;
+    transition: transform 0.3s ease;
 }
 
-    .admin-dashboard-sidebar .admin-dashboard-logo {
-        text-align: center;
-        margin-bottom: 1rem;
+    .admin-dashboard-sidebar.closed {
+        transform: translateX(-100%);
     }
 
-    .admin-dashboard-sidebar .admin-dashboard-nav-list {
-        padding: 0;
-        list-style: none;
+.admin-dashboard-nav-list {
+    list-style: none;
+    padding: 0;
+}
+
+    .admin-dashboard-nav-list li a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: #333;
+        text-decoration: none;
+        transition: 0.3s;
     }
 
-        .admin-dashboard-sidebar .admin-dashboard-nav-list li {
-            margin: 0.5rem 0;
+        .admin-dashboard-nav-list li a:hover {
+            background: #f0f0f0;
+            border-radius: 5px;
         }
 
-            .admin-dashboard-sidebar .admin-dashboard-nav-list li a {
-                display: flex;
-                align-items: center;
-                padding: 0.75rem 1rem;
-                color: #333;
-                text-decoration: none;
-                transition: 0.3s;
-            }
-
-                .admin-dashboard-sidebar .admin-dashboard-nav-list li a i {
-                    margin-right: 0.75rem;
-                }
-
-                .admin-dashboard-sidebar .admin-dashboard-nav-list li a:hover {
-                    background: #f0f0f0;
-                    border-radius: 5px;
-                }
-
-/* Sidebar Toggle for Admin Dashboard */
-#admin-dashboard-sidebar-toggle {
-    display: none;
-}
-
-/* Main Content for Admin Dashboard */
-.admin-dashboard-content {
+/* Main Content */
+.admin-dashboard-main {
+    flex-grow: 1;
     margin-left: 250px;
-    padding: 1rem;
-    transition: all 0.3s ease;
+    transition: margin-left 0.3s ease;
+    width: 100%;
 }
 
 .admin-dashboard-topbar {
@@ -82,45 +68,18 @@
     text-align: center;
 }
 
-/* Responsive Sidebar for Admin Dashboard */
+/* Responsive Design */
 @media (max-width: 992px) {
     .admin-dashboard-sidebar {
-        width: 0;
-        overflow: hidden;
+        transform: translateX(-100%);
     }
 
-    .admin-dashboard-content {
+    .admin-dashboard-main {
         margin-left: 0;
     }
 
     #admin-dashboard-sidebar-toggle {
-        display: inline-block;
         cursor: pointer;
-    }
-
-    .admin-dashboard-sidebar.open {
-        width: 250px;
+        display: inline-block;
     }
 }
-
-.admin-dashboard-logout-form {
-    display: flex;
-    align-items: center;
-}
-
-.admin-dashboard-logout-btn {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: inherit;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 10px 15px;
-    width: 100%;
-    text-align: left;
-}
-
-    .admin-dashboard-logout-btn i {
-        margin-right: 10px;
-    }

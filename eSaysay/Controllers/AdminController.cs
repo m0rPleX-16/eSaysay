@@ -7,6 +7,7 @@ using System.Diagnostics;
 using eSaysay.Models.Entities;
 using eSaysay.Data;
 using eSaysay.Services;
+using System.Text.Json;
 
 namespace eSaysay.Controllers
 {
@@ -119,6 +120,27 @@ namespace eSaysay.Controllers
                 return BadRequest("Invalid exercise data.");
             }
 
+            // Validate and parse AnswerChoices
+            if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
+            {
+                if (!IsValidAnswerChoices(exercise.AnswerChoices))
+                {
+                    _logger.LogInformation("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values).");
+                    return BadRequest("Invalid format for AnswerChoices. Expected JSON or comma-separated values.");
+                }
+                exercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices); // Format the data
+            }
+            else
+            {
+                exercise.AnswerChoices = null; // Set to null if empty
+            }
+
+            // Handle Hint
+            if (string.IsNullOrWhiteSpace(exercise.Hint))
+            {
+                exercise.Hint = null; // Set to null if empty
+            }
+
             _context.InteractiveExercises.Add(exercise);
             await _context.SaveChangesAsync();
             await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}");
@@ -139,6 +161,24 @@ namespace eSaysay.Controllers
                 existingExercise.DifficultyLevel = exercise.DifficultyLevel;
                 existingExercise.LessonID = exercise.LessonID;
 
+                // Validate and parse AnswerChoices
+                if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
+                {
+                    if (!IsValidAnswerChoices(exercise.AnswerChoices))
+                    {
+                        _logger.LogInformation("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values).");
+                        return BadRequest("Invalid format for AnswerChoices. Expected JSON or comma-separated values.");
+                    }
+                    existingExercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices); 
+                }
+                else
+                {
+                    existingExercise.AnswerChoices = null; 
+                }
+
+                // Handle Hint
+                existingExercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
+
                 await _context.SaveChangesAsync();
                 await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}");
                 _logger.LogInformation($"Exercise updated: {exercise.ExerciseType}");
@@ -151,6 +191,40 @@ namespace eSaysay.Controllers
             return RedirectToAction("Exercises");
         }
 
+        // Helper method to validate AnswerChoices format
+        private bool IsValidAnswerChoices(string answerChoices)
+        {
+            try
+            {
+                // Check if the input is valid JSON
+                JsonDocument.Parse(answerChoices);
+                return true;
+            }
+            catch (JsonException)
+            {
+                // If not JSON, check if it's comma-separated values
+                var values = answerChoices.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                return values.Length > 0;
+            }
+        }
+
+        private string FormatAnswerChoices(string answerChoices)
+        {
+            if (IsValidAnswerChoices(answerChoices))
+            {
+                try
+                {
+                    JsonDocument.Parse(answerChoices);
+                    return answerChoices;
+                }
+                catch (JsonException)
+                {
+                    var values = answerChoices.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    return JsonSerializer.Serialize(values); 
+                }
+            }
+            return null; 
+        }
         // POST: Admin/ArchiveExercise
         [HttpPost]
         public async Task<IActionResult> ArchiveExercise(int ExerciseID)

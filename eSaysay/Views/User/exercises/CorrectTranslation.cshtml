@@ -1,0 +1,67 @@
+﻿@model eSaysay.Models.Entities.InteractiveExercise
+@{
+    ViewData["Title"] = "Correct Translation";
+    ViewData["PageClass"] = "CorrectTranslation-Page";
+}
+
+<div class="container correct-exercise">
+    <div class="header-correct">
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-correct">✖</a>
+        <div class="progress-bar"><div class="progress-bar-inner"></div></div>
+    </div>
+
+    <div class="title title-question">Select the correct translation</div>
+    <center><div class="container correct-content"><h6>@Model.Content</h6></div></center>
+
+    <!-- Dynamic Answer Grid -->
+    <div class="container answer-grid" id="answer-grid">
+        @if (!string.IsNullOrEmpty(Model.AnswerChoices))
+        {
+            var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
+            for (int i = 0; i < choices.Count; i++)
+            {
+                <button onclick="selectAnswer(@(i + 1))">@choices[i]</button>
+            }
+        }
+        else
+        {
+            <p>No answer choices available.</p>
+        }
+    </div>
+
+    <div class="footer">
+        <button class="skip" onclick="skip()">Skip</button>
+        <button class="check" onclick="checkAnswer()">Check</button>
+    </div>
+</div>
+
+<script>
+    let selectedAnswerId = null;
+
+    function selectAnswer(answerId) {
+        document.querySelectorAll('.answer-grid button').forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+        selectedAnswerId = answerId;
+    }
+
+    function checkAnswer() {
+        if (selectedAnswerId === null) {
+            alert('Please select an answer first!');
+            return;
+        }
+
+        const correctAnswer = "@Model.CorrectAnswer";
+        const selectedAnswerText = document.querySelector(`.answer-grid button:nth-child(${selectedAnswerId})`).innerText;
+
+        if (selectedAnswerText.toLowerCase() === correctAnswer.toLowerCase()) {
+            alert("✅ Correct!");
+        } else {
+            alert(`❌ Incorrect! Correct Answer: ${correctAnswer}`);
+        }
+    }
+
+    function skip() {
+        // Implement skip logic here
+        alert("Skipped!");
+    }
+</script>

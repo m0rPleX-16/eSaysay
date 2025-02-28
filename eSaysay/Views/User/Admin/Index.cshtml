@@ -46,3 +46,10 @@
         </div>
     </div>
 </main>
+
+<script>
+    document.getElementById("admin-dashboard-sidebar-toggle").addEventListener("click", function() {
+        document.getElementById("admin-dashboard-sidebar").classList.toggle("closed");
+        document.querySelector(".admin-dashboard-main").classList.toggle("shifted");
+    });
+</script>

@@ -20,6 +20,8 @@
             <th>Lesson</th>
             <th>Type</th>
             <th>Correct Answer</th>
+            <th>Answer Choices</th>
+            <th>Hint</th>
             <th>Difficulty</th>
             <th>Actions</th>
         </tr>
@@ -32,13 +34,15 @@
                 <td>@exercise.Lesson.Title</td>
                 <td>@exercise.ExerciseType</td>
                 <td>@exercise.CorrectAnswer</td>
+                <td>@exercise.AnswerChoices</td>
+                <td>@exercise.Hint</td>
                 <td>@exercise.DifficultyLevel</td>
                 <td>
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">Edit</button>
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteExerciseModal-@exercise.ExerciseID">Archive</button>
                 </td>
             </tr>
-            
+
             <!-- Edit Exercise Modal -->
             <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
@@ -56,7 +60,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Exercise Type</label>
-                                    <select class="form-control" name="ExerciseType" required>
+                                    <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
                                         <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
                                         <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
                                         <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
@@ -66,6 +70,14 @@
                                 <div class="mb-3">
                                     <label class="form-label">Correct Answer</label>
                                     <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
+                                </div>
+                                <div class="mb-3" id="answerChoicesSection">
+                                    <label class="form-label">Answer Choices</label>
+                                    <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hint</label>
+                                    <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Difficulty Level</label>
@@ -110,7 +122,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Exercise Type</label>
-                        <select class="form-control" name="ExerciseType" required>
+                        <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
                             <option value="Listening Exercise">Listening Exercise</option>
                             <option value="Correct Translation">Correct Translation</option>
                             <option value="Complete Translation">Complete Translation</option>
@@ -120,6 +132,14 @@
                     <div class="mb-3">
                         <label class="form-label">Correct Answer</label>
                         <input type="text" class="form-control" name="CorrectAnswer" required>
+                    </div>
+                    <div class="mb-3" id="answerChoicesSection">
+                        <label class="form-label">Answer Choices</label>
+                        <input type="text" class="form-control" name="AnswerChoices">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hint</label>
+                        <input type="text" class="form-control" name="Hint">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Difficulty Level</label>
@@ -145,3 +165,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    function handleExerciseTypeChange(selectElement) {
+        const exerciseType = selectElement.value;
+        const answerChoicesSection = document.getElementById("answerChoicesSection");
+
+        // Show or hide Answer Choices based on the selected exercise type
+        if (exerciseType === "Listening Exercise") {
+            answerChoicesSection.style.display = "none"; // Hide for Listening Exercise
+        } else if (exerciseType === "Pairing Exercise") {
+            answerChoicesSection.style.display = "block"; // Show for Pairing Exercise
+            answerChoicesSection.querySelector("input").setAttribute("required", "true"); 
+        } else {
+            answerChoicesSection.style.display = "block"; // Show for Complete and Correct Translation
+            answerChoicesSection.querySelector("input").removeAttribute("required");
+        }
+    }
+
+    // Initialize the modal based on the default selected exercise type
+    document.addEventListener("DOMContentLoaded", function () {
+        const exerciseTypeSelect = document.querySelector("select[name='ExerciseType']");
+        if (exerciseTypeSelect) {
+            handleExerciseTypeChange(exerciseTypeSelect);
+        }
+    });
+</script>

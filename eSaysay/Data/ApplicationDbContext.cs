@@ -23,7 +23,6 @@ namespace eSaysay.Data
         public DbSet<UserBadge> UserBadges { get; set; }
         public DbSet<UserProgress> UserProgress{ get; set; }
         public DbSet<UserResponse> UserResponse{ get; set; }
-        public DbSet<ApplicationUser> ApplicationUser { get; set; }  
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

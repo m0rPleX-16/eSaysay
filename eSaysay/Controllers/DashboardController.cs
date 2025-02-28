@@ -69,6 +69,56 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Dashboard/Index.cshtml", allLessons);
         }
 
+        public IActionResult LessonDetails(int id)
+        {
+            var lesson = _context.Lessons.FirstOrDefault(l => l.LessonID == id);
+            if (lesson == null)
+            {
+                return NotFound("Lesson not found.");
+            }
+
+            var exercises = _context.InteractiveExercises
+                .Where(e => e.LessonID == id)
+                .ToList();
+
+            // Shuffle the exercises
+            var random = new Random();
+            exercises = exercises.OrderBy(x => random.Next()).ToList();
+
+            ViewBag.Lesson = lesson;
+            return View("~/Views/User/Dashboard/LessonDetails.cshtml", exercises);
+        }
+
+
+        public IActionResult StartExercise(int exerciseId)
+        {
+            var exercise = _context.InteractiveExercises.FirstOrDefault(e => e.ExerciseID == exerciseId);
+
+            if (exercise == null)
+            {
+                return NotFound("Exercise not found.");
+            }
+
+            switch (exercise.ExerciseType)
+            {
+                case "Complete Translation":
+                    return View("~/Views/User/Exercises/CompleteTranslation.cshtml", exercise);
+
+                case "Correct Translation":
+                    return View("~/Views/User/Exercises/CorrectTranslation.cshtml", exercise);
+
+                case "Listening Exercise":
+                    return View("~/Views/User/Exercises/ListeningExercise.cshtml", exercise);
+
+                case "Pairing":
+                    return View("~/Views/User/Exercises/Pairing.cshtml", exercise);
+
+                default:
+                    return NotFound($"Invalid exercise type: {exercise.ExerciseType}");
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> Logs()
         {

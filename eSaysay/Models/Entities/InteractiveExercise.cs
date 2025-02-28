@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,6 +25,12 @@ namespace eSaysay.Models.Entities
         [Required]
         [MaxLength(100)]
         public string CorrectAnswer { get; set; }
+
+        [MaxLength(300)]
+        public string AnswerChoices { get; set; } // Store as JSON or comma-separated values
+
+        [MaxLength(500)]
+        public string Hint { get; set; } // Optional hint
 
         [MaxLength(20)]
         public string DifficultyLevel { get; set; }

@@ -1,0 +1,71 @@
+﻿@model eSaysay.Models.Entities.InteractiveExercise
+@{
+    ViewData["Title"] = "Complete Translation";
+    ViewData["PageClass"] = "CompleteTranslation-Page";
+}
+
+<div class="container complete-exercise">
+    <div class="header-complete">
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-complete">✖</a>
+        <div class="progress-bar"><div class="progress-bar-inner"></div></div>
+    </div>
+
+    <div class="title title-question">Complete the translation</div>
+    <center><div class="container complete-content"><h6>@Model.Content</h6></div></center>
+
+    <!-- Dynamic Answer Grid -->
+    <div class="container answer-grid" id="answer-grid">
+        @if (!string.IsNullOrEmpty(Model.AnswerChoices))
+        {
+            var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
+            foreach (var choice in choices)
+            {
+                <button onclick="selectAnswer('@choice')">@choice</button>
+            }
+        }
+        else
+        {
+            <p>No answer choices available.</p>
+        }
+    </div>
+
+    <div class="footer">
+        <button class="skip" onclick="skip()">Skip</button>
+        <button class="check" onclick="checkAnswer()">Check</button>
+    </div>
+</div>
+
+<script>
+    function selectAnswer(answer) {
+        document.querySelectorAll('.answer-grid button').forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+        sessionStorage.setItem('selectedAnswer', answer);
+    }
+
+    function checkAnswer() {
+        const selectedAnswer = sessionStorage.getItem('selectedAnswer');
+        if (!selectedAnswer) {
+            alert('Please select an answer first!');
+            return;
+        }
+        fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ q: selectedAnswer, source: "de", target: "en", format: "text" })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const correctAnswer = "@Model.CorrectAnswer";
+            if (data.translatedText.toLowerCase() === correctAnswer.toLowerCase()) {
+                alert("✅ Correct!");
+            } else {
+                alert(`❌ Incorrect! Correct Answer: ${correctAnswer}`);
+            }
+        });
+    }
+
+    function skip() {
+        // Implement skip logic here
+        alert("Skipped!");
+    }
+</script>
