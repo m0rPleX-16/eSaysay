@@ -23,11 +23,16 @@ namespace eSaysay.Data
         public DbSet<UserBadge> UserBadges { get; set; }
         public DbSet<UserProgress> UserProgress{ get; set; }
         public DbSet<UserResponse> UserResponse{ get; set; }
+        public DbSet<Notification> Notification { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
         }
 
+        internal async Task<IEnumerable<object>> BadgesToListAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

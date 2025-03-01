@@ -11,7 +11,7 @@
     </div>
 
     <div class="title title-question">Complete the translation</div>
-    <center><div class="container complete-content"><h6>@Model.Content</h6></div></center>
+    <center><div class="container complete-content"><h6>@Model.ContentTranslate</h6></div></center>
 
     <!-- Dynamic Answer Grid -->
     <div class="container answer-grid" id="answer-grid">
@@ -36,36 +36,43 @@
 </div>
 
 <script>
-    function selectAnswer(answer) {
-        document.querySelectorAll('.answer-grid button').forEach(btn => btn.classList.remove('selected'));
-        event.target.classList.add('selected');
-        sessionStorage.setItem('selectedAnswer', answer);
-    }
-
     function checkAnswer() {
         const selectedAnswer = sessionStorage.getItem('selectedAnswer');
+
         if (!selectedAnswer) {
             alert('Please select an answer first!');
             return;
         }
-        fetch("https://libretranslate.com/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ q: selectedAnswer, source: "de", target: "en", format: "text" })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const correctAnswer = "@Model.CorrectAnswer";
-            if (data.translatedText.toLowerCase() === correctAnswer.toLowerCase()) {
-                alert("✅ Correct!");
-            } else {
-                alert(`❌ Incorrect! Correct Answer: ${correctAnswer}`);
-            }
-        });
-    }
 
-    function skip() {
-        // Implement skip logic here
-        alert("Skipped!");
+        fetch(`/Translation/Translate?text=${encodeURIComponent(selectedAnswer)}&fromLang=de&toLang=en`)
+            .then(response => response.json())
+            .then(data => {
+                const translatedText = data.translatedText;
+                const correctAnswer = "@Model.CorrectAnswer";
+                const isCorrect = translatedText.toLowerCase() === correctAnswer.toLowerCase();
+
+                // Send user response to server
+                fetch('/Exercise/SaveUserResponse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userID: "@User.Identity.Name",
+                        exerciseID: @Model.ExerciseID,
+                        userAnswer: selectedAnswer,
+                        isCorrect: isCorrect
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.isCorrect) {
+                        updateUserProgress();
+                    }
+                })
+                .catch(error => console.error("Error saving response:", error));
+            })
+            .catch(error => console.error("Translation Error:", error));
     }
 </script>

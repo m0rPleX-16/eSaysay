@@ -16,7 +16,8 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Content</th>
+            <th>Content (English)</th>
+            <th>Content (Korean)</th>
             <th>Lesson</th>
             <th>Type</th>
             <th>Correct Answer</th>
@@ -31,6 +32,7 @@
         {
             <tr>
                 <td>@exercise.Content</td>
+                <td>@exercise.ContentTranslate</td> <!-- ✅ Show Translated Content -->
                 <td>@exercise.Lesson.Title</td>
                 <td>@exercise.ExerciseType</td>
                 <td>@exercise.CorrectAnswer</td>
@@ -55,8 +57,12 @@
                             <form method="post" action="/Admin/EditExercise">
                                 <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
                                 <div class="mb-3">
-                                    <label class="form-label">Content</label>
+                                    <label class="form-label">Content (English)</label>
                                     <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content (Korean)</label>
+                                    <input type="text" class="form-control" name="ContentKorean" value="@exercise.ContentTranslate" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Exercise Type</label>
@@ -105,6 +111,7 @@
         }
     </tbody>
 </table>
+
 
 <!-- Add Exercise Modal -->
 <div class="modal fade" id="addExerciseModal" tabindex="-1" aria-hidden="true">
@@ -165,29 +172,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function handleExerciseTypeChange(selectElement) {
-        const exerciseType = selectElement.value;
-        const answerChoicesSection = document.getElementById("answerChoicesSection");
-
-        // Show or hide Answer Choices based on the selected exercise type
-        if (exerciseType === "Listening Exercise") {
-            answerChoicesSection.style.display = "none"; // Hide for Listening Exercise
-        } else if (exerciseType === "Pairing Exercise") {
-            answerChoicesSection.style.display = "block"; // Show for Pairing Exercise
-            answerChoicesSection.querySelector("input").setAttribute("required", "true"); 
-        } else {
-            answerChoicesSection.style.display = "block"; // Show for Complete and Correct Translation
-            answerChoicesSection.querySelector("input").removeAttribute("required");
-        }
-    }
-
-    // Initialize the modal based on the default selected exercise type
-    document.addEventListener("DOMContentLoaded", function () {
-        const exerciseTypeSelect = document.querySelector("select[name='ExerciseType']");
-        if (exerciseTypeSelect) {
-            handleExerciseTypeChange(exerciseTypeSelect);
-        }
-    });
-</script>

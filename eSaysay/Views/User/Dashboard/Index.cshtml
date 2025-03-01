@@ -8,6 +8,28 @@
 
     <main class="main-content user-dashboard">
         @await Html.PartialAsync("_NavbarAuthenticated")
+
+        <!-- Notifications Section -->
+        <div class="notifications-container">
+            <h4 class="notifications-title">🔔 Notifications</h4>
+            @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+            {
+                <ul class="notifications-list">
+                    @foreach (var notification in ViewBag.Notifications)
+                    {
+                        <li class="notification-item">
+                            <span class="notification-message">@notification.Message</span>
+                            <span class="notification-date">@notification.DateCreated.ToString("MMM dd, yyyy hh:mm tt")</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">No new notifications.</p>
+            }
+        </div>
+
         <div>
             <h1>Welcome to Your Dashboard</h1>
             <p>This is your main panel where you can manage your learning progress.</p>
@@ -119,3 +141,45 @@
         </div>
     </footer>
 </div>
+
+<!-- CSS Styling -->
+<style>
+    .notifications-container {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .notifications-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .notifications-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .notification-item {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-message {
+        font-size: 16px;
+    }
+
+    .notification-date {
+        font-size: 12px;
+        color: #6c757d;
+    }
+</style>

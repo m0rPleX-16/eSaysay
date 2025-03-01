@@ -30,12 +30,22 @@ namespace eSaysay.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var allLessons = await _context.Lessons.ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
 
-            if (allLessons == null || allLessons.Count == 0)
+            // Fetch lessons
+            var allLessons = await _context.Lessons.ToListAsync() ?? new List<Lesson>();
+
+            // Fetch notifications (async fix)
+            var notifications = await _context.Notification
+                .Where(n => n.UserID == user.Id)
+                .OrderByDescending(n => n.DateCreated)
+                .ToListAsync();
+
+            // Logging
+            if (!allLessons.Any())
             {
                 _logger.LogWarning("No lessons were retrieved from the database.");
-                allLessons = new List<Lesson>();
             }
             else
             {
@@ -45,28 +55,40 @@ namespace eSaysay.Controllers
                     _logger.LogInformation($"Lesson ID: {lesson.LessonID}, Title: {lesson.Title}, Difficulty: {lesson.DifficultyLevel}");
                 }
             }
-    
-            var beginnerLessons = allLessons
-                .Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Beginner", StringComparison.OrdinalIgnoreCase))
-                .ToList();
 
-            var intermediateLessons = allLessons
-                .Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Intermediate", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            _logger.LogInformation($"Notifications Found: {notifications.Count}");
 
-            var advancedLessons = allLessons
-                .Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Advanced", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            // Categorize lessons
+            var beginnerLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Beginner", StringComparison.OrdinalIgnoreCase)).ToList();
+            var intermediateLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Intermediate", StringComparison.OrdinalIgnoreCase)).ToList();
+            var advancedLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Advanced", StringComparison.OrdinalIgnoreCase)).ToList();
 
-            _logger.LogInformation($"Beginner Lessons Found: {beginnerLessons.Count}");
-            _logger.LogInformation($"Intermediate Lessons Found: {intermediateLessons.Count}");
-            _logger.LogInformation($"Advanced Lessons Found: {advancedLessons.Count}");
+            _logger.LogInformation($"Beginner Lessons: {beginnerLessons.Count}, Intermediate Lessons: {intermediateLessons.Count}, Advanced Lessons: {advancedLessons.Count}");
 
             ViewBag.BeginnerLessons = beginnerLessons;
             ViewBag.IntermediateLessons = intermediateLessons;
             ViewBag.AdvancedLessons = advancedLessons;
+            ViewBag.Notifications = notifications;
 
-            return View("~/Views/User/Dashboard/Index.cshtml", allLessons);
+            // Pass data using ViewModel
+            var viewModel = new DashboardViewModel
+            {
+                Lessons = allLessons,
+                Notifications = notifications
+            };
+
+            return View("~/Views/User/Dashboard/Index.cshtml", viewModel);
+        }
+
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var notification = await _context.Notification.FindAsync(id);
+            if (notification != null)
+            {
+                notification.IsRead = true;
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult LessonDetails(int id)
@@ -111,7 +133,7 @@ namespace eSaysay.Controllers
                     return View("~/Views/User/Exercises/ListeningExercise.cshtml", exercise);
 
                 case "Pairing":
-                    return View("~/Views/User/Exercises/Pairing.cshtml", exercise);
+                    return View("~/Views/User/Exercises/PairingExercise.cshtml", exercise);
 
                 default:
                     return NotFound($"Invalid exercise type: {exercise.ExerciseType}");

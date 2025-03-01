@@ -10,10 +10,9 @@
     </div>
 
     <div class="title title-question">What does this sound make?</div>
-    <center><div class="container listening-content"><h6>@Model.Content</h6></div></center>
+    <center><div class="container listening-content"><h6 id="content-text">@Model.Content</h6></div></center>
 
     <div class="audio-container">
-        <audio id="audio-player" src="~/assets/audio/sample.mp3"></audio>
         <button class="button" onclick="playAudio()">🔊</button>
     </div>
 
@@ -29,3 +28,53 @@
         <button class="check" onclick="checkAnswer()">Check</button>
     </div>
 </div>
+
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=OEKkx4ur"></script>
+<script>
+    // Function to play audio using ResponsiveVoice
+    function playAudio() {
+        // Get the text from the content element
+        const text = document.getElementById("content-text").innerText;
+
+        // Use ResponsiveVoice to read the text
+        responsiveVoice.speak(text, "Korean Female", {
+            onstart: () => console.log("Audio started"),
+            onend: () => console.log("Audio ended")
+        });
+    }
+
+    function checkListeningAnswer() {
+        const selectedAnswer = sessionStorage.getItem('selectedAnswer');
+
+        if (!selectedAnswer) {
+            alert('Please select an answer first!');
+            return;
+        }
+
+        const correctAnswer = "@Model.CorrectAnswer";
+        const isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+        // Send user response to server
+        fetch('/Exercise/SaveUserResponse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userID: "@User.Identity.Name",
+                exerciseID: @Model.ExerciseID,
+                userAnswer: selectedAnswer,
+                isCorrect: isCorrect
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.isCorrect) {
+                updateUserProgress();
+            }
+        })
+        .catch(error => console.error("Error saving response:", error));
+    }
+
+</script>

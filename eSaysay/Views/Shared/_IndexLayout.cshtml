@@ -77,6 +77,31 @@
                 document.querySelector(".admin-dashboard-main").classList.toggle("shifted");
             });
         </script>
+        <script>
+            function handleExerciseTypeChange(selectElement) {
+                const exerciseType = selectElement.value;
+                const answerChoicesSection = document.getElementById("answerChoicesSection");
+
+                // Show or hide Answer Choices based on the selected exercise type
+                if (exerciseType === "Listening Exercise") {
+                    answerChoicesSection.style.display = "none"; // Hide for Listening Exercise
+                } else if (exerciseType === "Pairing Exercise") {
+                    answerChoicesSection.style.display = "block";
+                    answerChoicesSection.querySelector("input").setAttribute("required", "true");
+                } else {
+                    answerChoicesSection.style.display = "block";
+                    answerChoicesSection.querySelector("input").removeAttribute("required");
+                }
+            }
+
+            // Initialize the modal based on the default selected exercise type
+            document.addEventListener("DOMContentLoaded", function () {
+                const exerciseTypeSelect = document.querySelector("select[name='ExerciseType']");
+                if (exerciseTypeSelect) {
+                    handleExerciseTypeChange(exerciseTypeSelect);
+                }
+            });
+        </script>
 
     }
     else if (User.IsInRole("Student"))

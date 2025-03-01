@@ -11,7 +11,7 @@
     </div>
 
     <div class="title title-question">Select the correct translation</div>
-    <center><div class="container correct-content"><h6>@Model.Content</h6></div></center>
+    <center><div class="container correct-content"><h6>@Model.ContentTranslate</h6></div></center>
 
     <!-- Dynamic Answer Grid -->
     <div class="container answer-grid" id="answer-grid">
@@ -36,32 +36,37 @@
 </div>
 
 <script>
-    let selectedAnswerId = null;
+    function checkCorrectTranslationAnswer() {
+        const selectedAnswer = sessionStorage.getItem('selectedAnswer');
 
-    function selectAnswer(answerId) {
-        document.querySelectorAll('.answer-grid button').forEach(btn => btn.classList.remove('selected'));
-        event.target.classList.add('selected');
-        selectedAnswerId = answerId;
-    }
-
-    function checkAnswer() {
-        if (selectedAnswerId === null) {
+        if (!selectedAnswer) {
             alert('Please select an answer first!');
             return;
         }
 
         const correctAnswer = "@Model.CorrectAnswer";
-        const selectedAnswerText = document.querySelector(`.answer-grid button:nth-child(${selectedAnswerId})`).innerText;
+        const isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase();
 
-        if (selectedAnswerText.toLowerCase() === correctAnswer.toLowerCase()) {
-            alert("✅ Correct!");
-        } else {
-            alert(`❌ Incorrect! Correct Answer: ${correctAnswer}`);
-        }
+        fetch('/Exercise/SaveUserResponse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userID: "@User.Identity.Name",
+                exerciseID: @Model.ExerciseID,
+                userAnswer: selectedAnswer,
+                isCorrect: isCorrect
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.isCorrect) {
+                updateUserProgress();
+            }
+        })
+        .catch(error => console.error("Error saving response:", error));
     }
 
-    function skip() {
-        // Implement skip logic here
-        alert("Skipped!");
-    }
 </script>
