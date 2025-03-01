@@ -4,27 +4,36 @@
 @{
     ViewData["Title"] = "Security Logs";
 }
+<main class="admin-logs">
+    @await Html.PartialAsync("_AdminSidebar")
 
-<h2>Security Logs</h2>
+    <div class="admin-logs-header">
+        <h2>Security Logs</h2>
+    </div>
+  
+    <div class="logs-content">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Event</th>
+                    <th>Timestamp</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td>@(log.User != null ? log.User.Email : "Unknown User")</td>
+                        <td>@log.Event</td>
+                        <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@log.IPAddress</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Event</th>
-            <th>Timestamp</th>
-            <th>IP Address</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var log in Model)
-        {
-            <tr>
-                <td>@(log.User != null ? log.User.Email : "Unknown User")</td>
-                <td>@log.Event</td>
-                <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                <td>@log.IPAddress</td>
-            </tr>
-        }
-    </tbody>
-</table>
+</main>
