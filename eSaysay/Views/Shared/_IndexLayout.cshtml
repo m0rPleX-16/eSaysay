@@ -34,7 +34,18 @@
     <link href="~/assets/css/main.css" rel="stylesheet">
     <link href="~/assets/css/sidebar.css" rel="stylesheet">
     <link href="~/assets/css/dashboard.css" rel="stylesheet">
-    <link href="~/assets/css/admin.css" rel="stylesheet">
+    <!--Admin-->
+    <link href="~/assets/css/admin/admin-sidebar.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-dashboard.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-students.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-exercise.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-languages.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-lessons.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-progress.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-analytics.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-logs.css" rel="stylesheet">
+    <link href="~/assets/css/admin/admin-settings.css" rel="stylesheet">
+    <!--Exercises-->
     <link href="~/assets/css/css_exercises/listening.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/corr_translation.css" rel="stylesheet">
     <link href="~/assets/css/css_exercises/comp_translation.css" rel="stylesheet">
@@ -47,9 +58,7 @@
     @if (User.IsInRole("Admin"))
     {
         <main class="main">
-            <div class="content">
-                <!-- Sidebar -->
-                @await Html.PartialAsync("_AdminSidebar")
+            <div class="content">                
                 @RenderBody()
             </div>
         </main>
@@ -177,7 +186,7 @@
             <div class="container copyright text-center mt-4">
                 <p>© <span>Copyright | </span> <strong class="px-1 sitename">eSaysay: A Language Learning System</strong> <span> | All Rights Reserved</span></p>
                 <div class="credits">
-                    Designed by <a href="https://openai.com/">OpenAi</a> | Customized for <strong>eSaysay</strong>
+                    Designed by eSaysay's Development Team
                 </div>
             </div>
 

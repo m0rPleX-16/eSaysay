@@ -1,23 +1,75 @@
 ﻿<!-- Sidebar -->
 <aside class="admin-dashboard-sidebar" id="adminSidebar">
-    <div class="admin-dashboard-logo">
-        <img src="/assets/img/eSaysay-logo.png" alt="eSaysay Logo" style="max-width: 100px;">
-        <h5>eSaysay Admin</h5>
-    </div>
-    <ul class="admin-dashboard-nav-list">
-        <li><a asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-        <li><a asp-controller="Admin" asp-action="Students"><i class="bi bi-people"></i> Students</a></li>
-        <li><a asp-controller="Admin" asp-action="Exercises"><i class="bi bi-book"></i> Exercises</a></li>
-        <li><a asp-controller="Admin" asp-action="Language"><i class="bi bi-book"></i> Languages</a></li>
-        <li><a asp-controller="Admin" asp-action="Lessons"><i class="bi bi-journal-text"></i> Lessons</a></li>
-        <li><a asp-controller="Admin" asp-action="Progress"><i class="bi bi-graph-up"></i> Progress</a></li>
-        <li><a asp-controller="Admin" asp-action="Analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
-        <li><a asp-controller="Admin" asp-action="Logs"><i class="bi bi-clock-history"></i> Logs</a></li>
-        <li><a asp-controller="Admin" asp-action="Badge"><i class="bi bi-gear"></i> Badge</a></li>
-        <li>
-            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="admin-dashboard-logout-form">
-                <button type="submit" class="admin-dashboard-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</button>
-            </form>
-        </li>
-    </ul>
+    <header class="admin-sidebar-header">
+        <img src="/assets/img/eSaysay-logo.png" alt="eSaysay Logo">
+    </header>
+    <nav class="admin-sidebar-nav">
+        <ul class="admin-dashboard-nav-list">
+            <li><a asp-controller="Admin" asp-action="Index">
+                    <span class="material-symbols-rounded">
+                        dashboard
+                    </span> Dashboard
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Students">
+                    <span class="material-symbols-rounded">
+                        group
+                    </span> Students
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Exercises">
+                    <span class="material-symbols-rounded">
+                        library_books
+                    </span> Exercises
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Language">
+                    <span class="material-symbols-rounded">
+                        language
+                    </span> Languages
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Lessons">
+                    <span class="material-symbols-rounded">
+                        book
+                    </span> Lessons
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Progress">
+                    <span class="material-symbols-rounded">
+                        monitoring
+                    </span> Progress
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Analytics">
+                    <span class="material-symbols-rounded">
+                        insert_chart
+                    </span>Analytics
+                </a>
+            </li>
+            <li><a asp-controller="Admin" asp-action="Logs">
+                    <span class="material-symbols-rounded">
+                        history
+                    </span> Logs
+                </a>
+            </li>
+            <hr />
+            <li><a asp-controller="Admin" asp-action="Settings">
+                    <span class="material-symbols-rounded">
+                        settings
+                    </span>Settings
+                </a>
+            </li>
+            <li class="admin-btn-logout">
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="admin-dashboard-logout-form">
+                    <button type="submit" class="admin-dashboard-logout-btn">
+                        <span class="material-symbols-rounded">
+                            logout
+                        </span>Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+   
 </aside>

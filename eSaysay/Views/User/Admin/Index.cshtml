@@ -1,52 +1,56 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
+<div class="admin-dashboard">
+    @await Html.PartialAsync("_AdminSidebar")
+    <main class="admin-content">
+        <!-- Main Content -->
+        <div class="flex-grow-1 d-flex flex-column">
+            <!-- Top Bar -->
+            <div class="admin-dashboard-topbar">
+                <span id="admin-dashboard-sidebar-toggle"><i class="bi bi-list" style="font-size: 1.5rem;"></i></span>
+                <h2>Administrator Dashboard</h2>
+                <span>Hello, Admin!</span>
+                <span id="datetime"></span>
+            </div>
+        </div>
 
-<!-- Main Content -->
-<div class="flex-grow-1 d-flex flex-column">
-    <!-- Top Bar -->
-    <div class="admin-dashboard-topbar">
-        <span id="admin-dashboard-sidebar-toggle"><i class="bi bi-list" style="font-size: 1.5rem;"></i></span>
-        <h2>Administrator Dashboard</h2>
-        <span>Hello, Admin!</span>
-        <span id="datetime"></span>
-    </div>
+        <!-- Page Content -->
+        <main class="admin-dashboard-content flex-grow-1 p-3">
+            <!-- Stats Boxes -->
+            <section class="admin-dashboard-stats-boxes">
+                <div class="admin-dashboard-stats-box">
+                    <h3>50</h3>
+                    <span>Learners</span>
+                </div>
+                <div class="admin-dashboard-stats-box">
+                    <h3>39%</h3>
+                    <span>Avg. User Progress</span>
+                </div>
+                <div class="admin-dashboard-stats-box">
+                    <h3>3:2</h3>
+                    <span>Completed vs. Unfinished</span>
+                </div>
+            </section>
+
+            <div class="admin-dashboard-stats-boxes mt-4">
+                <div class="admin-dashboard-stats-box">
+                    <h3>Time Consumed</h3>
+                    <span>Overall usage stats</span>
+                </div>
+                <div class="admin-dashboard-stats-box">
+                    <h3>Finished Lessons</h3>
+                    <span>Frequency of lesson completions</span>
+                </div>
+                <div class="admin-dashboard-stats-box">
+                    <h3>Export to PDF</h3>
+                    <span>Download progress reports</span>
+                </div>
+            </div>
+        </main>
+    </main>
+
 </div>
-
-<!-- Page Content -->
-<main class="admin-dashboard-content flex-grow-1 p-3">
-    <!-- Stats Boxes -->
-    <section class="admin-dashboard-stats-boxes">
-        <div class="admin-dashboard-stats-box">
-            <h3>50</h3>
-            <span>Learners</span>
-        </div>
-        <div class="admin-dashboard-stats-box">
-            <h3>39%</h3>
-            <span>Avg. User Progress</span>
-        </div>
-        <div class="admin-dashboard-stats-box">
-            <h3>3:2</h3>
-            <span>Completed vs. Unfinished</span>
-        </div>
-    </section>
-
-    <div class="admin-dashboard-stats-boxes mt-4">
-        <div class="admin-dashboard-stats-box">
-            <h3>Time Consumed</h3>
-            <span>Overall usage stats</span>
-        </div>
-        <div class="admin-dashboard-stats-box">
-            <h3>Finished Lessons</h3>
-            <span>Frequency of lesson completions</span>
-        </div>
-        <div class="admin-dashboard-stats-box">
-            <h3>Export to PDF</h3>
-            <span>Download progress reports</span>
-        </div>
-    </div>
-</main>
-
 <script>
     document.getElementById("admin-dashboard-sidebar-toggle").addEventListener("click", function() {
         document.getElementById("admin-dashboard-sidebar").classList.toggle("closed");

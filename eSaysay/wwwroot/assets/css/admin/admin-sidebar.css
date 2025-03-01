@@ -1,0 +1,75 @@
+﻿
+.admin-dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 200px;
+    background: #fff;
+    border-right: 1px solid #dee2e6;
+    transition: transform 0.3s ease;
+}
+
+.admin-sidebar-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    .admin-sidebar-header img {
+        display: block;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+
+    
+.admin-sidebar-nav {
+    margin:16px;
+}
+
+.admin-dashboard-nav-list {
+    list-style: none;
+    display: flex;
+    gap: 3px;
+    padding: 5px 8px;
+    flex-direction: column;
+    transition: 0.4s ease;
+}
+
+    .admin-dashboard-nav-list li a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: #274052;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .admin-dashboard-nav-list span {
+        margin-right: 4px;
+        font-size: 1rem;
+       
+    }
+
+    .admin-dashboard-nav-list li a:hover {
+        background: #FFF1CF;
+        border-radius: 5px;
+    }
+
+.admin-dashboard-logout-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #274052;
+}
+.admin-btn-logout:hover {
+    background: #FFF1CF;
+    border-radius: 5px;
+}
+
+.admin-dashboard-sidebar.closed {
+    transform: translateX(-100%);
+}
