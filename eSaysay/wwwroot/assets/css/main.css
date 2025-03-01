@@ -11,6 +11,7 @@
 # Help: https://bootstrapmade.com/color-system/
 --------------------------------------------------------------*/
 /* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arapey:ital@0;1&display=swap');
 :root {
     --default-font: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --heading-font: "Poppins", sans-serif;
@@ -20,16 +21,16 @@
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
 :root {
     --background-color: #ffffff; /* Background color for the entire website, including individual sections */
-    --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
+    --default-color: #274052; /* Default color used for the majority of the text content across the entire website */
     --heading-color: #37423b; /* Color for headings, subheadings and title throughout the website */
-    --accent-color: #5fcf80; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+    --accent-color: #DFB757; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
     --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
     --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-    --nav-color: #272828; /* The default color of the main navmenu links */
+    --nav-color: #274052; /* The default color of the main navmenu links */
     --nav-hover-color: #5fcf80; /* Applied to main navmenu links when they are hovered over or active */
     --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
     --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
@@ -244,7 +245,7 @@ h6 {
             font-size: 24px;
             margin: 0;
             letter-spacing: 1px;
-            color: #1C3548;
+            color: #274052;
         }
 
         .header .btn-login{
@@ -253,7 +254,7 @@ h6 {
 
             .header .btn-login,
             .header .btn-login:focus {
-                color: #1C3548;
+                color: #274052;
                 font-size: 15px;
                 font-weight: 600;
                 padding: 6px 20px;
@@ -268,7 +269,7 @@ h6 {
 
     .header .btn-getstarted,
     .header .btn-getstarted:focus {
-        color: var(--default-color);
+        color: #274052;
         font-size: 14px;
         font-weight: 600;
         padding: 8px 35px 10px 35px;
@@ -342,11 +343,11 @@ h6 {
 
         .navmenu a,
         .navmenu a:focus {
-            color: #1C3548;
+            color: #9DB1BF;
             padding: 18px 15px;
             font-size: 16px;
             font-family: var(--nav-font);
-            font-weight: 400;
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -369,7 +370,7 @@ h6 {
         .navmenu li:hover > a,
         .navmenu .active,
         .navmenu .active:focus {
-            color: #DFB757;
+            color: #274052;
         }
 
         .navmenu .dropdown ul {
@@ -704,7 +705,6 @@ h6 {
     .footer-hero .copyright {
         padding-top: 25px;
         padding-bottom: 25px;
-        background-color: color-mix(in srgb, var(--default-color), transparent 95%);
     }
 
         .footer-hero .copyright p {
@@ -914,7 +914,7 @@ section,
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--default-color);
+    color: #E0D3C5;
 }
 
     .hero img {
@@ -929,7 +929,7 @@ section,
 
     .hero:before {
         content: "";
-        background: color-mix(in srgb, var(--background-color), transparent 60%);
+   
         position: absolute;
         inset: 0;
         z-index: 2;
@@ -943,17 +943,19 @@ section,
     .hero h2 {
         margin: 0;
         font-size: 48px;
-        font-weight: 700;
+        font-weight: 600;
+        font-family: "Arapey", serif;
+        color: #E0D3C5;
     }
 
     .hero p {
-        color: color-mix(in srgb, var(--default-color), transparent 20%);
+        color: #E0D3C5;
         margin: 10px 0 0 0;
-        font-size: 24px;
+        font-size: 18px;
     }
 
     .hero .btn-get-started {
-        font-weight: 500;
+        font-weight: 700;
         font-size: 15px;
         letter-spacing: 1px;
         display: inline-block;
@@ -961,13 +963,13 @@ section,
         border-radius: 50px;
         transition: 0.4s;
         margin-top: 30px;
-        color: #1C3548;
+        color: #274052;
         background: #DFB757;
     }
 
         .hero .btn-get-started:hover {
             color: #1C3548;
-            background: #FFDE8D;
+            background: #EDD9AA;
         }
 
 @media (max-width: 768px) {
@@ -984,8 +986,13 @@ section,
 # About Section
 --------------------------------------------------------------*/
 .about .content h3 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
+    font-family: Arapey, serif;
+}
+
+.about img{
+    border-radius: 32px;
 }
 
 .about .content ul {
@@ -998,9 +1005,9 @@ section,
     }
 
     .about .content ul i {
-        font-size: 1.25rem;
+        color: #5E93BC;
+        font-size: 1.2rem;
         margin-right: 4px;
-        color: var(--accent-color);
     }
 
 .about .content p:last-child {
@@ -1009,7 +1016,7 @@ section,
 
 .about .content .read-more {
     background: var(--accent-color);
-    color: var(--contrast-color);
+    color: #274052;
     font-family: var(--heading-font);
     font-weight: 500;
     font-size: 15px;
@@ -1030,7 +1037,7 @@ section,
     }
 
     .about .content .read-more:hover {
-        background: color-mix(in srgb, var(--accent-color), transparent 20%);
+        background: #FFE4A3;
         padding-right: 19px;
     }
 
@@ -1053,7 +1060,7 @@ section,
         .counts .stats-item span {
             font-size: 48px;
             display: block;
-            color: var(--accent-color);
+            color: #274052;
             font-weight: 700;
         }
 
@@ -1070,13 +1077,13 @@ section,
 # Why Us Section
 --------------------------------------------------------------*/
 .why-us .why-box {
-    color: var(--contrast-color);
+    color: #274052;
     background: var(--accent-color);
     padding: 30px;
 }
 
     .why-us .why-box h3 {
-        color: var(--contrast-color);
+        color: #274052;
         font-weight: 700;
         font-size: 34px;
         margin-bottom: 30px;
@@ -1088,9 +1095,9 @@ section,
 
     .why-us .why-box .more-btn {
         display: inline-block;
-        background: color-mix(in srgb, var(--contrast-color), transparent 85%);
+        background: rgba(249,249,249,0.4);
         padding: 8px 40px 10px 40px;
-        color: var(--contrast-color);
+        color: #274052;
         transition: all ease-in-out 0.4s;
         border-radius: 50px;
     }
@@ -1100,7 +1107,7 @@ section,
         }
 
         .why-us .why-box .more-btn:hover {
-            color: var(--accent-color);
+            color: #274052;
             background: var(--surface-color);
         }
 
@@ -1216,7 +1223,8 @@ section,
 
     .courses .course-content .category {
         background: var(--accent-color);
-        color: var(--contrast-color);
+        color: #274052;
+        font-weight: 600;
         font-size: 14px;
         padding: 6px 14px;
         margin: 0;

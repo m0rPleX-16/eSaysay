@@ -1,0 +1,17 @@
+﻿
+.admin-exercise {
+    margin-left: 200px;
+}
+
+.admin-exercise-header { /* header top area*/
+    background: #fff;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.exercise-content {
+    margin: 16px;
+}
