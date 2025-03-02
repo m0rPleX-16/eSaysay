@@ -158,6 +158,13 @@
     width: 100%;
 }
 
+    .sidebar-nav .secondary-nav .nav-link {
+     width: 170px;
+    }
+.sidebar.collapsed .sidebar-nav .secondary-nav .nav-link {
+    width: 55px;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;

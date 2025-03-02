@@ -8,10 +8,13 @@
 
 <div class="container complete-exercise">
     <div class="header-complete">
-        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-complete">✖</a>
-        <div class="progress-bar">
-            <div class="progress-bar-inner"></div>
-        </div>
+      
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-complete">
+            <span class="material-symbols-rounded">
+                close
+            </span>
+        </a>
+        <div class="progress-bar"><div class="progress-bar-inner"></div></div>
     </div>
 
     <div class="title title-question">Complete the translation</div>

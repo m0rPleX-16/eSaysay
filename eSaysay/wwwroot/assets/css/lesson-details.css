@@ -1,0 +1,151 @@
+﻿
+.lesson-details-container {
+    max-width: 1200px; 
+    margin: 80px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+    .lesson-details-container .lesson-title {
+        font-size: 2.6rem;
+        font-weight: 600;
+        color: #5D4940;
+        margin-bottom: 20px;
+        font-family: 'Arapey', serif;
+    }
+
+    .lesson-details-container .lesson-description {
+        font-size: 18px;
+        font-style: italic;
+        font-weight: 500;
+        color: #5D4940;
+        opacity: 85%;
+        margin-bottom: 30px;
+    }
+
+    .lesson-details-container .exercise-heading {
+        font-size: 2rem;
+        font-weight: 500;
+        color: #274052;
+        margin-top: 40px;
+        margin-bottom: 30px;
+    }
+
+    .lesson-details-container .carousel-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        max-width: 1000px; /* Wider carousel wrapper */
+        margin: auto;
+    }
+
+.lesson-details-container .carousel {
+    background: none;
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    max-width: 800px; /* Wider carousel */
+    overflow: hidden;
+    justify-content: flex-start;
+}
+
+    .lesson-details-container .exercise-list {
+        display: flex;
+    }
+
+    .lesson-details-container .exercise-card {
+        min-width: 350px; /* Wider cards */
+        padding: 30px; /* More padding */
+        margin: 15px; /* More margin */
+        background: #FFFAF3;
+        border-radius: 15px; /* Rounded corners */
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        flex: 0 0 auto; /* Prevent flex shrinking */
+    }
+
+        .lesson-details-container .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+    .lesson-details-container .exercise-type {
+        font-size: 24px; /* Larger type */
+        font-weight: 600;
+        color: #274052;
+        margin-bottom: 20px;
+    }
+
+    .lesson-details-container .exercise-content {
+        font-size: 16px; /* Larger content */
+        color: #274052;
+        margin-bottom: 25px;
+    }
+
+    .lesson-details-container .btn-start {
+        background: #DFB757;
+        color: #274052;
+        padding: 12px 24px; /* Larger button */
+        border-radius: 26px; /* Rounded button */
+        text-decoration: none;
+        font-size: 16px; /* Larger font */
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+        .lesson-details-container .btn-start:hover {
+            background: #FFE4A3;
+        }
+
+    .lesson-details-container .btn-back {
+        background: #95a5a6;
+        color: #fff;
+        padding: 12px 24px; /* Larger button */
+        border-radius: 26px; /* Rounded button */
+        font-style: italic;
+        font-weight:500;
+        text-decoration: none;
+        font-size: 16px; /* Larger font */
+        margin-top: 30px;
+        transition: background 0.3s ease;
+    }
+
+        .lesson-details-container .btn-back:hover {
+            background: #7f8c8d;
+        }
+
+    .lesson-details-container .carousel-control {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        font-size: 36px; /* Larger arrows */
+        cursor: pointer;
+        padding: 15px; /* Larger padding */
+        color: #274052;
+        border-radius: 50%;
+        width: 50px; /* Larger buttons */
+        height: 50px; /* Larger buttons */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+        .lesson-details-container .carousel-control:hover {
+            background: #DFB757;
+            color: #274052;
+        }
+
+    .lesson-details-container .prev {
+        left: 10px; /* Adjusted position */
+    }
+
+    .lesson-details-container .next {
+        right: 10px; /* Adjusted position */
+    }

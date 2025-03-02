@@ -4,7 +4,7 @@
     ViewData["Title"] = $"{lesson.Title} - Exercises";
 }
 
-<div class="lesson-container">
+<div class="lesson-details-container">
     <h2 class="lesson-title">@lesson.Title</h2>
     <p class="lesson-description">@lesson.Description</p>
 
@@ -14,7 +14,6 @@
     }
     else
     {
-        <h3 class="exercise-heading">Exercises</h3>
         <div class="carousel-wrapper">
             <button class="carousel-control prev" onclick="moveSlide(-1)">&#10094;</button>
             <div class="carousel">
@@ -36,150 +35,6 @@
     <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">Back to Lessons</a>
 </div>
 
-<style>
-    .lesson-container {
-        max-width: 1200px; /* Increased container width */
-        margin: 40px auto;
-        padding: 30px;
-        background: #ffffff;
-        border-radius: 15px;
-        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .lesson-title {
-        font-size: 32px; /* Larger title */
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 20px;
-    }
-
-    .lesson-description {
-        font-size: 18px; /* Larger description */
-        color: #555;
-        margin-bottom: 30px;
-    }
-
-    .exercise-heading {
-        font-size: 28px; /* Larger heading */
-        font-weight: 500;
-        color: #34495e;
-        margin-top: 40px;
-        margin-bottom: 30px;
-    }
-
-    .carousel-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        max-width: 1000px; /* Wider carousel wrapper */
-        margin: auto;
-    }
-
-    .carousel {
-        display: flex;
-        transition: transform 0.5s ease-in-out;
-        width: 100%;
-        max-width: 800px; /* Wider carousel */
-        overflow: hidden;
-        justify-content: flex-start;
-    }
-
-    .exercise-list {
-        display: flex;
-    }
-
-    .exercise-card {
-        min-width: 350px; /* Wider cards */
-        padding: 30px; /* More padding */
-        margin: 15px; /* More margin */
-        background: #ffffff;
-        border-radius: 15px; /* Rounded corners */
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        flex: 0 0 auto; /* Prevent flex shrinking */
-    }
-
-        .exercise-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
-        }
-
-    .exercise-type {
-        font-size: 24px; /* Larger type */
-        font-weight: 500;
-        color: #2980b9;
-        margin-bottom: 20px;
-    }
-
-    .exercise-content {
-        font-size: 16px; /* Larger content */
-        color: #666;
-        margin-bottom: 25px;
-    }
-
-    .btn-start {
-        background: #3498db;
-        color: #fff;
-        padding: 12px 24px; /* Larger button */
-        border-radius: 10px; /* Rounded button */
-        text-decoration: none;
-        font-size: 16px; /* Larger font */
-        transition: background 0.3s ease;
-    }
-
-        .btn-start:hover {
-            background: #2980b9;
-        }
-
-    .btn-back {
-        background: #95a5a6;
-        color: #fff;
-        padding: 12px 24px; /* Larger button */
-        border-radius: 10px; /* Rounded button */
-        text-decoration: none;
-        font-size: 16px; /* Larger font */
-        margin-top: 30px;
-        transition: background 0.3s ease;
-    }
-
-        .btn-back:hover {
-            background: #7f8c8d;
-        }
-
-    .carousel-control {
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
-        font-size: 36px; /* Larger arrows */
-        cursor: pointer;
-        padding: 15px; /* Larger padding */
-        color: #34495e;
-        border-radius: 50%;
-        width: 50px; /* Larger buttons */
-        height: 50px; /* Larger buttons */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        transition: background 0.3s ease, color 0.3s ease;
-    }
-
-        .carousel-control:hover {
-            background: #3498db;
-            color: #fff;
-        }
-
-    .prev {
-        left: -25px; /* Adjusted position */
-    }
-
-    .next {
-        right: -25px; /* Adjusted position */
-    }
-</style>
 
 <script>
     let currentIndex = 0;
