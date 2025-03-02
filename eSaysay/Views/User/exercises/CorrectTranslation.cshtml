@@ -8,7 +8,11 @@
 
 <div class="container correct-exercise">
     <div class="header-correct">
-        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-correct">✖</a>
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-correct">
+            <span class="material-symbols-rounded">
+                close
+            </span>
+        </a>
         <div class="progress-bar"><div class="progress-bar-inner"></div></div>
     </div>
 
@@ -30,7 +34,7 @@
                 var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
                 for (int i = 0; i < choices.Count; i++)
                 {
-                    <button type="button" class="answer-btn" onclick="selectAnswer(this, '@choices[i]')">@choices[i]</button>
+                    <button type="button" class="corr-ans" onclick="selectAnswer(this, '@choices[i]')">@choices[i]</button>
                 }
             }
             else
@@ -38,8 +42,8 @@
                 <p>No answer choices available.</p>
             }
         </div>
-
-        <div class="footer">
+        <hr class="corr-hr" />
+        <div class="footer corr-footer">
             <button type="button" class="skip" onclick="skip()">Skip</button>
             <button type="button" class="check" onclick="checkAnswer()">Check</button>
         </div>
@@ -56,72 +60,6 @@
     </div>
 </div>
 
-<!-- Modal Styles -->
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-        background-color: white;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        border-radius: 10px;
-        width: 80%;
-        max-width: 400px;
-        text-align: center;
-    }
-
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-        .close:hover, .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-    .btn-primary {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-
-    /* Highlight selected answer */
-    .answer-btn {
-        padding: 10px;
-        margin: 5px;
-        border: 2px solid transparent;
-        border-radius: 5px;
-        cursor: pointer;
-        background-color: #f4f4f4;
-    }
-
-        .answer-btn.selected {
-            border-color: #4CAF50;
-            background-color: #eaffea;
-        }
-</style>
 
 <script>
     let startTime;
@@ -133,17 +71,29 @@
 
     // Function to select an answer
     function selectAnswer(button, answer) {
-        document.getElementById("user-answer").value = answer;
+    const userAnswerInput = document.getElementById("user-answer");
+    const isCorrectInput = document.getElementById("is-correct");
+
+    // Check if the button is already selected
+    if (button.classList.contains("selected")) {
+        // Unselect the button
+        button.classList.remove("selected");
+        userAnswerInput.value = ""; // Clear the selected answer
+        isCorrectInput.value = "false"; // Reset correctness
+    } else {
+        // Remove 'selected' class from all buttons
+        document.querySelectorAll('.corr-ans').forEach(btn => btn.classList.remove('selected'));
+
+        // Select the clicked button
+        button.classList.add("selected");
+        userAnswerInput.value = answer;
 
         // Check if the selected answer is correct
         const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
         const isCorrect = answer.toLowerCase() === correctAnswer;
-        document.getElementById("is-correct").value = isCorrect;
-
-        // Remove 'selected' class from all buttons and highlight the chosen one
-        document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
+        isCorrectInput.value = isCorrect;
     }
+}
 
     // Function to check the answer and submit
     function checkAnswer() {

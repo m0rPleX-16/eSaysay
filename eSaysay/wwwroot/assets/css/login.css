@@ -1,6 +1,6 @@
 ﻿.login-page {
     margin-top: 1px;
-    background-color: #E0D3C5;
+    background-color: #FEF6ED;
 }
 
 .login-page .container {
@@ -17,9 +17,9 @@
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
     }
-    
+
 .login-style {
-    background-color: grey;
+    background-color: #446277;
 }
 
     .login-style .text-center h1, .login-style .text-center .lead {

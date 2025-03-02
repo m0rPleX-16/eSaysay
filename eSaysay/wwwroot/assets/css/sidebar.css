@@ -127,10 +127,22 @@
     transition: 0.4s ease;
 }
 
-    .sidebar-nav .nav-link:hover {
-        color: #274052;
-        background: #DFB757;
+
+
+    .sidebar-nav .nav-link .nav-icon { 
+        color: #F4E4D0;
+        font-size: 1.37rem;
     }
+        .sidebar-nav .nav-link:hover {
+            color: #274052;
+            background: #DFB757;
+        }
+
+
+.class-item:hover .nav-link, .class-item:hover .nav-icon {
+    color: #274052; 
+}
+
 
     .sidebar-nav .nav-link .nav-label {
         transition: opacity 0.4s ease;
@@ -239,10 +251,8 @@
         font-size: 0.94rem;
     }
 
-        .sidebar-nav .nav-link .nav-icon { /**/
-            font-size: 1.37rem;
-        }
-
+        
+        
         .sidebar-nav .secondary-nav {
             position: relative;
             bottom: 0;

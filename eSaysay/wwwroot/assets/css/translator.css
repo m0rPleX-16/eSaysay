@@ -1,23 +1,53 @@
-﻿/* 🌍 General Container Styling */
+﻿
+.user-translator {
+    background-color: #FEF6ED;
+    color: #274052;
+}
+.main-content {
+    margin-left: 220px;
+    padding: 20px 20px 20px 20px;
+    transition: margin-left 0.4s ease;
+}
 .translator-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
     padding: 20px;
-    background-color: #274052;
+    margin-top: 20px;
+    border-radius: 16px;
+    background-color: #FFFAF3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.translator-mssg h1 {
+    color: #274052;
+}
+
+.translator-mssg .span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
 }
 
 /* 📦 Translator Wrapper */
 .translator-wrapper {
-    border: 2px solid #37423b;
+    border: 2px solid #ECDECE;
     border-radius: 10px;
-    padding: 20px;
-    background: #37423b;
+    padding: 30px;
+    background: #FEF6ED;
     width: 100%;
     max-width: 600px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 4px 4px 1px #ECDECE;
+    position: relative;
+}
+
+.btn-translator-wrapper {
+    background: none;
+    width: 100%;
+    max-width: 600px;
     position: relative;
 }
 
@@ -37,21 +67,46 @@ textarea {
     padding: 12px;
     resize: none;
     border-radius: 5px;
-    border-bottom: 2px solid #DFB757;
-    color: #fff;
+    border-bottom: 2px solid #ECDECE;
+    color: #274052;
     background-color: transparent;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-textarea::placeholder {
+    textarea::placeholder {
+        color: #9DB1BF;
+        opacity: 0.7;
+    }
+
+    textarea:focus {
+        border-bottom: 2px solid #ECDECE;
+        box-shadow: 0 0 8px #ECDECE;
+    }
+
+
+/* 🔄 Swap Button */
+.translator-swap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -85%);
+    font-size: 26px;
+    cursor: pointer;
     color: #DFB757;
-    opacity: 0.7;
+    background: none;
+    padding: 12px;
+    border-radius: 50%;
+    border: none;
+    transition: background 0.3s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
 }
 
-textarea:focus {
-    border-bottom: 2px solid #FFD700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-}
+    .translator-swap:hover {
+        transform: translate(-50%, -90%) scale(1.5);
+    }
+
+    .translator-swap:active {
+        transform: translate(-50%, -80%) scale(0.9);
+    }
 
 /* 🎛 Translator Controls */
 .translator-controls {
@@ -62,59 +117,35 @@ textarea:focus {
 }
 
 /* 🎨 Icon Styling */
-.material-icons {
-    font-size: 26px;
-    color: #FFD700;
+.material-symbols-rounded {
+    font-size: 2rem;
+    color: #274052;
     cursor: pointer;
     transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.material-icons:hover {
-    color: #fff;
+.material-symbols-rounded:hover {
+    color: #274052;
     transform: scale(1.1);
 }
 
-/* 🔄 Swap Button */
-.translator-swap {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 26px;
-    cursor: pointer;
-    color: #DFB757;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 12px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 215, 0, 0.5);
-    transition: background 0.3s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
-}
-
-.translator-swap:hover {
-    background: rgba(255, 215, 0, 0.3);
-    transform: translate(-50%, -50%) scale(1.1);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-.translator-swap:active {
-    transform: translate(-50%, -50%) scale(1);
-    background: rgba(255, 215, 0, 0.5);
-}
 
 /* 🎙️ Icon Buttons */
 .icon-btn {
+    display: flex;
+    justify-content:center;
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 36px;
     transition: background 0.3s ease, transform 0.2s ease-in-out;
 }
 
-.icon-btn:hover {
-    background: rgba(255, 215, 0, 0.2);
-    transform: scale(1.1);
-}
+    .icon-btn:hover {
+        background-color: #9DB1BF;
+        transform: scale(1.1);
+    }
 
 /* 🔘 Translate Button */
 #translator-button {
@@ -122,20 +153,20 @@ textarea:focus {
     margin-top: 20px;
     padding: 12px;
     font-size: 18px;
-    background-color: #37423b;
-    color: #DFB757;
+    background-color: #DFB757;
+    color: #274052;
     border: none;
     cursor: pointer;
     font-weight: bold;
     border-radius: 5px;
-    transition: background 0.3s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
+    transition: background 0.2s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
 }
 
-#translator-button:hover {
-    background-color: #274052;
-    transform: scale(1.05);
-    box-shadow: 0 0 8px rgba(223, 183, 87, 0.5);
-}
+    #translator-button:hover {
+        background-color: #FFE4A3;
+        box-shadow: 4px 4px 1px #DFB757;
+        transition: box-shadow 0.2s ease;
+    }
 
 /* 📱 Responsive Adjustments */
 @media (max-width: 768px) {

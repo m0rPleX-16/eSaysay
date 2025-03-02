@@ -80,7 +80,7 @@
     gap: 10px; /* Space between buttons (rows) */
 }
 
-    .answer-column button {
+    .answer-column .pair {
         padding: 15px;
         font-size: 18px;
         border: none;
@@ -96,29 +96,56 @@
             background-color: #0056b3;
         }
 
-/*------------FOOTER OF LISTENING EXERCISE -------------------------------*/
-.footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 20px;
-    background: none;
+.list-hr {
+    border: 3px solid #C0ACA4;
+    border-radius: 16px;
+    opacity: 30%;
+    margin-top: 60px;
 }
 
-    .footer button {
-        margin-left: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
+/*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
+
+.list-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto 0;
+    gap: 20px;
+}
+
+    .list-footer .skip,
+    .list-footer .check {
+        flex: 1; /* Makes them equal width */
+        padding: 6px 10px;
+        font-size: 18px;
+        border-radius: 16px;
         cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
     }
 
-    .footer .skip {
-        background-color: #6c757d;
-        color: white;
+    .list-footer .skip {
+        background-color: transparent;
+        border: 4px solid #E4DDD5;
+        color: #274052;
+        font-weight: 500;
     }
 
-    .footer .check {
-        background-color: #28a745;
-        color: white;
+    .list-footer .check {
+        background-color: #DFB757;
+        border: 4px solid #D5AB46;
+        color: #274052;
+        font-weight: 500;
+    }
+
+    .list-footer .skip:hover {
+        background-color: #E4DDD5;
+    }
+
+    .list-footer .check:hover {
+        background-color: #FFE4A3;
+        border: 4px solid #FFE4A3;
     }

@@ -10,7 +10,7 @@
 }
 
 .container.correct-exercise {
-    margin-top: 30px;
+    padding: 40px;
 }
 
 /* ------------ header w close button --------------------- */
@@ -74,7 +74,8 @@
     display: inline-block;
     align-items: center;
     justify-content: center;
-    background-color: white;
+    background-color: #FFFAF3;
+    box-shadow: 0px 8px 100px rgba(0, 0, 0, 0.1);
     padding: 16px;
     border-radius: 36px;
     width: auto;
@@ -83,8 +84,11 @@
 }
 
     .container .correct-content h6 {
+        color: #274052;
         text-align: center;
         margin: 0;
+        font-weight: 600;
+        font-size: 1.6rem;
     }
 
 /* ------------------------- answers -------------------------- */
@@ -96,44 +100,82 @@
     padding: 20px;
 }
 
-    .answer-grid button {
+    .answer-grid .corr-ans {
+        display: inline-block;
+        width: auto;
+        height: auto;
         padding: 15px;
         font-size: 18px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: white;
+        font-weight: 500;
+        border-radius: 16px;
+        background-color: transparent;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 4px 6px 1px rgba(0, 0, 0, 0.1);
+        color: #274052;
         cursor: pointer;
     }
 
-        .answer-grid button:hover {
-            background-color: #0056b3;
+        .answer-grid .corr-ans:hover {
+            background-color: #DFB757;
+            font-weight: 500;
         }
+
+.corr-ans.selected {
+    background-color: #DFB757;
+    font-weight: 500;
+}
+
+
+.corr-hr {
+    border: 3px solid #C0ACA4;
+    border-radius: 16px;
+    opacity: 30%;
+    margin-top: 60px;
+}
 
 /*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
 
-.footer {
+.corr-footer {
     display: flex;
-    justify-content: flex-end;
-    padding: 20px;
-    background: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto 0;
+    gap: 20px;
 }
 
-    .footer button {
-        margin-left: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
+    .corr-footer .skip,
+    .corr-footer .check {
+        flex: 1; /* Makes them equal width */
+        padding: 6px 10px;
+        font-size: 18px;
+        border-radius: 16px;
         cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
     }
 
-    .footer .skip {
-        background-color: #6c757d;
-        color: white;
+    .corr-footer .skip {
+        background-color: transparent;
+        border: 4px solid #E4DDD5;
+        color: #274052;
+        font-weight: 500;
     }
 
-    .footer .check {
-        background-color: #28a745;
-        color: white;
+    .corr-footer .check {
+        background-color: #DFB757;
+        border: 4px solid #D5AB46;
+        color: #274052;
+        font-weight: 500;
+    }
+
+    .corr-footer .skip:hover {
+        background-color: #E4DDD5;
+    }
+
+    .corr-footer .check:hover {
+        background-color: #FFE4A3;
+        border: 4px solid #FFE4A3;
     }
