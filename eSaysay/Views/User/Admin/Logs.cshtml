@@ -4,36 +4,61 @@
 @{
     ViewData["Title"] = "Security Logs";
 }
+
 <main class="admin-logs">
     @await Html.PartialAsync("_AdminSidebar")
 
     <div class="admin-logs-header">
         <h2>Security Logs</h2>
     </div>
-  
-    <div class="logs-content">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Event</th>
-                    <th>Timestamp</th>
-                    <th>IP Address</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var log in Model)
-                {
-                    <tr>
-                        <td>@(log.User != null ? log.User.Email : "Unknown User")</td>
-                        <td>@log.Event</td>
-                        <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        <td>@log.IPAddress</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    
 
+    <!-- Search Bar -->
+    <div class="logs-searchbar">
+
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by user or event..." value="@ViewBag.SearchQuery">
+    </div>
+
+    <!-- Logs Table Container (loaded via AJAX) -->
+    <div id="logsTableContainer">
+        @await Html.PartialAsync("~/Views/User/Admin/Partial/_LogsTablePartial.cshtml", Model)
+    </div>
+
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                function loadLogs(page = 1) {
+                    const searchQuery = $('#searchInput').val();
+                    $.ajax({
+                        url: '/Admin/FilterLogs',
+                        type: 'GET',
+                        data: { searchQuery: searchQuery, page: page },
+                        success: function (response) {
+                            $('#logsTableContainer').html(response);
+                            $('.log-pagination').html($(response).find('.log-pagination').html());
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching filtered logs:', error);
+                        }
+                    });
+                }
+
+                // Search logs with debounce (delay to prevent too many requests)
+                let timeoutId;
+                $('#searchInput').on('input', function () {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        loadLogs();
+                    }, 300);
+                });
+
+                // Handle pagination clicks
+                $(document).on('click', '.pagination-link', function (e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    loadLogs(page);
+                });
+            });
+        </script>
+    }
 </main>

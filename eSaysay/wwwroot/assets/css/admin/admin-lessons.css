@@ -14,4 +14,104 @@
 
 .lessons-content {
     margin: 16px;
+    padding: 0 100px 0 100px;
 }
+
+
+/*SEARCH BAR*/
+
+.lessons-searchbar {
+    padding: 40px 115px 10px 115px;
+}
+
+.btn-lessons-search {
+    background-color: #DFB757;
+    color: #274052;
+}
+
+    .btn-lessons-search:hover {
+        background-color: #FFE4A3;
+        color: #274052;
+    }
+
+/*ADD BUTTON*/
+.btn-lessons-add {
+    background-color: #367C1E;
+    color: #fefefe;
+    font-weight: 600;
+    width: 150px;
+}
+
+    .btn-lessons-add:hover {
+        background-color: #5A9A3D;
+        color: #fefefe;
+    }
+/*ACTION BUTTON*/
+.btn-lessons-edit {
+    background-color: #488EC3;
+    color: #FAF3E2;
+    font-weight: 700;
+    height: 42px;
+    width: 40px;
+}
+
+    .btn-lessons-edit span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-lessons-edit:hover {
+        background-color: #C3DFF4;
+        color: #274052;
+    }
+
+.btn-lessons-archive {
+    background-color: #808080;
+    color: #FAF3E2;
+    font-weight: 700;
+    height: 42px;
+    width: 40px;
+}
+
+    .btn-lessons-archive span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-lessons-archive:hover {
+        background-color: #DEDEDE;
+        color: #274052;
+    }
+
+/*PAGINATIONNN*/
+
+.lessons-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+    .lessons-pagination .pagination {
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+        .lessons-pagination .pagination .page-link {
+            color: #446277;
+            background-color: transparent;
+            border: 2px solid #E0D3C5;
+        }
+
+        .lessons-pagination .pagination .page-item.active .page-link {
+            background-color: #DFB757;
+            color: #274052;
+            border: 2px solid #DFB757;
+            font-weight: 700;
+        }
+
+        .lessons-pagination.pagination .page-item .page-link:hover {
+            background-color: #E0D3C5;
+            color: #274052;
+        }

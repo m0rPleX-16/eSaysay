@@ -53,13 +53,13 @@
                     </span> Logs
                 </a>
             </li>
-            <hr />
             <li><a asp-controller="Admin" asp-action="Settings">
                     <span class="material-symbols-rounded">
-                        settings
-                    </span>Settings
+                        badge
+                    </span> Badges
                 </a>
             </li>
+            <hr />
             <li class="admin-btn-logout">
                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="admin-dashboard-logout-form">
                     <button type="submit" class="admin-dashboard-logout-btn">

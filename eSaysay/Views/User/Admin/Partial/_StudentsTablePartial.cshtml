@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model List<IdentityUser>
+
+@if (Model != null && Model.Any())
+{
+    <div class="table-students">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.Email</td>
+                        <td>
+                            <button class="btn btn-students-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editModal-@student.Id">
+                                <span class="material-symbols-rounded">edit</span>
+                            </button>
+                            <button class="btn btn-students-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveModal-@student.Id">
+                                <span class="material-symbols-rounded">archive</span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    @if (ViewBag.TotalPages >= 1)
+    {
+        <nav class="students-pagination">
+            <ul class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <p>No students found.</p>
+}
