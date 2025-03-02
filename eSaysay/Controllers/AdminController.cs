@@ -197,26 +197,64 @@ namespace eSaysay.Controllers
             ViewBag.Lessons = lessons;
             return View("~/Views/User/Admin/Exercises.cshtml", exercises);
         }
-        // POST: Admin/CreateExercise
         [HttpPost]
         public async Task<IActionResult> CreateExercise(InteractiveExercise exercise)
         {
             _logger.LogInformation($"Creating exercise: {exercise.ExerciseType}, Lesson ID: {exercise.LessonID}");
 
-            if (!ModelState.IsValid)
+            // Ensure LessonID is valid before proceeding
+            if (exercise.LessonID == 0)
             {
-                _logger.LogWarning("Invalid model state detected.");
+                _logger.LogWarning("Error: LessonID is required.");
+                ModelState.AddModelError("LessonID", "The Lesson field is required.");
                 return BadRequest(ModelState);
             }
 
-            // Translate content to Korean
-            exercise.ContentTranslate = await TranslateToKorean(exercise.Content);
+            // Fetch Lesson from database
+            var lesson = await _context.Lessons.FindAsync(exercise.LessonID);
+            if (lesson == null)
+            {
+                _logger.LogWarning("Error: Lesson not found.");
+                ModelState.AddModelError("LessonID", "Invalid Lesson ID.");
+                return BadRequest(ModelState);
+            }
 
+            // Assign Lesson object explicitly
+            exercise.Lesson = lesson;
+
+            // Translate Content
+            var translatedText = await TranslateToKorean(exercise.Content);
+            _logger.LogInformation($"Translation result: {translatedText}");
+
+            if (string.IsNullOrWhiteSpace(translatedText))
+            {
+                _logger.LogWarning("Error: Translation failed.");
+                ModelState.AddModelError("ContentTranslate", "Translation failed.");
+                return BadRequest(ModelState);
+            }
+
+            // Assign translated text before saving
+            exercise.ContentTranslate = translatedText;
+
+            // Validate ModelState after setting all required properties
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState)
+                {
+                    foreach (var subError in error.Value.Errors)
+                    {
+                        _logger.LogWarning($"Model Error - {error.Key}: {subError.ErrorMessage}");
+                    }
+                }
+                return BadRequest(ModelState);
+            }
+
+            // Process AnswerChoices
             if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
             {
                 if (!IsValidAnswerChoices(exercise.AnswerChoices))
                 {
-                    _logger.LogWarning("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values). ");
+                    _logger.LogWarning("Error: AnswerChoices is not in a valid format.");
                     return BadRequest("Invalid format for AnswerChoices.");
                 }
                 exercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices);
@@ -228,12 +266,14 @@ namespace eSaysay.Controllers
 
             exercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
 
+            // Save to database
             _context.InteractiveExercises.Add(exercise);
             await _context.SaveChangesAsync();
             await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}");
 
             return RedirectToAction("Exercises");
         }
+
 
         // POST: Admin/EditExercise
         [HttpPost]
@@ -517,8 +557,6 @@ namespace eSaysay.Controllers
 
             return PartialView("~/Views/User/Admin/Partial/_LogsTablePartial.cshtml", logs);
         }
-
-
 
         public IActionResult Progress()
         {

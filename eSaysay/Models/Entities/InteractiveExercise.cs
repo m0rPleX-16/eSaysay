@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,6 +13,7 @@ namespace eSaysay.Models.Entities
 
         [ForeignKey("LessonID")]
         public int LessonID { get; set; }
+        [ValidateNever]
         public Lesson Lesson { get; set; }
 
         [Required]
@@ -22,19 +24,18 @@ namespace eSaysay.Models.Entities
         [MaxLength(200)]
         public string Content { get; set; }
 
-        [Required]
         [MaxLength(200)]
-        public string ContentTranslate { get; set; }
+        public string? ContentTranslate { get; set; }
 
         [Required]
         [MaxLength(100)]
         public string CorrectAnswer { get; set; }
 
         [MaxLength(300)]
-        public string AnswerChoices { get; set; } // Store as JSON or comma-separated values
+        public string? AnswerChoices { get; set; }
 
         [MaxLength(500)]
-        public string Hint { get; set; } // Optional hint
+        public string? Hint { get; set; } 
 
         [MaxLength(20)]
         public string DifficultyLevel { get; set; }
