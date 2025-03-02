@@ -14,66 +14,44 @@
         </button>
     </header>
 
-    <!-- User Profile Section -->
-    <div class="user-profile">
-        @if (User.Identity.IsAuthenticated)
-        {
-            <div class="profile-info">
-                <img src="~/assets/img/default-profile.png" alt="Profile Picture" class="profile-picture" />
-                <div class="profile-details">
-                    <p class="username">@User.Identity.Name</p>
-                    <p class="user-role">@(User.IsInRole("Student") ? "Student" : "Admin")</p>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="profile-info">
-                <img src="~/assets/img/default-profile.png" alt="Profile Picture" class="profile-picture" />
-                <div class="profile-details">
-                    <p class="username">Guest</p>
-                    <p class="user-role">Not Logged In</p>
-                </div>
-            </div>
-        }
-    </div>
-
     <!-- Sidebar Navigation -->
     <nav class="sidebar-nav">
         <!-- Primary Top Nav -->
         <ul class="nav-list primary-nav">
             <p id="sidebar-title">Your Journey</p>
             <li class="class-item">
-                <a asp-controller="Dashboard" asp-action="Index">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
                     <span class="nav-icon material-symbols-rounded">book_5</span>
                     <span class="nav-label">Learn</span>
                 </a>
             </li>
             <li class="class-item">
-                <a asp-controller="Dashboard" asp-action="PracticeSpeech">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="PracticeSpeech">
                     <span class="nav-icon material-symbols-rounded">book_ribbon</span>
                     <span class="nav-label">Practice</span>
                 </a>
             </li>
-            <p id="sidebar-title">Settings</p>
             <li class="class-item">
-                <a asp-controller="Dashboard" asp-action="Profile">
-                    <span class="nav-icon material-symbols-rounded">account_circle</span>
-                    <span class="nav-label">Profile</span>
-                </a>
-            </li>
-            <li class="class-item">
-                <a asp-controller="Dashboard" asp-action="Translator">
-                    <span class="nav-icon material-symbols-rounded">book_ribbon</span>
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Translator">
+                    <span class="nav-icon material-symbols-rounded">translate</span>
                     <span class="nav-label">Translator</span>
                 </a>
             </li>
             <li class="class-item">
-                <a asp-controller="Dashboard" asp-action="Stats">
-                    <span class="nav-icon material-symbols-rounded">book_ribbon</span>
-                    <span class="nav-label">Student Stats</span>
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Stats">
+                    <span class="nav-icon material-symbols-rounded">equalizer</span>
+                    <span class="nav-label">Statistics</span>
                 </a>
             </li>
+            <p id="sidebar-title">Settings</p>
+            <li class="class-item">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Profile">
+                    <span class="nav-icon material-symbols-rounded">account_circle</span>
+                    <span class="nav-label">Profile</span>
+                </a>
+            </li>
+
+           
         </ul>
         <!--Secondary bottom nav-->
         <ul class="nav-list secondary-nav">

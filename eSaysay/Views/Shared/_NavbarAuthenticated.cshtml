@@ -1,23 +1,41 @@
 ﻿
 
-<header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center">
-        <a asp-controller="Dashboard" asp-action="Index" class="logo d-flex align-items-center me-auto">
-            <img src="~/assets/img/eSaysay-logo.png" alt="eSaysay-logo">
-            <h1 class="sitename">eSaysay</h1>
-        </a>
+<header id="header" class="header header-auth-nav d-flex align-items-center sticky-top">
+    <div class="container-fluid nav-auth-container container-xl position-relative d-flex align-items-center">
 
-        <nav id="navmenu" class="navmenu">
+      
+            <h3 class="nav-auth-title">eSaysay</h3>
+       
+
+        <nav id="navmenu" class="navmenu nav-auth-navmenu">
             <ul>
-                <li><a asp-controller="Dashboard" asp-action="Index" class="active">Dashboard</a></li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-                </li>
+                
+                
+                @if(User.Identity.IsAuthenticated){
+                    <li class="nav-item user-role">
+                        <p class="user-role nav-auth-role">@(User.IsInRole("Student") ? "Student" : "Admin")</p>
+                    </li>
+                    <li class="nav-item user-profile">
+                        <img src="~/assets/img/default-profile.png" alt="Profile Picture" class="profile-picture rounded-circle nav-auth-pfp" />
+                    </li>
+                  
+                    <li class="nav-item">
+                        <a class="nav-link nav-auth-username" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@User.Identity?.Name</a>
+                    </li>
+                
+                } else {
+                    
+                    <li class="nav-item user-profile">
+                        <img src="~/assets/img/default-profile.png" alt="Profile Picture" class="profile-picture nav-auth-pfp" />
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-auth-username" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Guest</a>
+                    </li>
+                }
+                
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="btn-getstarted border-0">Logout</button>
-        </form>
+        
     </div>
 </header>

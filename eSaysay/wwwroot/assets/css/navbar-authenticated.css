@@ -1,0 +1,59 @@
+﻿.container-fluid.nav-auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%; /* Ensure the container takes full width */
+}
+
+.header-auth-nav {
+    border-radius: 16px;
+    height: 50px;
+    background-color: #274052;
+    display: flex;
+    justify-content: center; /* Center the container within the header */
+    align-items: center;
+}
+
+.nav-auth-title {
+    color: #F4E4D0;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0;
+    padding-left: 10px;
+}
+
+ .nav-auth-navmenu {
+    position: absolute;
+    right: 26px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-auth-pfp {
+    height: 36px;
+    width: 36px;
+    color: #C0ACA4;
+    font-size: 12px;
+    font-style: italic;
+}
+
+
+.nav-item .nav-auth-username {
+    color: #F4E4D0;
+    font-size: 0.9rem;
+}
+
+    .nav-item .nav-auth-username:hover {
+        color: #C0ACA4;
+    }
+
+.nav-item .nav-auth-role {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 12px;
+    color: #C0ACA4;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
