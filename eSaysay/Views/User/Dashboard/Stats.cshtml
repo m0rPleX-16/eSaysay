@@ -1,0 +1,279 @@
+﻿@model eSaysay.Models.ViewModels.DashboardViewModel;
+
+
+<div class="user-dashboard">
+    @await Html.PartialAsync("_Sidebar")
+
+    <main class="main-content">
+        @await Html.PartialAsync("_NavbarAuthenticated")
+
+        <div class="dashboard-container">
+            <!-- Top Section: Analytics -->
+            <div class="analytics-section">
+                <h2>My Analytics</h2>
+                <div class="analytics-summary">
+                    <div class="metric">
+                        <h3>Average Score</h3>
+                        <p>@(Model.Analytics?.AverageScore != null ? $"{Model.Analytics.AverageScore}%" : "N/A")</p>
+                    </div>
+                    <div class="metric">
+                        <h3>Total Time Spent</h3>
+                        <p>@TimeSpan.FromMinutes(Model.Analytics?.TimeSpent ?? 0).ToString(@"hh\:mm\:ss")</p>
+                    </div>
+                    <div class="metric">
+                        <h3>Lessons Completed</h3>
+                        <p>@(Model.Analytics?.LessonCompleted ?? 0)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Section: Progress and Recommendations -->
+            <div class="middle-section">
+                <!-- UserProgress -->
+                <div class="user-progress-section">
+                    <h2>My Progress</h2>
+                    <table class="progress-table">
+                        <thead>
+                            <tr>
+                                <th>Lesson</th>
+                                <th>Status</th>
+                                <th>Score</th>
+                                <th>Time Spent</th>
+                                <th>Last Accessed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.UserProgress != null && Model.UserProgress.Count > 0)
+                            {
+                                foreach (var progress in Model.UserProgress)
+                                {
+                                    <tr>
+                                        <td>@(progress.Lesson?.Title ?? "N/A")</td>
+                                        <td>
+                                            <span class="status @(progress.CompletionStatus?.ToLower() ?? "not-started")">
+                                                @(progress.CompletionStatus ?? "Not Started")
+                                            </span>
+                                        </td>
+                                        <td>@(progress.Score != null ? $"{progress.Score}%" : "N/A")</td>
+                                        <td>@TimeSpan.FromSeconds(progress.TimeSpent).ToString(@"hh\:mm\:ss")</td>
+                                        <td>@(progress.LastAccessedDate != DateTime.MinValue ? progress.LastAccessedDate.ToString("MM/dd/yyyy") : "N/A")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5">No progress data available.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- AdaptiveLearning -->
+                <div class="adaptive-learning-section">
+                    <h2>Adaptive Learning</h2>
+                    <div class="adaptive-summary">
+                        <div class="metric">
+                            <h3>Current Level</h3>
+                            <p>@(Model.AdaptiveLearning?.CurrentLevel != null ? Model.AdaptiveLearning.CurrentLevel.ToString() : "N/A")</p>
+                        </div>
+                        <div class="metric">
+                            <h3>Recommended Lessons</h3>
+                            <ul>
+                                @if (Model.AdaptiveLearning?.RecommendedLessons != null && Model.AdaptiveLearning.RecommendedLessons.Any())
+                                {
+                                    foreach (var lessonId in Model.AdaptiveLearning.RecommendedLessons)
+                                    {
+                                        <li>Lesson @lessonId</li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>No recommended lessons available.</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section: UserBadge -->
+            <div class="user-badges-section">
+                <h2>My Badges</h2>
+                <div class="badges-grid">
+                    @if (Model.UserBadges != null && Model.UserBadges.Any())
+                    {
+                        foreach (var badge in Model.UserBadges)
+                        {
+                            <div class="badge-card">
+                                <h3>@(badge.Badge?.BadgeName ?? "Unnamed Badge")</h3>
+                                <p>Earned on: @(badge.DateEarned != DateTime.MinValue ? badge.DateEarned.ToString("MM/dd/yyyy") : "N/A")</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No badges earned yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Dashboard Container */
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Analytics Section */
+    .analytics-section {
+        margin-bottom: 30px;
+    }
+
+    .analytics-summary {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+        .analytics-summary .metric {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+        }
+
+        .analytics-summary h3 {
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        .analytics-summary p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+    /* Middle Section: Progress and Recommendations */
+    .middle-section {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .user-progress-section {
+        flex: 2;
+    }
+
+    .adaptive-learning-section {
+        flex: 1;
+    }
+
+    /* UserProgress Table */
+    .progress-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .progress-table th, .progress-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .progress-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+        .status.completed {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .status.in-progress {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .status.not-started {
+            background-color: #f44336;
+            color: white;
+        }
+
+    /* Adaptive Learning Section */
+    .adaptive-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+        .adaptive-summary .metric {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .adaptive-summary ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .adaptive-summary li {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+    /* UserBadge Section */
+    .user-badges-section {
+        margin-bottom: 30px;
+    }
+
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .badge-card {
+        text-align: center;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-image {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 10px;
+    }
+
+    .badge-card h3 {
+        margin-bottom: 5px;
+        color: #4CAF50;
+    }
+
+    .badge-card p {
+        font-size: 14px;
+        color: #666;
+    }
+</style>

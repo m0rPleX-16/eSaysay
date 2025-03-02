@@ -257,18 +257,20 @@ namespace eSaysay.Controllers
             {
                 try
                 {
-                    JsonDocument.Parse(answerChoices);
-                    return answerChoices;
+                    // If the input is already valid JSON, parse it and convert to comma-separated string
+                    var jsonArray = JsonDocument.Parse(answerChoices).RootElement;
+                    var values = jsonArray.EnumerateArray().Select(e => e.GetString()).ToList();
+                    return string.Join(",", values);
                 }
                 catch (JsonException)
                 {
+                    // If the input is not JSON, assume it's a comma-separated string
                     var values = answerChoices.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    return JsonSerializer.Serialize(values);
+                    return string.Join(",", values);
                 }
             }
             return null;
         }
-
         // Helper method to translate content to Korean
         private async Task<string> TranslateToKorean(string text)
         {
@@ -471,52 +473,6 @@ namespace eSaysay.Controllers
             }
 
             return BadRequest("Failed to archive user.");
-        }
-
-        [HttpPost]
-        public IActionResult SaveUserResponse([FromBody] UserResponse userResponse)
-        {
-            if (userResponse == null || string.IsNullOrEmpty(userResponse.UserID))
-            {
-                return BadRequest(new { message = "Invalid response data." });
-            }
-
-            userResponse.AttemptDate = DateTime.UtcNow;
-
-            _context.UserResponse.Add(userResponse);
-            _context.SaveChanges();
-
-            return Ok(new { message = "Response saved!", isCorrect = userResponse.IsCorrect });
-        }
-
-        [HttpPost]
-        public IActionResult UpdateUserProgress(string userID, int lessonID, bool isCorrect)
-        {
-            var progress = _context.UserProgress
-                .FirstOrDefault(p => p.UserID == userID && p.LessonID == lessonID);
-
-            if (progress == null)
-            {
-                progress = new UserProgress
-                {
-                    UserID = userID,
-                    LessonID = lessonID,
-                    CompletionStatus = isCorrect ? "Completed" : "In Progress",
-                    Score = isCorrect ? 100 : 0,
-                    TimeSpent = 0, 
-                    LastAccessedDate = DateTime.UtcNow
-                };
-                _context.UserProgress.Add(progress);
-            }
-            else
-            {
-                progress.CompletionStatus = "Completed";
-                progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2;
-                progress.LastAccessedDate = DateTime.UtcNow;
-            }
-
-            _context.SaveChanges();
-            return Ok(new { message = "Progress updated!" });
         }
 
         public IActionResult Settings()

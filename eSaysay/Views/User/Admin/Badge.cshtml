@@ -7,125 +7,132 @@
     ViewData["Title"] = "Manage Badges";
 }
 
-<h2>Manage Badges</h2>
+<main class="admin-exercise">
+    @await Html.PartialAsync("_AdminSidebar")
+    <div class="admin-exercise-header">
+        <h2>Manage Badges</h2>
+    </div>
 
-<!-- Button to Open Add Badge Modal -->
-<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addBadgeModal">
-    Add Badge
-</button>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Badge Name</th>
-            <th>Description</th>
-            <th>Criteria</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="exercise-content">
+        <!-- Button to Open Add Badge Modal -->
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addBadgeModal">
+            Add Badge
+        </button>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Badge Name</th>
+                    <th>Description</th>
+                    <th>Criteria</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var badge in Model)
+                {
+                    <tr>
+                        <td>@badge.BadgeName</td>
+                        <td>@badge.Description</td>
+                        <td>@badge.Criteria</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editBadgeModal-@badge.BadgeID">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBadgeModal-@badge.BadgeID">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Edit Badge Modal -->
         @foreach (var badge in Model)
         {
-            <tr>
-                <td>@badge.BadgeName</td>
-                <td>@badge.Description</td>
-                <td>@badge.Criteria</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editBadgeModal-@badge.BadgeID">
-                        Edit
-                    </button>
-                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBadgeModal-@badge.BadgeID">
-                        Delete
-                    </button>
-                </td>
-            </tr>
+            <div class="modal fade" id="editBadgeModal-@badge.BadgeID" tabindex="-1" aria-labelledby="editBadgeModalLabel-@badge.BadgeID" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Badge</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="/Admin/EditBadge">
+                                <input type="hidden" name="BadgeID" value="@badge.BadgeID">
+                                <div class="mb-3">
+                                    <label class="form-label">Badge Name</label>
+                                    <input type="text" class="form-control" name="BadgeName" value="@badge.BadgeName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-control" name="Description" value="@badge.Description" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Criteria</label>
+                                    <input type="text" class="form-control" name="Criteria" value="@badge.Criteria" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
 
-<!-- Add Badge Modal -->
-<div class="modal fade" id="addBadgeModal" tabindex="-1" aria-labelledby="addBadgeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Badge</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="/Admin/AddBadge">
-                    <div class="mb-3">
-                        <label class="form-label">Badge Name</label>
-                        <input type="text" class="form-control" name="BadgeName" required>
+        <!-- Delete Badge Modal -->
+        @foreach (var badge in Model)
+        {
+            <div class="modal fade" id="deleteBadgeModal-@badge.BadgeID" tabindex="-1" aria-labelledby="deleteBadgeModalLabel-@badge.BadgeID" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Badge</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the badge "@badge.BadgeName"?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post" action="/Admin/ArchiveBadge">
+                                <input type="hidden" name="BadgeID" value="@badge.BadgeID">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <input type="text" class="form-control" name="Description" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Criteria</label>
-                        <input type="text" class="form-control" name="Criteria" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Badge Modal -->
-@foreach (var badge in Model)
-{
-    <div class="modal fade" id="editBadgeModal-@badge.BadgeID" tabindex="-1" aria-labelledby="editBadgeModalLabel-@badge.BadgeID" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Badge</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <form method="post" action="/Admin/EditBadge">
-                        <input type="hidden" name="BadgeID" value="@badge.BadgeID">
-                        <div class="mb-3">
-                            <label class="form-label">Badge Name</label>
-                            <input type="text" class="form-control" name="BadgeName" value="@badge.BadgeName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <input type="text" class="form-control" name="Description" value="@badge.Description" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Criteria</label>
-                            <input type="text" class="form-control" name="Criteria" value="@badge.Criteria" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </form>
+            </div>
+        }
+        <!-- Add Badge Modal -->
+        <div class="modal fade" id="addBadgeModal" tabindex="-1" aria-labelledby="addBadgeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Badge</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/Admin/AddBadge">
+                            <div class="mb-3">
+                                <label class="form-label">Badge Name</label>
+                                <input type="text" class="form-control" name="BadgeName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" class="form-control" name="Description" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Criteria</label>
+                                <input type="text" class="form-control" name="Criteria" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-}
-
-<!-- Delete Badge Modal -->
-@foreach (var badge in Model)
-{
-    <div class="modal fade" id="deleteBadgeModal-@badge.BadgeID" tabindex="-1" aria-labelledby="deleteBadgeModalLabel-@badge.BadgeID" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete Badge</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the badge "@badge.BadgeName"?</p>
-                </div>
-                <div class="modal-footer">
-                    <form method="post" action="/Admin/ArchiveBadge">
-                        <input type="hidden" name="BadgeID" value="@badge.BadgeID">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+</main>
