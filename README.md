@@ -6,7 +6,6 @@
 
 ## 🚀 Features
 
-- **🌍 Language Selection** – Choose from a wide range of available languages.
 - **🎯 Personalized Learning Path** – Adaptive learning dynamically adjusts lessons based on user progress.
 - **📚 Interactive Lessons** – Engaging activities, including vocabulary building, grammar exercises, listening comprehension, and speaking challenges.
 - **📊 Progress Tracking** – Detailed analytics to monitor learning improvements and performance insights.
@@ -18,7 +17,7 @@
 
 - Provide a user-friendly and engaging platform for language learners.
 - Implement **adaptive learning algorithms** to tailor lessons based on user progress.
-- Enhance **listening, speaking, reading, and writing skills** through interactive exercises.
+- Enhance **listening, speaking,and reading skills** through interactive exercises.
 - Track user progress with **detailed analytics and performance insights**.
 - Ensure **data privacy, authentication, and optimized performance** for a secure experience.
 
@@ -36,7 +35,7 @@
 ### **Algorithms & APIs**
 - **Adaptive Learning Algorithm** – Dynamically adjusts lessons based on user proficiency.
 - **Spaced Repetition Algorithm (SuperMemo Formula)** – Reinforces knowledge retention.
-- **LibreTranslate API** – Provides multilingual translation services.
+- **MyMemory API** – Provides multilingual translation services.
 - **ResponsiveVoice.js API** – Enables text-to-speech functionalities.
 - **Web Speech API** – Implements speech recognition for pronunciation assessments.
 
@@ -59,16 +58,6 @@
 ```sh
 git clone https://github.com/yourusername/eSaysay.git
 cd eSaysay
-```
-
-### **2️⃣ Install Dependencies**
-```sh
-npm install  # For frontend dependencies
-```
-
-### **3️⃣ Run the Development Server**
-```sh
-npm start  # Starts the React.js frontend
 ```
 
 ### **4️⃣ Backend Setup (ASP.NET Core & SQL Server)**
