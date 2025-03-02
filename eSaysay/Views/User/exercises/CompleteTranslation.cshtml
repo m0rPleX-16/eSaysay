@@ -8,6 +8,7 @@
 
 <div class="container complete-exercise">
     <div class="header-complete">
+      
         <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-complete">
             <span class="material-symbols-rounded">
                 close
@@ -17,50 +18,68 @@
     </div>
 
     <div class="title title-question">Complete the translation</div>
-    <center><div class="container complete-content"><h6>@Model.ContentTranslate</h6></div></center>
+    <center>
+        <div class="container complete-content"><h6>@Model.ContentTranslate</h6></div>
+    </center>
+</div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>🎉 Success!</h2>
-            <p>Your response has been saved successfully.</p>
-            <button id="goToDashboard" class="btn btn-primary">Go to Dashboard</button>
-        </div>
+<!-- Success Modal -->
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>🎉 Success!</h2>
+        <p>Your response has been saved successfully.</p>
+        <button id="goToDashboard" class="btn btn-primary">Go to Dashboard</button>
+    </div>
+</div>
+
+<!-- Form for submitting the answer -->
+<form id="answer-form">
+    <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
+    <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
+    <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
+    <input type="hidden" name="UserAnswer" id="user-answer" value="" />
+
+    <!-- Dynamic Answer Grid -->
+    <div class="container answer-grid" id="answer-grid">
+        @if (!string.IsNullOrEmpty(Model.AnswerChoices))
+        {
+            var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
+            foreach (var choice in choices)
+            {
+                <button type="button" onclick="selectAnswer('@choice')">@choice</button>
+            }
+        }
+        else
+        {
+            <p>No answer choices available.</p>
+        }
     </div>
 
-    <!-- Form for submitting the answer -->
-    <form id="answer-form">
-        <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
-        <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
-        <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
-        <input type="hidden" name="UserAnswer" id="user-answer" value="" />
-
-        <!-- Dynamic Answer Grid -->
-        <div class="container answer-grid" id="answer-grid">
-            @if (!string.IsNullOrEmpty(Model.AnswerChoices))
-            {
-                var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
-                foreach (var choice in choices)
-                {
-                    <button type="button" onclick="selectAnswer('@choice')">@choice</button>
-                }
-            }
-            else
-            {
-                <p>No answer choices available.</p>
-            }
-        </div>
-
-        <div class="footer">
-            <button type="button" class="skip" onclick="skip()">Skip</button>
-            <button type="button" class="check" onclick="checkAnswer()">Check</button>
-        </div>
-    </form>
+    <div class="footer">
+        <button type="button" class="skip" onclick="skip()">Skip</button>
+        <button type="button" class="check" onclick="checkAnswer()">Check</button>
+    </div>
+</form>
 </div>
 
 <!-- Modal Styles -->
 <style>
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .progress-bar-inner {
+        width: 0%;
+        height: 100%;
+        background-color: #4caf50;
+        transition: width 1s linear;
+    }
     /* Modal Styles */
     .modal {
         display: none; /* Hidden by default */
@@ -121,6 +140,21 @@
 </style>
 
 <script>
+    let startTime; // Variable to store start time
+
+    document.addEventListener("DOMContentLoaded", function () {
+        startTime = new Date().getTime(); // Capture start time in milliseconds
+
+        let allottedTime = 10; // Set allotted time
+        let progressBar = document.querySelector(".progress-bar-inner");
+
+        progressBar.style.transition = `width ${allottedTime}s linear`;
+        progressBar.style.width = "100%"; // Progress bar starts filling
+
+        setTimeout(() => {
+            progressBar.style.width = "0%"; // Reset when time is up
+        }, allottedTime * 1000);
+    });
     // Function to select an answer
     function selectAnswer(answer) {
         document.getElementById("user-answer").value = answer;
@@ -149,7 +183,11 @@
             return;
         }
 
+        let endTime = new Date().getTime(); // Capture end time
+        let timeSpent = Math.floor((endTime - startTime) / 1000); // Convert to seconds
+
         const formData = new FormData(document.getElementById("answer-form"));
+        formData.append("TimeSpent", timeSpent); // Append time spent
 
         fetch('/Dashboard/SaveUserResponse', {
             method: 'POST',
@@ -158,9 +196,9 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessModal(); // Show the success modal
+                showSuccessModal(); // Show success modal
             } else {
-                alert(data.message); // Show an error message
+                alert(data.message);
             }
         })
         .catch(error => {
@@ -192,4 +230,16 @@
     goToDashboard.onclick = function () {
         window.location.href = "/Dashboard/Index";
     };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let allottedTime = 10; // Change this to the actual allotted time in seconds
+        let progressBar = document.querySelector(".progress-bar-inner");
+
+        progressBar.style.transition = `width ${allottedTime}s linear`;
+        progressBar.style.width = "100%"; // Fill up over allotted time
+
+        setTimeout(() => {
+            progressBar.style.width = "0%"; // Reset when time is up
+        }, allottedTime * 1000);
+    });
 </script>

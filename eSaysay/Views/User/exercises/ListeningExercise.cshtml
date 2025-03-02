@@ -42,6 +42,11 @@
             }
         </div>
 
+        <!-- New Completion Feature -->
+        <div class="container completion-input">
+            <input type="text" id="completion-answer" placeholder="Type your answer here..." oninput="updateCompletionAnswer()">
+        </div>
+
         <div class="footer">
             <button type="button" class="skip" onclick="skip()">Skip</button>
             <button type="button" class="check" onclick="checkAnswer()">Check</button>
@@ -61,104 +66,46 @@
 
 <!-- Modal Styles -->
 <style>
-    /* Modal Styles */
-    .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1000; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
-    }
-
-    .modal-content {
-        background-color: white;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        border-radius: 10px;
-        width: 80%; /* Responsive width */
-        max-width: 400px; /* Max width */
+    .completion-input {
+        margin-top: 15px;
         text-align: center;
     }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        .completion-input input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-
-    .btn-primary {
-        background-color: #4CAF50; /* Green */
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-        .btn-primary:hover {
-            background-color: #45a049; /* Darker green */
-        }
-
-    /* Selected Answer Style */
-    .selected {
-        background-color: #4CAF50; /* Green background */
-        color: white; /* White text */
-        border: 2px solid #45a049;
-    }
 </style>
 
 <script src="https://code.responsivevoice.org/responsivevoice.js?key=OEKkx4ur"></script>
 <script>
-    // Function to play audio using ResponsiveVoice
     function playAudio() {
-        // Get the text from the content element
         const text = document.getElementById("content-text").innerText;
-
-        // Use ResponsiveVoice to read the text
         responsiveVoice.speak(text, "Korean Female", {
             onstart: () => console.log("Audio started"),
             onend: () => console.log("Audio ended")
         });
     }
 
-    // Function to select an answer
     function selectAnswer(answer) {
         document.getElementById("user-answer").value = answer;
-
-        // Check if the selected answer is correct
         const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
         const isCorrect = answer.toLowerCase() === correctAnswer;
-
-        // Set the IsCorrect value in the hidden input
         document.getElementById("is-correct").value = isCorrect;
-
-        // Highlight the selected button
-        const buttons = document.querySelectorAll('#answer-grid button');
-        buttons.forEach(button => {
-            button.classList.remove('selected');
-        });
+        document.querySelectorAll('#answer-grid button').forEach(button => button.classList.remove('selected'));
         event.target.classList.add('selected');
     }
 
-    // Function to check the answer
+    function updateCompletionAnswer() {
+        document.getElementById("user-answer").value = document.getElementById("completion-answer").value;
+    }
+
     function checkAnswer() {
         const selectedAnswer = document.getElementById("user-answer").value;
-
         if (!selectedAnswer) {
-            alert('Please select an answer first!');
+            alert('Please select or type an answer first!');
             return;
         }
 
@@ -171,9 +118,9 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessModal(); // Show the success modal
+                showSuccessModal();
             } else {
-                alert(data.message); // Show an error message
+                alert(data.message);
             }
         })
         .catch(error => {
@@ -182,7 +129,6 @@
         });
     }
 
-    // Modal Functions
     const successModal = document.getElementById("successModal");
     const closeModal = document.getElementsByClassName("close")[0];
     const goToDashboard = document.getElementById("goToDashboard");

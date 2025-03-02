@@ -21,6 +21,7 @@
         <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
         <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
         <input type="hidden" name="UserAnswer" id="user-answer" value="" />
+        <input type="hidden" name="TimeSpent" id="time-spent" value="0" />
 
         <!-- Dynamic Answer Grid -->
         <div class="container answer-grid" id="answer-grid">
@@ -29,7 +30,7 @@
                 var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
                 for (int i = 0; i < choices.Count; i++)
                 {
-                    <button type="button" onclick="selectAnswer('@choices[i]')">@choices[i]</button>
+                    <button type="button" class="answer-btn" onclick="selectAnswer(this, '@choices[i]')">@choices[i]</button>
                 }
             }
             else
@@ -87,8 +88,7 @@
         font-weight: bold;
     }
 
-        .close:hover,
-        .close:focus {
+        .close:hover, .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
@@ -106,29 +106,46 @@
         .btn-primary:hover {
             background-color: #45a049;
         }
+
+    /* Highlight selected answer */
+    .answer-btn {
+        padding: 10px;
+        margin: 5px;
+        border: 2px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #f4f4f4;
+    }
+
+        .answer-btn.selected {
+            border-color: #4CAF50;
+            background-color: #eaffea;
+        }
 </style>
 
 <script>
+    let startTime;
+
+    // Start tracking time when the page loads
+    window.onload = function () {
+        startTime = Date.now();
+    };
+
     // Function to select an answer
-    function selectAnswer(answer) {
+    function selectAnswer(button, answer) {
         document.getElementById("user-answer").value = answer;
 
         // Check if the selected answer is correct
         const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
         const isCorrect = answer.toLowerCase() === correctAnswer;
-
-        // Set the IsCorrect value in the hidden input
         document.getElementById("is-correct").value = isCorrect;
 
-        // Highlight the selected button
-        const buttons = document.querySelectorAll('#answer-grid button');
-        buttons.forEach(button => {
-            button.classList.remove('selected');
-        });
-        event.target.classList.add('selected');
+        // Remove 'selected' class from all buttons and highlight the chosen one
+        document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
     }
 
-    // Function to check the answer
+    // Function to check the answer and submit
     function checkAnswer() {
         const selectedAnswer = document.getElementById("user-answer").value;
 
@@ -136,6 +153,11 @@
             alert('Please select an answer first!');
             return;
         }
+
+        // Calculate time spent
+        const endTime = Date.now();
+        const timeSpent = Math.floor((endTime - startTime) / 1000); // Convert to seconds
+        document.getElementById("time-spent").value = timeSpent;
 
         const formData = new FormData(document.getElementById("answer-form"));
 
@@ -146,9 +168,9 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessModal(); // Show the success modal
+                showSuccessModal();
             } else {
-                alert(data.message); // Show an error message
+                alert(data.message);
             }
         })
         .catch(error => {
