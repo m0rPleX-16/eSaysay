@@ -8,16 +8,38 @@
 
 <div class="container listening-exercise">
     <div class="header-listening">
-        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-listening">✖</a>
+        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@Model.LessonID" class="btn close-button-listening">
+            <span class="material-symbols-rounded">
+                close
+            </span>
+        </a>
         <div class="progress-bar"><div class="progress-bar-inner"></div></div>
     </div>
 
+    
     <div class="title title-question">What does this sound make?</div>
-    <center><div class="container listening-content"><h6 id="content-text">@Model.Content</h6></div></center>
 
-    <div class="audio-container">
-        <button class="button" onclick="playAudio()">🔊</button>
+    <div class="list-question row">
+        <div class="col">
+            <div class="justify-content-end audio-container">
+                <button class="button" onclick="playAudio()">
+                    <span class="material-symbols-rounded">
+                        volume_up
+                    </span>
+                </button>
+            </div>
+
+        </div>
+     <div class="col">
+            <div class="justify-content-start container listening-content">
+                <h6 id="content-text">@Model.Content</h6>
+            </div>
+     </div>
+        
+        
+       
     </div>
+   
 
     <!-- Form for submitting the answer -->
     <form id="answer-form">
@@ -33,7 +55,7 @@
                 var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
                 for (int i = 0; i < choices.Count; i++)
                 {
-                    <button type="button" onclick="selectAnswer('@choices[i]')">@choices[i]</button>
+                    <button type="button" class="list-ans" onclick="selectAnswer('@choices[i]')">@choices[i]</button>
                 }
             }
             else
@@ -42,12 +64,9 @@
             }
         </div>
 
-        <!-- New Completion Feature -->
-        <div class="container completion-input">
-            <input type="text" id="completion-answer" placeholder="Type your answer here..." oninput="updateCompletionAnswer()">
-        </div>
-
-        <div class="footer">
+       
+        <hr class="list-hr" />
+        <div class="footer list-footer">
             <button type="button" class="skip" onclick="skip()">Skip</button>
             <button type="button" class="check" onclick="checkAnswer()">Check</button>
         </div>

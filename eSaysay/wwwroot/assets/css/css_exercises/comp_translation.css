@@ -9,8 +9,8 @@
     background-color: #FEF1E1;
 }
 
-.container.complete-exercise {
-    margin-top: 30px;
+.complete-exercise {
+    padding: 40px
 }
 
 /* ------------ header w close button --------------------- */
@@ -35,6 +35,7 @@
         color: #274052;
         background: none;
         align-items: center;
+        margin-right: 10px;
         justify-content: center;
         transition: 0.4s ease;
     }
@@ -47,94 +48,206 @@
 
 /* ------------------------------ header w PROGRESS BAR ------------------------------------ */
 
-.progress-bar {
-    flex-grow: 1;
+.complete-exercise .progress-bar {
+    width: 100%;
     height: 20px;
-    background-color: #A75F37;
+    background-color: #D7D7D7;
     border-radius: 36px;
-    margin: 0 10px;
     overflow: hidden;
+    margin: 10px 0;
 }
 
-.progress-bar-inner {
+.complete-exercise .progress-bar-inner {
+    width: 0%;
     height: 100%;
-    width: 40%;
     background-color: #DFB757;
-    border-radius: 10px;
+    transition: width 1s linear;
 }
-
 /* ------------------------- question or title -------------------------- */
 
-.title-question {
+.complete-exercise .title-question {
     padding: 20px;
     font-size: 24px;
     font-weight: bold;
+}
+
+.container-complete-content{
+    padding: 12px;
+    margin-bottom: 24px;
 }
 
 .container .complete-content {
     display: inline-block;
     align-items: center;
     justify-content: center;
-    background-color: white;
-    padding: 16px;
-    border-radius: 36px;
+    background-color: #FFFAF3;
+    box-shadow: 0px 8px 100px rgba(0, 0, 0, 0.1);
+    padding: 26px;
+    border-radius: 26px;
     width: auto;
     height: auto;
     text-align: center;
 }
 
-.container .complete-content h6 {
-    text-align: center;
-    margin: 0;
-}
+    .container .complete-content h6 {
+        color: #274052;
+        text-align: center;
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.6rem;
+    }
 
 /* ------------------------- answers -------------------------- */
 
 .answer-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 16px;
     padding: 20px;
 }
 
-    .answer-grid button {
+    .answer-grid .comp-ans {
+        display: inline-block;
+        width: auto;
+        height: auto;
         padding: 15px;
         font-size: 18px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: white;
+        font-weight:500;
+        border-radius: 16px;
+        background-color: transparent;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 4px 6px 1px rgba(0, 0, 0, 0.1);
+        color: #274052;
         cursor: pointer;
     }
 
-        .answer-grid button:hover {
-            background-color: #0056b3;
-        }
+    .answer-grid .comp-ans:hover {
+        background-color: #DFB757;
+        font-weight: 500;
+    }
+.comp-ans.selected {
+    background-color: #DFB757;
+    font-weight: 500;
+}
+
+
+
+
+/* ------------------------- MODAL -------------------------- */
+
+/* Modal Styles */
+.comp-success-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+    .comp-success-modal .modal-content {
+        background-color: white;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        border-radius: 10px;
+        width: 80%; /* Responsive width */
+        max-width: 400px; /* Max width */
+        text-align: center;
+    }
+
+
+    /*  ---- success modal ----- */
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+.btn-success-comp {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .btn-success-comp:hover {
+        background-color: #45a049; /* Darker green */
+    }
+
+/* Selected Answer Style */
+.selected {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: 2px solid #45a049;
+}
+
+
+
+.comp-hr {
+    border: 3px solid #C0ACA4;
+    border-radius: 16px;
+    opacity: 30%;
+    margin-top: 60px;
+}
 
 /*------------FOOOTER OF LISTENING EXERCISE -------------------------------*/
 
-.footer {
+.comp-footer {
     display: flex;
-    justify-content: flex-end;
-    padding: 20px;
-    background: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px; 
+    margin: 20px auto 0;
+    gap: 20px;
 }
 
-    .footer button {
-        margin-left: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
+    .comp-footer .skip,
+    .comp-footer .check {
+        flex: 1; /* Makes them equal width */
+        padding: 6px 10px;
+        font-size: 18px;
+        border-radius: 16px;
         cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
     }
 
-    .footer .skip {
-        background-color: #6c757d;
-        color: white;
+    .comp-footer .skip {
+        background-color: transparent;
+        border: 4px solid #E4DDD5;
+        color: #274052;
+        font-weight: 500;
     }
 
-    .footer .check {
-        background-color: #28a745;
-        color: white;
+    .comp-footer .check {
+        background-color: #DFB757;
+        border: 4px solid #D5AB46;
+        color: #274052;
+        font-weight: 500;
+    }
+
+    .comp-footer .skip:hover {
+        background-color: #E4DDD5;
+    }
+
+    .comp-footer .check:hover {
+        background-color: #FFE4A3;
+        border: 4px solid #FFE4A3;
     }

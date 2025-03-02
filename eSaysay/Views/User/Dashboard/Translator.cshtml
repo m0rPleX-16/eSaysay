@@ -2,40 +2,62 @@
     ViewData["Title"] = "Translator";
 }
 
-<div class="user-dashboard">
+<div class="user-translator">
     @await Html.PartialAsync("_Sidebar")
 
-    <main class="main-content">
+    <main class="main-content user-translator">
         @await Html.PartialAsync("_NavbarAuthenticated")
 
+        <div class="translator-mssg mt-3" style="color: #274052; ">
+            <h2>  Your <span class="span-dashboard">translator</span> </h2>
+        </div>
         <div class="translator-container">
-            <div class="translator-wrapper">
-                <div class="translator-text-input">
-                    <textarea class="from-text" placeholder="English text here" aria-label="Input text to translate"></textarea>
-                    <textarea class="to-text" placeholder="Korean text here" readonly aria-label="Translated text"></textarea>
+
+                <div class="translator-wrapper">
+
+                    <div class="translator-text-input">
+                        <textarea class="from-text" placeholder="Enter text here (English)" aria-label="Input text to translate"></textarea>
+                        <textarea class="to-text" placeholder="Korean text here" readonly aria-label="Translated text"></textarea>
+                    </div>
+
+                    <button class="translator-swap" aria-label="Swap Languages">
+                    <span class="material-symbols-rounded">
+                        swap_horiz
+                    </span>
+                    </button>
+
+                    <div class="translator-controls">
+                        <button id="speak-from" class="icon-btn" aria-label="Listen to input text">
+                        <span class="material-symbols-rounded">
+                            volume_up
+                        </span>
+                        </button>
+                        <button id="copy-from" class="icon-btn" aria-label="Copy input text">
+                        <span class="material-symbols-rounded">
+                            content_copy
+                        </span>
+                        </button>
+                        <button id="copy-to" class="icon-btn" aria-label="Copy translated text">
+                        <span class="material-symbols-rounded">
+                            content_copy
+                        </span>
+                        </button>
+                        <button id="speak-to" class="icon-btn" aria-label="Listen to translated text">
+                        <span class="material-symbols-rounded">
+                            volume_up
+                        </span>
+                        </button>
+                    </div>
+
+                
+
                 </div>
 
-                <button class="translator-swap" aria-label="Swap Languages">
-                    <i class="material-icons">swap_horiz</i>
-                </button>
-
-                <div class="translator-controls">
-                    <button id="speak-from" class="icon-btn" aria-label="Listen to input text">
-                        <i class="material-icons">volume_up</i>
-                    </button>
-                    <button id="copy-from" class="icon-btn" aria-label="Copy input text">
-                        <i class="material-icons">content_copy</i>
-                    </button>
-                    <button id="copy-to" class="icon-btn" aria-label="Copy translated text">
-                        <i class="material-icons">content_copy</i>
-                    </button>
-                    <button id="speak-to" class="icon-btn" aria-label="Listen to translated text">
-                        <i class="material-icons">volume_up</i>
-                    </button>
+                <div class="btn-translator-wrapper">
+                <button id="translator-button" class="btn-primary" aria-label="Translate text">Translate</button>
                 </div>
-            </div>
-
-            <button id="translator-button" class="btn-primary" aria-label="Translate text">Translate</button>
+            
+            
         </div>
     </main>
 </div>

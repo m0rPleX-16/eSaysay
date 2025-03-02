@@ -1,0 +1,182 @@
+﻿
+/* Dashboard Container */
+.stats-dashboard-container {
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FFFAF3;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-statistics h2 {
+    color: #274052;
+}
+
+.stats-mssg h2 {
+    color: #274052;
+}
+
+.stats-mssg .span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+/* Analytics Section */
+.analytics-section {
+    margin-bottom: 30px;
+}
+
+.analytics-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+    .analytics-summary .metric {
+        text-align: center;
+        padding: 30px;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 30%;
+    }
+
+    .analytics-summary h3 {
+        color: #274052;
+        
+        font-size: 2rem;
+        font-weight: 800;
+        padding: 10px;
+    }
+
+    .analytics-summary p {
+        text-align: left;
+        margin-bottom: 10px;
+        color: #879CAB;
+        font-weight:500;
+    }
+
+/* Middle Section: Progress and Recommendations */
+.middle-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.user-progress-section {
+    flex: 2;
+}
+
+.adaptive-learning-section {
+    flex: 1;
+}
+
+/* UserProgress Table */
+.progress-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top:20px;
+}
+
+    .progress-table thead tr th:first-child {
+        border-top-left-radius: 12px;
+    }
+    .progress-table thead tr th:last-child {
+        border-top-right-radius: 12px;
+    }
+    .progress-table th, .progress-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .progress-table th {
+        background-color: #DFB757;
+        color: #274052;
+        
+    }
+
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+    .status.completed {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .status.in-progress {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .status.not-started {
+        background-color: #f44336;
+        color: white;
+    }
+
+/* Adaptive Learning Section */
+.adaptive-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+    .adaptive-summary .metric {
+        text-align: center;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .adaptive-summary ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .adaptive-summary li {
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+/* UserBadge Section */
+.user-badges-section {
+    margin-bottom: 30px;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.badge-card {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.badge-image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.badge-card h3 {
+    margin-bottom: 5px;
+    color: #4CAF50;
+}
+
+.badge-card p {
+    font-size: 14px;
+    color: #666;
+}
