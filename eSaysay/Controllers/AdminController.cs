@@ -45,12 +45,53 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Index.cshtml");
         }
 
-        // GET: Admin/Language
-        public IActionResult Language()
+        // GET: Admin/Language with pagination and search
+        public async Task<IActionResult> Language(string searchTerm, int page = 1, int pageSize = 5)
         {
-            var languages = _context.Language.ToList();
+            var query = _context.Language.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(l => l.LanguageName.Contains(searchTerm));
+            }
+
+            int totalItems = await query.CountAsync();
+            var languages = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)System.Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.SearchTerm = searchTerm;
+
             return View("~/Views/User/Admin/Language.cshtml", languages);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> FilterLanguages(string searchTerm, int page = 1, int pageSize = 5)
+        {
+            var query = _context.Language.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(l => l.LanguageName.Contains(searchTerm));
+            }
+
+            int totalItems = await query.CountAsync();
+            var languages = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)System.Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.SearchTerm = searchTerm;
+
+            return PartialView("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", languages);
+        }
+
+
 
         // POST: Admin/AddLanguage
         [HttpPost]
@@ -313,20 +354,56 @@ namespace eSaysay.Controllers
             return RedirectToAction("Exercises");
         }
 
-        public IActionResult Lessons()
+        public IActionResult Lessons(string searchQuery, int page = 1, int pageSize = 5)
         {
-            var lessons = _context.Lessons.Include(l => l.Language).ToList();
+            var lessonsQuery = _context.Lessons.Include(l => l.Language).AsQueryable();
             var languages = _context.Language.ToList();
 
-            _logger.LogInformation($"Languages count: {languages.Count}");
-
-            if (!languages.Any())
+            if (!string.IsNullOrEmpty(searchQuery))
             {
-                _logger.LogWarning("ViewBag.Languages is empty even though the database has data!");
+                lessonsQuery = lessonsQuery.Where(l => l.Title.Contains(searchQuery)
+                                                   || l.Language.LanguageName.Contains(searchQuery)
+                                                   || l.LessonType.Contains(searchQuery));
             }
 
+            int totalLessons = lessonsQuery.Count();
+            var lessons = lessonsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
             ViewBag.Languages = languages;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalLessons / (double)pageSize);
+            ViewBag.SearchQuery = searchQuery;
+
             return View("~/Views/User/Admin/Lessons.cshtml", lessons);
+        }
+        public IActionResult FilterLessons(string searchQuery, int page = 1, int pageSize = 5)
+        {
+            try
+            {
+                var lessonsQuery = _context.Lessons.Include(l => l.Language).AsQueryable();
+
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    lessonsQuery = lessonsQuery.Where(l =>
+                        l.Title.Contains(searchQuery) ||
+                        l.LessonType.Contains(searchQuery) ||
+                        l.DifficultyLevel.Contains(searchQuery) ||
+                        (l.Language != null && l.Language.LanguageName.Contains(searchQuery))
+                    );
+                }
+
+                int totalLessons = lessonsQuery.Count();
+                var lessons = lessonsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling(totalLessons / (double)pageSize);
+
+                return PartialView("~/Views/User/Admin/Partial/_LessonsTablePartial.cshtml", lessons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
         }
 
         // POST: Admin/CreateLesson
@@ -389,27 +466,73 @@ namespace eSaysay.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Logs()
+        public async Task<IActionResult> Logs(string searchQuery, int page = 1, int pageSize = 10)
         {
-            var logs = await _context.SecurityLog
+            var logsQuery = _context.SecurityLog
                 .Include(log => log.User)
                 .OrderByDescending(log => log.Timestamp)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                logsQuery = logsQuery.Where(log =>
+                    (log.User != null && log.User.Email.Contains(searchQuery)) ||
+                    log.Event.Contains(searchQuery));
+            }
+
+            var totalLogs = await logsQuery.CountAsync();
+            var logs = await logsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalLogs / (double)pageSize);
+            ViewBag.SearchQuery = searchQuery;
 
             return View("~/Views/User/Admin/Logs.cshtml", logs);
         }
+        public async Task<IActionResult> FilterLogs(string searchQuery, int page = 1, int pageSize = 10)
+        {
+            var logsQuery = _context.SecurityLog
+                .Include(log => log.User)
+                .OrderByDescending(log => log.Timestamp)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                logsQuery = logsQuery.Where(log =>
+                    (log.User != null && log.User.Email.Contains(searchQuery)) ||
+                    log.Event.Contains(searchQuery));
+            }
+
+            var totalLogs = await logsQuery.CountAsync();
+            var logs = await logsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalLogs / (double)pageSize);
+
+            return PartialView("~/Views/User/Admin/Partial/_LogsTablePartial.cshtml", logs);
+        }
+
+
 
         public IActionResult Progress()
         {
             return View("~/Views/User/Admin/Progress.cshtml");
         }
 
-        public async Task<IActionResult> Students()
+        public async Task<IActionResult> Students(string search, int page = 1, int pageSize = 10)
         {
-            var users = await _userManager.Users.ToListAsync();
+            // Fetch all users first
+            var allUsers = await _userManager.Users.ToListAsync();
 
+            // Filter users who are in the "Student" role
             var students = new List<IdentityUser>();
-            foreach (var user in users)
+            foreach (var user in allUsers)
             {
                 if (await _userManager.IsInRoleAsync(user, "Student"))
                 {
@@ -417,8 +540,53 @@ namespace eSaysay.Controllers
                 }
             }
 
+            // Apply search filter (case-insensitive)
+            if (!string.IsNullOrEmpty(search))
+            {
+                students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Pagination
+            int totalStudents = students.Count;
+            students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Search = search;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
             return View("~/Views/User/Admin/Students.cshtml", students);
         }
+        public async Task<IActionResult> FilterStudents(string search, int page = 1, int pageSize = 10)
+        {
+            var allUsers = await _userManager.Users.ToListAsync();
+            var students = new List<IdentityUser>();
+
+            foreach (var user in allUsers)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Student"))
+                {
+                    students.Add(user);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            int totalStudents = students.Count;
+            students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
+            Console.WriteLine($"Pagination Debug: Total Students = {totalStudents}, Total Pages = {ViewBag.TotalPages}, Current Page = {ViewBag.CurrentPage}");
+
+            return PartialView("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", students);
+        }
+
+
+
 
         [HttpPost]  
         public async Task<IActionResult> EditStudent(string Id, string Email)

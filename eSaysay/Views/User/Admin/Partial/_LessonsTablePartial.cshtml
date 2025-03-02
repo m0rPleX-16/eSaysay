@@ -1,0 +1,147 @@
+﻿@using eSaysay.Models.Entities;
+@model List<Lesson>
+
+<div id="lessons-content">
+    <table class="table table-lessons table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Lesson Type</th>
+                <th>Difficulty</th>
+                <th>Language</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lesson in Model)
+            {
+                <tr>
+                    <td>@lesson.Title</td>
+                    <td>@lesson.LessonType</td>
+                    <td>@lesson.DifficultyLevel</td>
+                    <td>@lesson.Language.LanguageName</td>
+                    <td>
+                        <button class="btn btn-lessons-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editLessonModal-@lesson.LessonID">
+                            <span class="material-symbols-rounded">edit</span>
+                        </button>
+                        <button class="btn btn-lessons-archive btn-sm" data-bs-toggle="modal" data-bs-target="#deleteLessonModal-@lesson.LessonID">
+                            <span class="material-symbols-rounded">archive</span>
+                        </button>
+                    </td>
+                </tr>
+                <!-- Edit Lesson Modal -->
+                <div class="modal fade" id="editLessonModal-@lesson.LessonID" tabindex="-1" aria-labelledby="editLessonModalLabel-@lesson.LessonID" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editLessonModalLabel-@lesson.LessonID">Edit Lesson</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="/Admin/EditLesson">
+                                    <input type="hidden" name="LessonID" value="@lesson.LessonID" />
+                                    <div class="mb-3">
+                                        <label for="title-@lesson.LessonID" class="form-label">Title</label>
+                                        <input type="text" class="form-control" id="title-@lesson.LessonID" name="Title" value="@lesson.Title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="languageID-@lesson.LessonID" class="form-label">Language</label>
+                                        <select class="form-control" id="languageID-@lesson.LessonID" name="LanguageID" required>
+                                            @if (ViewBag.Languages != null)
+                                            {
+                                                @foreach (var language in ViewBag.Languages)
+                                                {
+                                                    <option value="@language.LanguageID" selected="@(lesson.LanguageID == language.LanguageID ? "selected" : null)">
+                                                        @language.LanguageName
+                                                    </option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option disabled>No languages available</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lessonType-@lesson.LessonID" class="form-label">Lesson Type</label>
+                                        <select class="form-control" id="lessonType-@lesson.LessonID" name="LessonType" required>
+                                            <option value="Video" selected="@(lesson.LessonType == "Video")">Video</option>
+                                            <option value="Text" selected="@(lesson.LessonType == "Text")">Text</option>
+                                            <option value="Quiz" selected="@(lesson.LessonType == "Quiz")">Quiz</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="difficultyLevel-@lesson.LessonID" class="form-label">Difficulty Level</label>
+                                        <select class="form-control" id="difficultyLevel-@lesson.LessonID" name="DifficultyLevel" required>
+                                            <option value="Beginner" selected="@(lesson.DifficultyLevel == "Beginner")">Beginner</option>
+                                            <option value="Intermediate" selected="@(lesson.DifficultyLevel == "Intermediate")">Intermediate</option>
+                                            <option value="Advanced" selected="@(lesson.DifficultyLevel == "Advanced")">Advanced</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description-@lesson.LessonID" class="form-label">Description</label>
+                                        <textarea class="form-control" id="description-@lesson.LessonID" name="Description">@lesson.Description</textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive (Delete) Lesson Modal -->
+                <div class="modal fade" id="deleteLessonModal-@lesson.LessonID" tabindex="-1" aria-labelledby="deleteLessonModalLabel-@lesson.LessonID" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteLessonModalLabel-@lesson.LessonID">Archive Lesson</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to archive the lesson <strong>@lesson.Title</strong>?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <form method="post" action="/Admin/ArchiveLesson">
+                                    <input type="hidden" name="LessonID" value="@lesson.LessonID" />
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Archive</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+
+    </table>
+
+    <!-- Pagination Controls -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="lessons-pagination">
+            <ul class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+</div>

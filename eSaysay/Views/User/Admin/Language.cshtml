@@ -1,48 +1,33 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using eSaysay.Models.Entities;
-
 @model List<Language>
 
 @{
     ViewData["Title"] = "Manage Languages";
 }
+
 <main class="admin-languages">
     @await Html.PartialAsync("_AdminSidebar")
 
     <div class="admin-languages-header">
         <h2>Manage Languages</h2>
     </div>
- 
+    <!-- Search Bar -->
+    <div class="language-searchbar">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search Languages..." value="@ViewBag.SearchTerm">
+    </div>
+
     <div class="languages-content">
+
         <!-- Button to Open Add Language Modal -->
-        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addLanguageModal">
+        <button type="button" class="btn btn-language-add mb-3" data-bs-toggle="modal" data-bs-target="#addLanguageModal">
             Add Language
         </button>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Language Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var language in Model)
-                {
-                    <tr>
-                        <td>@language.LanguageName</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editLanguageModal-@language.LanguageID">
-                                Edit
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteLanguageModal-@language.LanguageID">
-                                Archive
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="table-language" id="languageTableContainer">
+            @await Html.PartialAsync("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", Model)
+        </div>
+
 
         <!-- Add Language Modal -->
         <div class="modal fade" id="addLanguageModal" tabindex="-1" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
@@ -64,56 +49,48 @@
                 </div>
             </div>
         </div>
-
-        <!-- Edit Language Modal -->
-        @foreach (var language in Model)
-        {
-            <div class="modal fade" id="editLanguageModal-@language.LanguageID" tabindex="-1" aria-labelledby="editLanguageModalLabel-@language.LanguageID" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editLanguageModalLabel-@language.LanguageID">Edit Language</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" action="/Admin/EditLanguage">
-                                <input type="hidden" name="LanguageID" value="@language.LanguageID">
-                                <div class="mb-3">
-                                    <label for="languageName-@language.LanguageID" class="form-label">Language Name</label>
-                                    <input type="text" class="form-control" id="languageName-@language.LanguageID" name="LanguageName" value="@language.LanguageName" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-
-        <!-- Delete Language Modal -->
-        @foreach (var language in Model)
-        {
-            <div class="modal fade" id="deleteLanguageModal-@language.LanguageID" tabindex="-1" aria-labelledby="deleteLanguageModalLabel-@language.LanguageID" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteLanguageModalLabel-@language.LanguageID">Delete Language</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete the language "@language.LanguageName"?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <form method="post" action="/Admin/DeleteLanguage">
-                                <input type="hidden" name="LanguageID" value="@language.LanguageID">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
-    
+
+
+
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                function loadLanguages(page = 1) {
+                    const searchTerm = $('#searchInput').val();
+                    $.ajax({
+                        url: '/Admin/FilterLanguages',
+                        type: 'GET',
+                        data: { searchTerm: searchTerm, page: page },
+                        success: function (response) {
+                            $('#languageTableContainer').html(response);
+                            $('.language-pagination').html($(response).find('.language-pagination').html());
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching filtered data:', error);
+                            console.error('Response Text:', xhr.responseText);
+                        }
+                    });
+                }
+
+                // Debounce function to prevent excessive AJAX calls
+                let timeoutId;
+                $('#searchInput').on('input', function () {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        loadLanguages();
+                    }, 300);
+                });
+
+                // Handle pagination clicks
+                $(document).on('click', '.pagination-link', function (e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    loadLanguages(page);
+                });
+            });
+        </script>
+    }
+
 </main>

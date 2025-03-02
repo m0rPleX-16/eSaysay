@@ -1,0 +1,110 @@
+﻿@using eSaysay.Models.Entities;
+@model List<Language>
+
+<div id="languageTableContainer">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-10">Language Name</th>
+                <th class="col-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var language in Model)
+            {
+                <tr>
+                    <td>@language.LanguageName</td>
+                    <td>
+                        <button class="btn btn-language-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editLanguageModal-@language.LanguageID">
+                            <span class="material-symbols-rounded">edit</span>
+                        </button>
+                        <button class="btn btn-language-archive btn-sm" data-bs-toggle="modal" data-bs-target="#deleteLanguageModal-@language.LanguageID">
+                            <span class="material-symbols-rounded">archive</span>
+                        </button>
+                    </td>
+                </tr>
+
+            }
+
+        </tbody>
+    </table>
+
+    <!-- Edit Language Modal -->
+    @foreach (var language in Model)
+    {
+        <div class="modal fade" id="editLanguageModal-@language.LanguageID" tabindex="-1" aria-labelledby="editLanguageModalLabel-@language.LanguageID" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editLanguageModalLabel-@language.LanguageID">Edit Language</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/Admin/EditLanguage">
+                            <input type="hidden" name="LanguageID" value="@language.LanguageID">
+                            <div class="mb-3">
+                                <label for="languageName-@language.LanguageID" class="form-label">Language Name</label>
+                                <input type="text" class="form-control" id="languageName-@language.LanguageID" name="LanguageName" value="@language.LanguageName" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Delete Language Modal -->
+    @foreach (var language in Model)
+    {
+        <div class="modal fade" id="deleteLanguageModal-@language.LanguageID" tabindex="-1" aria-labelledby="deleteLanguageModalLabel-@language.LanguageID" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteLanguageModalLabel-@language.LanguageID">Delete Language</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete the language "@language.LanguageName"?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="/Admin/DeleteLanguage">
+                            <input type="hidden" name="LanguageID" value="@language.LanguageID">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Pagination Controls -->
+    @if (ViewBag.TotalPages >= 1)
+    {
+        <nav class="language-pagination">
+            <ul class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
