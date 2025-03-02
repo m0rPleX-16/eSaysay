@@ -31,7 +31,8 @@
         border: none;
         height: 35px;
         width: 35px;
-        color: #000;
+        font-weight:700;
+        color: #274052;
         background: none;
         align-items: center;
         justify-content: center;
