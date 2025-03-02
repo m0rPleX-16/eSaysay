@@ -10,7 +10,7 @@
     <div class="admin-exercise-header">
         <h2>Manage Exercises</h2>
     </div>
-    
+
     <div class="exercise-content">
 
         <!-- Button to Open Add Exercise Modal -->
@@ -21,7 +21,8 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Content</th>
+                    <th>Content (English)</th>
+                    <th>Content (Korean)</th>
                     <th>Lesson</th>
                     <th>Type</th>
                     <th>Correct Answer</th>
@@ -36,6 +37,7 @@
                 {
                     <tr>
                         <td>@exercise.Content</td>
+                        <td>@exercise.ContentTranslate</td> <!-- ✅ Show Translated Content -->
                         <td>@exercise.Lesson.Title</td>
                         <td>@exercise.ExerciseType</td>
                         <td>@exercise.CorrectAnswer</td>
@@ -47,7 +49,6 @@
                             <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteExerciseModal-@exercise.ExerciseID">Archive</button>
                         </td>
                     </tr>
-
                     <!-- Edit Exercise Modal -->
                     <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog">

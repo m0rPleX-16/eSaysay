@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Translator";
+}
+
+<div class="user-dashboard">
+    @await Html.PartialAsync("_Sidebar")
+
+    <main class="main-content">
+        @await Html.PartialAsync("_NavbarAuthenticated")
+
+        <div class="translator-container">
+            <div class="translator-wrapper">
+                <div class="translator-text-input">
+                    <textarea class="from-text" placeholder="English text here" aria-label="Input text to translate"></textarea>
+                    <textarea class="to-text" placeholder="Korean text here" readonly aria-label="Translated text"></textarea>
+                </div>
+
+                <button class="translator-swap" aria-label="Swap Languages">
+                    <i class="material-icons">swap_horiz</i>
+                </button>
+
+                <div class="translator-controls">
+                    <button id="speak-from" class="icon-btn" aria-label="Listen to input text">
+                        <i class="material-icons">volume_up</i>
+                    </button>
+                    <button id="copy-from" class="icon-btn" aria-label="Copy input text">
+                        <i class="material-icons">content_copy</i>
+                    </button>
+                    <button id="copy-to" class="icon-btn" aria-label="Copy translated text">
+                        <i class="material-icons">content_copy</i>
+                    </button>
+                    <button id="speak-to" class="icon-btn" aria-label="Listen to translated text">
+                        <i class="material-icons">volume_up</i>
+                    </button>
+                </div>
+            </div>
+
+            <button id="translator-button" class="btn-primary" aria-label="Translate text">Translate</button>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <script>
+               const fromInput = document.querySelector(".from-text");
+        const toInput = document.querySelector(".to-text");
+        const translateButton = document.querySelector("#translator-button");
+        const speakFrom = document.querySelector("#speak-from");
+        const speakTo = document.querySelector("#speak-to");
+        const copyFrom = document.querySelector("#copy-from");
+        const copyTo = document.querySelector("#copy-to");
+        const swapButton = document.querySelector(".translator-swap");
+
+        async function fetchTranslation(text, fromLang, toLang) {
+            if (!text) return;
+            let API_URL = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
+            try {
+                let response = await fetch(API_URL);
+                let data = await response.json();
+                return data.responseData.translatedText;
+            } catch (error) {
+                console.error("Translation API error:", error);
+            }
+        }
+
+        translateButton.addEventListener("click", async () => {
+            let text = fromInput.value.trim();
+            if (!text) return;
+            let fromLang = fromInput.placeholder.includes("English") ? "en" : "ko";
+            let toLang = fromLang === "en" ? "ko" : "en";
+            let translatedText = await fetchTranslation(text, fromLang, toLang);
+            toInput.value = translatedText || "Translation error";
+        });
+
+        function speakText(text, lang) {
+            if (!text) return;
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            speechSynthesis.speak(utterance);
+        }
+
+        speakFrom.addEventListener("click", () => {
+            let lang = fromInput.placeholder.includes("English") ? "en-US" : "ko-KR";
+            speakText(fromInput.value, lang);
+        });
+
+        speakTo.addEventListener("click", () => {
+            let lang = toInput.placeholder.includes("English") ? "en-US" : "ko-KR";
+            speakText(toInput.value, lang);
+        });
+
+        copyFrom.addEventListener("click", () => {
+            navigator.clipboard.writeText(fromInput.value);
+        });
+
+        copyTo.addEventListener("click", () => {
+            navigator.clipboard.writeText(toInput.value);
+        });
+
+        swapButton.addEventListener("click", () => {
+            let tempText = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = tempText;
+
+            let tempPlaceholder = fromInput.placeholder;
+            fromInput.placeholder = toInput.placeholder;
+            toInput.placeholder = tempPlaceholder;
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

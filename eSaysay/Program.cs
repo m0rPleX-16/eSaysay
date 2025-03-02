@@ -15,8 +15,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<SecurityLogService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<BadgeService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

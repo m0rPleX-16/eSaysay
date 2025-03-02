@@ -23,6 +23,10 @@ namespace eSaysay.Models.Entities
         public string Content { get; set; }
 
         [Required]
+        [MaxLength(200)]
+        public string ContentTranslate { get; set; }
+
+        [Required]
         [MaxLength(100)]
         public string CorrectAnswer { get; set; }
 
@@ -34,5 +38,7 @@ namespace eSaysay.Models.Entities
 
         [MaxLength(20)]
         public string DifficultyLevel { get; set; }
+
+        public DateTime DateCreated { get; set; } = DateTime.Now;
     }
 }

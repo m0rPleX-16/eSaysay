@@ -4,8 +4,11 @@ namespace eSaysay.Models.ViewModels
 {
     public class DashboardViewModel
     {
-        public List<Lesson> BeginnerLessons { get; set; } = new();
-        public List<Lesson> IntermediateLessons { get; set; } = new();
-        public List<Lesson> AdvancedLessons { get; set; } = new();
+        public List<Lesson> Lessons { get; set; }
+        public List<Notification> Notifications { get; set; }
+        public Analytics? Analytics { get; set; }
+        public List<UserBadge> UserBadges { get; set; }
+        public AdaptiveLearning AdaptiveLearning { get; set; }
+        public List<UserProgress> UserProgress { get; set; }
     }
 }

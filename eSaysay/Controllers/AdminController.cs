@@ -8,6 +8,7 @@ using eSaysay.Models.Entities;
 using eSaysay.Data;
 using eSaysay.Services;
 using System.Text.Json;
+using System.Net.Http;
 
 namespace eSaysay.Controllers
 {
@@ -19,17 +20,23 @@ namespace eSaysay.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly SecurityLogService _logService;
+        private readonly HttpClient _httpClient;
+        private readonly BadgeService _badgeService;
         public AdminController(ILogger<AdminController> logger,
                                UserManager<IdentityUser> userManager,
                                RoleManager<IdentityRole> roleManager,
                                ApplicationDbContext context,
-                               SecurityLogService logService) 
+                               SecurityLogService logService,
+                               HttpClient httpClient,
+                               BadgeService badgeService) 
         {
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
-            _logService = logService; 
+            _logService = logService;
+            _httpClient = httpClient;
+            _badgeService = badgeService;
         }
 
 
@@ -126,7 +133,49 @@ namespace eSaysay.Controllers
             }
             return RedirectToAction("Language");
         }
+        public async Task<IActionResult> Badge()
+        {
+            try
+            {
+                var badges = await _badgeService.GetAllBadgesAsync();
+                return View("~/Views/User/Admin/Badge.cshtml", badges);
+            }
+            catch (Exception ex)
+            {
+                return Content($"Error: {ex.Message}");
+            }
+        }
 
+
+        // POST: Admin/AddBadge
+        [HttpPost]
+        public async Task<IActionResult> AddBadge(Badge badge)
+        {
+            if (ModelState.IsValid)
+            {
+                await _badgeService.AddBadgeAsync(badge);
+            }
+            return RedirectToAction("Badge");
+        }
+
+        // POST: Admin/EditBadge
+        [HttpPost]
+        public async Task<IActionResult> EditBadge(Badge badge)
+        {
+            if (ModelState.IsValid)
+            {
+                await _badgeService.UpdateBadgeAsync(badge);
+            }
+            return RedirectToAction("Badge");
+        }
+        
+        // POST: Admin/ArchiveBadge
+        [HttpPost]
+        public async Task<IActionResult> ArchiveBadge(int badgeId)
+        {
+            await _badgeService.ArchiveBadgeAsync(badgeId);
+            return RedirectToAction("Badge");
+        }
         public IActionResult Analytics()
         {
             return View("~/Views/User/Admin/Analytics.cshtml");
@@ -148,39 +197,36 @@ namespace eSaysay.Controllers
             ViewBag.Lessons = lessons;
             return View("~/Views/User/Admin/Exercises.cshtml", exercises);
         }
-
         // POST: Admin/CreateExercise
         [HttpPost]
         public async Task<IActionResult> CreateExercise(InteractiveExercise exercise)
         {
             _logger.LogInformation($"Creating exercise: {exercise.ExerciseType}, Lesson ID: {exercise.LessonID}");
 
-            if (exercise == null || string.IsNullOrWhiteSpace(exercise.ExerciseType))
+            if (!ModelState.IsValid)
             {
-                _logger.LogInformation("Error: Exercise data is missing or invalid.");
-                return BadRequest("Invalid exercise data.");
+                _logger.LogWarning("Invalid model state detected.");
+                return BadRequest(ModelState);
             }
 
-            // Validate and parse AnswerChoices
+            // Translate content to Korean
+            exercise.ContentTranslate = await TranslateToKorean(exercise.Content);
+
             if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
             {
                 if (!IsValidAnswerChoices(exercise.AnswerChoices))
                 {
-                    _logger.LogInformation("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values).");
-                    return BadRequest("Invalid format for AnswerChoices. Expected JSON or comma-separated values.");
+                    _logger.LogWarning("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values). ");
+                    return BadRequest("Invalid format for AnswerChoices.");
                 }
-                exercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices); // Format the data
+                exercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices);
             }
             else
             {
-                exercise.AnswerChoices = null; // Set to null if empty
+                exercise.AnswerChoices = null;
             }
 
-            // Handle Hint
-            if (string.IsNullOrWhiteSpace(exercise.Hint))
-            {
-                exercise.Hint = null; // Set to null if empty
-            }
+            exercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
 
             _context.InteractiveExercises.Add(exercise);
             await _context.SaveChangesAsync();
@@ -193,41 +239,40 @@ namespace eSaysay.Controllers
         [HttpPost]
         public async Task<IActionResult> EditExercise(InteractiveExercise exercise)
         {
-            var existingExercise = _context.InteractiveExercises.Find(exercise.ExerciseID);
-            if (existingExercise != null)
+            var existingExercise = await _context.InteractiveExercises.FirstOrDefaultAsync(e => e.ExerciseID == exercise.ExerciseID);
+
+            if (existingExercise == null)
             {
-                existingExercise.ExerciseType = exercise.ExerciseType;
-                existingExercise.Content = exercise.Content;
-                existingExercise.CorrectAnswer = exercise.CorrectAnswer;
-                existingExercise.DifficultyLevel = exercise.DifficultyLevel;
-                existingExercise.LessonID = exercise.LessonID;
+                _logger.LogWarning($"Exercise with ID {exercise.ExerciseID} not found.");
+                return NotFound($"Exercise with ID {exercise.ExerciseID} not found.");
+            }
 
-                // Validate and parse AnswerChoices
-                if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
+            existingExercise.ExerciseType = exercise.ExerciseType;
+            existingExercise.Content = exercise.Content;
+            existingExercise.ContentTranslate = await TranslateToKorean(exercise.Content);
+            existingExercise.CorrectAnswer = exercise.CorrectAnswer;
+            existingExercise.DifficultyLevel = exercise.DifficultyLevel;
+            existingExercise.LessonID = exercise.LessonID;
+
+            if (!string.IsNullOrWhiteSpace(exercise.AnswerChoices))
+            {
+                if (!IsValidAnswerChoices(exercise.AnswerChoices))
                 {
-                    if (!IsValidAnswerChoices(exercise.AnswerChoices))
-                    {
-                        _logger.LogInformation("Error: AnswerChoices is not in a valid format (expected JSON or comma-separated values).");
-                        return BadRequest("Invalid format for AnswerChoices. Expected JSON or comma-separated values.");
-                    }
-                    existingExercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices); 
+                    _logger.LogWarning("Error: AnswerChoices is not in a valid format.");
+                    return BadRequest("Invalid format for AnswerChoices.");
                 }
-                else
-                {
-                    existingExercise.AnswerChoices = null; 
-                }
-
-                // Handle Hint
-                existingExercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
-
-                await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}");
-                _logger.LogInformation($"Exercise updated: {exercise.ExerciseType}");
+                existingExercise.AnswerChoices = FormatAnswerChoices(exercise.AnswerChoices);
             }
             else
             {
-                _logger.LogInformation("Exercise not found!");
+                existingExercise.AnswerChoices = null;
             }
+
+            existingExercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
+
+            await _context.SaveChangesAsync();
+            await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}");
+            _logger.LogInformation($"Exercise updated: {exercise.ExerciseType}");
 
             return RedirectToAction("Exercises");
         }
@@ -237,13 +282,11 @@ namespace eSaysay.Controllers
         {
             try
             {
-                // Check if the input is valid JSON
                 JsonDocument.Parse(answerChoices);
                 return true;
             }
             catch (JsonException)
             {
-                // If not JSON, check if it's comma-separated values
                 var values = answerChoices.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 return values.Length > 0;
             }
@@ -255,17 +298,47 @@ namespace eSaysay.Controllers
             {
                 try
                 {
-                    JsonDocument.Parse(answerChoices);
-                    return answerChoices;
+                    // If the input is already valid JSON, parse it and convert to comma-separated string
+                    var jsonArray = JsonDocument.Parse(answerChoices).RootElement;
+                    var values = jsonArray.EnumerateArray().Select(e => e.GetString()).ToList();
+                    return string.Join(",", values);
                 }
                 catch (JsonException)
                 {
+                    // If the input is not JSON, assume it's a comma-separated string
                     var values = answerChoices.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    return JsonSerializer.Serialize(values); 
+                    return string.Join(",", values);
                 }
             }
-            return null; 
+            return null;
         }
+        // Helper method to translate content to Korean
+        private async Task<string> TranslateToKorean(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return text;
+
+            string url = $"https://api.mymemory.translated.net/get?q={Uri.EscapeDataString(text)}&langpair=en|ko";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Translation API error: {response.StatusCode}");
+                return text;
+            }
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var jsonDoc = JsonDocument.Parse(jsonResponse);
+
+            if (jsonDoc.RootElement.TryGetProperty("responseData", out var responseData) &&
+                responseData.TryGetProperty("translatedText", out var translatedText))
+            {
+                return translatedText.GetString() ?? text;
+            }
+
+            return text;
+        }
+
         // POST: Admin/ArchiveExercise
         [HttpPost]
         public async Task<IActionResult> ArchiveExercise(int ExerciseID)

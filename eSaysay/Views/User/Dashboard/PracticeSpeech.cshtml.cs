@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace eSaysay.Views.User.Admin
+namespace eSaysay.Views.User.Dashboard
 {
-    public class SettingsModel : PageModel
+    public class PracticeSpeechModel : PageModel
     {
         public void OnGet()
         {

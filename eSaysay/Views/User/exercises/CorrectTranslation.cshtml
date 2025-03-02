@@ -1,4 +1,6 @@
-﻿@model eSaysay.Models.Entities.InteractiveExercise
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@model eSaysay.Models.Entities.InteractiveExercise
 @{
     ViewData["Title"] = "Correct Translation";
     ViewData["PageClass"] = "CorrectTranslation-Page";
@@ -11,57 +13,171 @@
     </div>
 
     <div class="title title-question">Select the correct translation</div>
-    <center><div class="container correct-content"><h6>@Model.Content</h6></div></center>
+    <center><div class="container correct-content"><h6>@Model.ContentTranslate</h6></div></center>
 
-    <!-- Dynamic Answer Grid -->
-    <div class="container answer-grid" id="answer-grid">
-        @if (!string.IsNullOrEmpty(Model.AnswerChoices))
-        {
-            var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
-            for (int i = 0; i < choices.Count; i++)
+    <!-- Form for submitting the answer -->
+    <form id="answer-form">
+        <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
+        <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
+        <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
+        <input type="hidden" name="UserAnswer" id="user-answer" value="" />
+
+        <!-- Dynamic Answer Grid -->
+        <div class="container answer-grid" id="answer-grid">
+            @if (!string.IsNullOrEmpty(Model.AnswerChoices))
             {
-                <button onclick="selectAnswer(@(i + 1))">@choices[i]</button>
+                var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
+                for (int i = 0; i < choices.Count; i++)
+                {
+                    <button type="button" onclick="selectAnswer('@choices[i]')">@choices[i]</button>
+                }
             }
-        }
-        else
-        {
-            <p>No answer choices available.</p>
-        }
-    </div>
+            else
+            {
+                <p>No answer choices available.</p>
+            }
+        </div>
 
-    <div class="footer">
-        <button class="skip" onclick="skip()">Skip</button>
-        <button class="check" onclick="checkAnswer()">Check</button>
+        <div class="footer">
+            <button type="button" class="skip" onclick="skip()">Skip</button>
+            <button type="button" class="check" onclick="checkAnswer()">Check</button>
+        </div>
+    </form>
+</div>
+
+<!-- Success Modal -->
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>🎉 Success!</h2>
+        <p>Your response has been saved successfully.</p>
+        <button id="goToDashboard" class="btn btn-primary">Go to Dashboard</button>
     </div>
 </div>
 
-<script>
-    let selectedAnswerId = null;
-
-    function selectAnswer(answerId) {
-        document.querySelectorAll('.answer-grid button').forEach(btn => btn.classList.remove('selected'));
-        event.target.classList.add('selected');
-        selectedAnswerId = answerId;
+<!-- Modal Styles -->
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
     }
 
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+</style>
+
+<script>
+    // Function to select an answer
+    function selectAnswer(answer) {
+        document.getElementById("user-answer").value = answer;
+
+        // Check if the selected answer is correct
+        const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
+        const isCorrect = answer.toLowerCase() === correctAnswer;
+
+        // Set the IsCorrect value in the hidden input
+        document.getElementById("is-correct").value = isCorrect;
+
+        // Highlight the selected button
+        const buttons = document.querySelectorAll('#answer-grid button');
+        buttons.forEach(button => {
+            button.classList.remove('selected');
+        });
+        event.target.classList.add('selected');
+    }
+
+    // Function to check the answer
     function checkAnswer() {
-        if (selectedAnswerId === null) {
+        const selectedAnswer = document.getElementById("user-answer").value;
+
+        if (!selectedAnswer) {
             alert('Please select an answer first!');
             return;
         }
 
-        const correctAnswer = "@Model.CorrectAnswer";
-        const selectedAnswerText = document.querySelector(`.answer-grid button:nth-child(${selectedAnswerId})`).innerText;
+        const formData = new FormData(document.getElementById("answer-form"));
 
-        if (selectedAnswerText.toLowerCase() === correctAnswer.toLowerCase()) {
-            alert("✅ Correct!");
-        } else {
-            alert(`❌ Incorrect! Correct Answer: ${correctAnswer}`);
+        fetch('/Dashboard/SaveUserResponse', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessModal(); // Show the success modal
+            } else {
+                alert(data.message); // Show an error message
+            }
+        })
+        .catch(error => {
+            console.error("Error saving response:", error);
+            alert("An error occurred while saving your response. Please try again.");
+        });
+    }
+
+    // Modal Functions
+    const successModal = document.getElementById("successModal");
+    const closeModal = document.getElementsByClassName("close")[0];
+    const goToDashboard = document.getElementById("goToDashboard");
+
+    function showSuccessModal() {
+        successModal.style.display = "block";
+    }
+
+    function hideSuccessModal() {
+        successModal.style.display = "none";
+    }
+
+    closeModal.onclick = hideSuccessModal;
+    window.onclick = function (event) {
+        if (event.target === successModal) {
+            hideSuccessModal();
         }
-    }
+    };
 
-    function skip() {
-        // Implement skip logic here
-        alert("Skipped!");
-    }
+    goToDashboard.onclick = function () {
+        window.location.href = "/Dashboard/Index";
+    };
 </script>
