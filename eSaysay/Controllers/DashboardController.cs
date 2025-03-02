@@ -118,12 +118,18 @@ namespace eSaysay.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveUserResponse([FromForm] UserResponse userResponse)
+        public async Task<IActionResult> SaveUserResponse([FromForm] UserResponse userResponse, [FromForm] int TimeSpent)
         {
             if (userResponse == null || string.IsNullOrEmpty(userResponse.UserID))
             {
                 _logger.LogWarning("Invalid response data: UserResponse is null or UserID is empty.");
                 return BadRequest(new { message = "Invalid response data." });
+            }
+
+            if (TimeSpent < 0)
+            {
+                _logger.LogWarning("Invalid TimeSpent value: Cannot be negative.");
+                return BadRequest(new { message = "Invalid TimeSpent value." });
             }
 
             // Check if the UserID exists in AspNetUsers
@@ -134,11 +140,11 @@ namespace eSaysay.Controllers
                 return BadRequest(new { message = "Invalid UserID." });
             }
 
-            // Log the incoming data for debugging
             _logger.LogInformation($"UserID: {userResponse.UserID}");
             _logger.LogInformation($"ExerciseID: {userResponse.ExerciseID}");
             _logger.LogInformation($"UserAnswer: {userResponse.UserAnswer}");
             _logger.LogInformation($"IsCorrect: {userResponse.IsCorrect}");
+            _logger.LogInformation($"TimeSpent: {TimeSpent}");
 
             try
             {
@@ -157,8 +163,8 @@ namespace eSaysay.Controllers
                 _context.UserResponse.Add(userResponse);
                 await _context.SaveChangesAsync();
 
-                // Update UserProgress
-                await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect);
+                // Update UserProgress with time tracking
+                await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
 
                 // Update Analytics
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect);
@@ -183,8 +189,7 @@ namespace eSaysay.Controllers
                 return StatusCode(500, new { message = "An error occurred while saving your response." });
             }
         }
-
-        private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect)
+        private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
             var progress = await _context.UserProgress
                 .FirstOrDefaultAsync(p => p.UserID == userId && p.LessonID == lessonId);
@@ -197,7 +202,7 @@ namespace eSaysay.Controllers
                     LessonID = lessonId,
                     CompletionStatus = isCorrect ? "Completed" : "In Progress",
                     Score = isCorrect ? 100 : 0,
-                    TimeSpent = 0, // You can track time spent using a timer
+                    TimeSpent = TimeSpent,
                     LastAccessedDate = DateTime.UtcNow
                 };
                 _context.UserProgress.Add(progress);
@@ -207,6 +212,7 @@ namespace eSaysay.Controllers
                 progress.CompletionStatus = isCorrect ? "Completed" : "In Progress";
                 progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2; // Update average score
                 progress.LastAccessedDate = DateTime.UtcNow;
+                progress.TimeSpent += TimeSpent;
             }
             await _context.SaveChangesAsync();
         }
