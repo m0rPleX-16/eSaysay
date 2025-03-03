@@ -799,7 +799,7 @@ h6 {
 --------------------------------------------------------------*/
 .page-title {
     --default-color: var(--contrast-color);
-    --background-color: var(--accent-color);
+    --background-color: #274052;
     --heading-color: var(--contrast-color);
     color: var(--default-color);
     background-color: var(--background-color);
