@@ -13,7 +13,7 @@ namespace eSaysay.Models.Entities
         [Required]
         [ForeignKey("User")]
         public string UserID { get; set; } // Foreign Key referencing Users
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         [Required]
         [StringLength(255)]

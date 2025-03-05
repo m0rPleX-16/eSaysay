@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@model List<IdentityUser>
+@model List<ApplicationUser>
 
 @if (Model != null && Model.Any())
 {
@@ -8,6 +8,12 @@
             <thead>
                 <tr>
                     <th>Email</th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Birthday</th>
                     <th>Options</th>
                 </tr>
             </thead>
@@ -16,10 +22,19 @@
                 {
                     <tr>
                         <td>@student.Email</td>
+                        <td>@student.FirstName</td>
+                        <td>@student.MiddleName</td>
+                        <td>@student.LastName</td>
+                        <td>@student.Gender</td>
+                        <td>@student.Age</td>
+                        <td>@student.Birthday.ToString("yyyy-MM-dd")</td>
                         <td>
+                            <!-- Edit Button -->
                             <button class="btn btn-students-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editModal-@student.Id">
                                 <span class="material-symbols-rounded">edit</span>
                             </button>
+
+                            <!-- Archive Button -->
                             <button class="btn btn-students-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveModal-@student.Id">
                                 <span class="material-symbols-rounded">archive</span>
                             </button>
@@ -30,6 +45,88 @@
         </table>
     </div>
 
+    @foreach (var student in Model)
+    {
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal-@student.Id" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Student</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" asp-action="EditStudent">
+                        <div class="modal-body">
+                            <input type="hidden" name="Id" value="@student.Id" />
+
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" name="FirstName" class="form-control" value="@student.FirstName" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Middle Name</label>
+                                <input type="text" name="MiddleName" class="form-control" value="@student.MiddleName" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" name="LastName" class="form-control" value="@student.LastName" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                <select name="Gender" class="form-control" required>
+                                    <option value="Male" selected="@(student.Gender == "Male")">Male</option>
+                                    <option value="Female" selected="@(student.Gender == "Female")">Female</option>
+                                    <option value="Other" selected="@(student.Gender == "Other")">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" name="Age" class="form-control" value="@student.Age" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Birthday</label>
+                                <input type="date" name="Birthday" class="form-control" value="@student.Birthday.ToString("yyyy-MM-dd")" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
+            <div id="toastContainer"></div>
+        </div>
+
+
+        <!-- Archive Modal -->
+        <div class="modal fade" id="archiveModal-@student.Id" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Archive Student</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" asp-action="ArchiveStudent">
+                        <div class="modal-body">
+                            <p>Are you sure you want to archive <strong>@student.FirstName @student.LastName</strong>?</p>
+                            <input type="hidden" name="Id" value="@student.Id" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Archive</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+
+        </script>
+    }
 
     @if (ViewBag.TotalPages >= 1)
     {

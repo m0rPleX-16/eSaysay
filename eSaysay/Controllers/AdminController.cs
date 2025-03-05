@@ -16,19 +16,17 @@ namespace eSaysay.Controllers
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly SecurityLogService _logService;
         private readonly HttpClient _httpClient;
-        private readonly BadgeService _badgeService;
         public AdminController(ILogger<AdminController> logger,
-                               UserManager<IdentityUser> userManager,
+                               UserManager<ApplicationUser> userManager,
                                RoleManager<IdentityRole> roleManager,
                                ApplicationDbContext context,
                                SecurityLogService logService,
-                               HttpClient httpClient,
-                               BadgeService badgeService) 
+                               HttpClient httpClient)
         {
             _logger = logger;
             _userManager = userManager;
@@ -36,7 +34,6 @@ namespace eSaysay.Controllers
             _context = context;
             _logService = logService;
             _httpClient = httpClient;
-            _badgeService = badgeService;
         }
 
 
@@ -48,7 +45,9 @@ namespace eSaysay.Controllers
         // GET: Admin/Language with pagination and search
         public async Task<IActionResult> Language(string searchTerm, int page = 1, int pageSize = 5)
         {
-            var query = _context.Language.AsQueryable();
+            var query = _context.Language
+                .Where(l => !l.IsArchived) // Only fetch languages that are NOT archived
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -91,8 +90,6 @@ namespace eSaysay.Controllers
             return PartialView("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", languages);
         }
 
-
-
         // POST: Admin/AddLanguage
         [HttpPost]
         public async Task<IActionResult> AddLanguage(Language language)
@@ -119,63 +116,80 @@ namespace eSaysay.Controllers
             return RedirectToAction("Language");
         }
 
-        // POST: Admin/DeleteLanguage
-        [HttpPost]
-        public async Task<IActionResult> DeleteLanguage(int LanguageID)
+        // GET: Admin/ArchivedLanguage
+        public async Task<IActionResult> ArchivedLanguage(string search, int page = 1, int pageSize = 10)
         {
-            var language = _context.Language.Find(LanguageID);
+            // Fetch only archived languages
+            var archivedLanguagesQuery = _context.Language
+                .Where(l => l.IsArchived)
+                .AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(search))
+            {
+                archivedLanguagesQuery = archivedLanguagesQuery
+                    .Where(l => l.LanguageName.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Pagination
+            int totalLanguages = await archivedLanguagesQuery.CountAsync();
+            var archivedLanguages = await archivedLanguagesQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Pass data to the view
+            ViewBag.Search = search;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalLanguages / pageSize);
+
+            return View("~/Views/User/Admin/Shared/ArchivedLanguage.cshtml", archivedLanguages);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ArchiveLanguage(int LanguageID)
+        {
+            var language = await _context.Language.FindAsync(LanguageID);
             if (language != null)
             {
-                _context.Language.Remove(language);
+                language.IsArchived = true; // Soft delete
+                _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
                 await _logService.LogEvent($"Archived language: {language.LanguageName}");
             }
             return RedirectToAction("Language");
         }
-        public async Task<IActionResult> Badge()
+
+        [HttpPost]
+        public async Task<IActionResult> RestoreLanguage(int LanguageID)
         {
-            try
+            var language = await _context.Language.FindAsync(LanguageID);
+            if (language != null)
             {
-                var badges = await _badgeService.GetAllBadgesAsync();
-                return View("~/Views/User/Admin/Badge.cshtml", badges);
+                language.IsArchived = false; // Restore
+                _context.Language.Update(language);
+                await _context.SaveChangesAsync();
+
+                await _logService.LogEvent($"Restored language: {language.LanguageName}");
             }
-            catch (Exception ex)
-            {
-                return Content($"Error: {ex.Message}");
-            }
+            return Ok();
         }
 
-
-        // POST: Admin/AddBadge
         [HttpPost]
-        public async Task<IActionResult> AddBadge(Badge badge)
+        public async Task<IActionResult> DeleteLanguagePermanently(int LanguageID)
         {
-            if (ModelState.IsValid)
+            var language = await _context.Language.FindAsync(LanguageID);
+            if (language != null)
             {
-                await _badgeService.AddBadgeAsync(badge);
+                _context.Language.Remove(language);
+                await _context.SaveChangesAsync();
+
+                await _logService.LogEvent($"Permanently deleted language: {language.LanguageName}");
             }
-            return RedirectToAction("Badge");
+            return Ok();
         }
 
-        // POST: Admin/EditBadge
-        [HttpPost]
-        public async Task<IActionResult> EditBadge(Badge badge)
-        {
-            if (ModelState.IsValid)
-            {
-                await _badgeService.UpdateBadgeAsync(badge);
-            }
-            return RedirectToAction("Badge");
-        }
-        
-        // POST: Admin/ArchiveBadge
-        [HttpPost]
-        public async Task<IActionResult> ArchiveBadge(int badgeId)
-        {
-            await _badgeService.ArchiveBadgeAsync(badgeId);
-            return RedirectToAction("Badge");
-        }
         public IActionResult Analytics()
         {
             return View("~/Views/User/Admin/Analytics.cshtml");
@@ -184,7 +198,11 @@ namespace eSaysay.Controllers
         // GET: Admin/Exercises
         public IActionResult Exercises()
         {
-            var exercises = _context.InteractiveExercises.Include(e => e.Lesson).ToList();
+            var exercises = _context.InteractiveExercises
+                .Include(e => e.Lesson)
+                .Where(e => !e.IsArchived)  
+                .ToList();
+
             var lessons = _context.Lessons.ToList();
 
             _logger.LogInformation($"Lessons count: {lessons.Count}");
@@ -195,8 +213,10 @@ namespace eSaysay.Controllers
             }
 
             ViewBag.Lessons = lessons;
+
             return View("~/Views/User/Admin/Exercises.cshtml", exercises);
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateExercise(InteractiveExercise exercise)
         {
@@ -273,7 +293,6 @@ namespace eSaysay.Controllers
 
             return RedirectToAction("Exercises");
         }
-
 
         // POST: Admin/EditExercise
         [HttpPost]
@@ -378,15 +397,14 @@ namespace eSaysay.Controllers
 
             return text;
         }
-
         // POST: Admin/ArchiveExercise
         [HttpPost]
         public async Task<IActionResult> ArchiveExercise(int ExerciseID)
         {
-            var exercise = _context.InteractiveExercises.Find(ExerciseID);
+            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
             if (exercise != null)
             {
-                _context.InteractiveExercises.Remove(exercise);
+                exercise.IsArchived = true; // Mark as archived instead of deleting
                 await _context.SaveChangesAsync();
 
                 await _logService.LogEvent($"Archived exercise ID: {ExerciseID}");
@@ -394,9 +412,67 @@ namespace eSaysay.Controllers
             return RedirectToAction("Exercises");
         }
 
+        // GET: Admin/ArchivedExercises with pagination and search
+        public async Task<IActionResult> ArchivedExercises(string search, int page = 1, int pageSize = 10)
+        {
+            var archivedExercises = await _context.InteractiveExercises
+                .Include(e => e.Lesson)
+                .Where(e => e.IsArchived) // ✅ Only archived exercises
+                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                archivedExercises = archivedExercises
+                    .Where(e => e.Content.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            int totalExercises = archivedExercises.Count;
+            archivedExercises = archivedExercises.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Search = search;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalExercises / pageSize);
+
+            return View("~/Views/User/Admin/Shared/ArchivedExercises.cshtml", archivedExercises);
+        }
+
+        // POST: Admin/RestoreExercise
+        [HttpPost]
+        public async Task<IActionResult> RestoreExercise(int ExerciseID)
+        {
+            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
+            if (exercise != null)
+            {
+                exercise.IsArchived = false;
+                _context.InteractiveExercises.Update(exercise);
+                await _context.SaveChangesAsync();
+                await _logService.LogEvent($"Restored exercise: {exercise.Content}");
+            }
+            return RedirectToAction("ArchivedExercises");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteExercisePermanently(int ExerciseID)
+        {
+            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
+            if (exercise != null)
+            {
+                _context.InteractiveExercises.Remove(exercise);
+                await _context.SaveChangesAsync();
+
+                await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}");
+            }
+            return Ok();
+        }
         public IActionResult Lessons(string searchQuery, int page = 1, int pageSize = 5)
         {
-            var lessonsQuery = _context.Lessons.Include(l => l.Language).AsQueryable();
+            var lessonsQuery = _context.Lessons
+                .Include(l => l.Language)
+                .Where(l => !l.IsArchived) // Ensure only non-archived lessons are fetched
+                .AsQueryable();
+
             var languages = _context.Language.ToList();
 
             if (!string.IsNullOrEmpty(searchQuery))
@@ -407,7 +483,10 @@ namespace eSaysay.Controllers
             }
 
             int totalLessons = lessonsQuery.Count();
-            var lessons = lessonsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var lessons = lessonsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             ViewBag.Languages = languages;
             ViewBag.CurrentPage = page;
@@ -416,6 +495,7 @@ namespace eSaysay.Controllers
 
             return View("~/Views/User/Admin/Lessons.cshtml", lessons);
         }
+
         public IActionResult FilterLessons(string searchQuery, int page = 1, int pageSize = 5)
         {
             try
@@ -493,17 +573,74 @@ namespace eSaysay.Controllers
         [HttpPost]
         public async Task<IActionResult> ArchiveLesson(int LessonID)
         {
-            var lesson = _context.Lessons.Find(LessonID);
+            var lesson = await _context.Lessons.FindAsync(LessonID);
             if (lesson != null)
             {
-                _context.Lessons.Remove(lesson);
-               await _context.SaveChangesAsync();
+                lesson.IsArchived = true; // Mark as archived instead of deleting
+                await _context.SaveChangesAsync();
 
                 await _logService.LogEvent($"Archived lesson: {lesson.Title}");
             }
             return RedirectToAction("Lessons");
         }
 
+        // GET: Admin/ArchivedLessons (View Archived Lessons)
+        public async Task<IActionResult> ArchivedLessons(string searchQuery, int page = 1, int pageSize = 5)
+        {
+            var archivedLessonsQuery = _context.Lessons
+                .Include(l => l.Language)
+                .Where(l => l.IsArchived) // Only fetch archived lessons
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                archivedLessonsQuery = archivedLessonsQuery.Where(l => l.Title.Contains(searchQuery)
+                                                                    || l.Language.LanguageName.Contains(searchQuery)
+                                                                    || l.LessonType.Contains(searchQuery));
+            }
+
+            int totalArchivedLessons = await archivedLessonsQuery.CountAsync();
+            var archivedLessons = await archivedLessonsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalArchivedLessons / (double)pageSize);
+            ViewBag.SearchQuery = searchQuery;
+
+            return View("~/Views/User/Admin/Shared/ArchivedLessons.cshtml", archivedLessons);
+        }
+
+        // POST: Admin/RestoreLesson
+        [HttpPost]
+        public async Task<IActionResult> RestoreLesson(int LessonID)
+        {
+            var lesson = await _context.Lessons.FindAsync(LessonID);
+            if (lesson != null)
+            {
+                lesson.IsArchived = false; // Unarchive the lesson
+                await _context.SaveChangesAsync();
+
+                await _logService.LogEvent($"Restored lesson: {lesson.Title}");
+            }
+            return RedirectToAction("ArchivedLessons");
+        }
+
+        // POST: Admin/DeleteLessonPermanent
+        [HttpPost]
+        public async Task<IActionResult> DeleteLessonPermanent(int LessonID)
+        {
+            var lesson = await _context.Lessons.FindAsync(LessonID);
+            if (lesson != null)
+            {
+                _context.Lessons.Remove(lesson); // Permanently delete the lesson
+                await _context.SaveChangesAsync();
+
+                await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}");
+            }
+            return RedirectToAction("ArchivedLessons");
+        }
 
         [HttpGet]
         public async Task<IActionResult> Logs(string searchQuery, int page = 1, int pageSize = 10)
@@ -563,13 +700,12 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Progress.cshtml");
         }
 
+        // ✅ Fetch Active Students
         public async Task<IActionResult> Students(string search, int page = 1, int pageSize = 10)
         {
-            // Fetch all users first
-            var allUsers = await _userManager.Users.ToListAsync();
+            var allUsers = await _userManager.Users.Where(u => !u.IsArchived).ToListAsync(); // ✅ Only active users
 
-            // Filter users who are in the "Student" role
-            var students = new List<IdentityUser>();
+            var students = new List<ApplicationUser>();
             foreach (var user in allUsers)
             {
                 if (await _userManager.IsInRoleAsync(user, "Student"))
@@ -578,13 +714,11 @@ namespace eSaysay.Controllers
                 }
             }
 
-            // Apply search filter (case-insensitive)
             if (!string.IsNullOrEmpty(search))
             {
                 students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Pagination
             int totalStudents = students.Count;
             students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
@@ -594,66 +728,37 @@ namespace eSaysay.Controllers
 
             return View("~/Views/User/Admin/Students.cshtml", students);
         }
-        public async Task<IActionResult> FilterStudents(string search, int page = 1, int pageSize = 10)
-        {
-            var allUsers = await _userManager.Users.ToListAsync();
-            var students = new List<IdentityUser>();
 
-            foreach (var user in allUsers)
+        // ✅ Fetch Archived Students
+            public async Task<IActionResult> ArchivedStudents(string search, int page = 1, int pageSize = 10)
             {
-                if (await _userManager.IsInRoleAsync(user, "Student"))
+                var allUsers = await _userManager.Users.Where(u => u.IsArchived).ToListAsync(); // ✅ Only archived users
+
+                var students = new List<ApplicationUser>();
+                foreach (var user in allUsers)
                 {
-                    students.Add(user);
+                    if (await _userManager.IsInRoleAsync(user, "Student"))
+                    {
+                        students.Add(user);
+                    }
                 }
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                int totalStudents = students.Count;
+                students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                ViewBag.Search = search;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
+                return View("~/Views/User/Admin/Shared/ArchivedStudents.cshtml", students);
             }
 
-            if (!string.IsNullOrEmpty(search))
-            {
-                students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            int totalStudents = students.Count;
-            students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
-
-            Console.WriteLine($"Pagination Debug: Total Students = {totalStudents}, Total Pages = {ViewBag.TotalPages}, Current Page = {ViewBag.CurrentPage}");
-
-            return PartialView("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", students);
-        }
-
-
-
-
-        [HttpPost]  
-        public async Task<IActionResult> EditStudent(string Id, string Email)
-        {
-            if (string.IsNullOrEmpty(Id) || string.IsNullOrEmpty(Email))
-            {
-                return BadRequest("Invalid input.");
-            }
-
-            var user = await _userManager.FindByIdAsync(Id);
-            if (user == null)
-            {
-                await _logService.LogEvent($"Updated student email: {Email}");
-                return NotFound("Student not found.");
-            }
-
-            user.Email = Email;
-            user.UserName = Email;
-
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-
-                return RedirectToAction("Students");
-            }
-
-            return BadRequest("Failed to update student.");
-        }
-
+        // ✅ Archive Student
         [HttpPost]
         public async Task<IActionResult> ArchiveStudent(string Id)
         {
@@ -668,10 +773,9 @@ namespace eSaysay.Controllers
                 return NotFound("User not found.");
             }
 
-            user.LockoutEnabled = true;
-            user.LockoutEnd = DateTime.MaxValue;
-
+            user.IsArchived = true;  // ✅ Soft-delete
             var result = await _userManager.UpdateAsync(user);
+
             if (result.Succeeded)
             {
                 await _logService.LogEvent($"Archived student ID: {Id}");
@@ -681,9 +785,57 @@ namespace eSaysay.Controllers
             return BadRequest("Failed to archive user.");
         }
 
-        public IActionResult Settings()
+        // ✅ Restore Student
+        [HttpPost]
+        public async Task<IActionResult> RestoreStudent(string Id)
         {
-            return View("~/Views/User/Admin/Settings.cshtml");
+            if (string.IsNullOrEmpty(Id))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.IsArchived = false;  // ✅ Restore user
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                await _logService.LogEvent($"Restored student ID: {Id}");
+                return RedirectToAction("ArchivedStudents");
+            }
+
+            return BadRequest("Failed to restore user.");
+        }
+
+        // ✅ Delete Student Permanently
+        [HttpPost]
+        public async Task<IActionResult> DeleteStudentPermanently(string Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                await _logService.LogEvent($"Permanently deleted student ID: {Id}");
+                return RedirectToAction("ArchivedStudents");
+            }
+
+            return BadRequest("Failed to delete user permanently.");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -41,5 +41,6 @@ namespace eSaysay.Models.Entities
         public string DifficultyLevel { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
+        public bool IsArchived { get; set; } = false;
     }
 }

@@ -1,4 +1,11 @@
-﻿@page
-@model eSaysay.Views.User.Dashboard.PracticeSpeechModel
-@{
+﻿@{
+    ViewData["Title"] = "Speech Assessment";
 }
+<!-- Dashboard Content of User -->
+<div class="user-dashboard">
+    @await Html.PartialAsync("_Sidebar")
+
+    <main class="main-content user-dashboard">
+        @await Html.PartialAsync("_NavbarAuthenticated")
+    </main>
+</div>

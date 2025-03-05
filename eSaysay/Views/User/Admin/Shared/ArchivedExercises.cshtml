@@ -1,0 +1,169 @@
+﻿@using eSaysay.Models.Entities;
+@model List<InteractiveExercise>
+
+@{
+    ViewData["Title"] = "Archived Exercises";
+}
+
+<main class="admin-archived-exercises">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <div class="admin-header">
+        <h2>Archived Exercises</h2>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
+    <!-- Search Bar -->
+    <div class="search-bar mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search Archived Exercises..." value="@ViewBag.Search">
+    </div>
+
+    <div class="archived-content">
+        @if (Model.Any())
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Exercise Type</th>
+                        <th>Content</th>
+                        <th>Lesson</th>
+                        <th>Difficulty</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exercise in Model)
+                    {
+                        <tr>
+                            <td>@exercise.ExerciseType</td>
+                            <td>@exercise.Content</td>
+                            <td>@exercise.Lesson.Title</td>
+                            <td>@exercise.DifficultyLevel</td>
+                            <td>@exercise.DateCreated.ToShortDateString()</td>
+                            <td>
+                                <!-- Restore Button -->
+                                <button class="btn btn-success btn-sm restore-btn" data-id="@exercise.ExerciseID">
+                                    <span class="material-symbols-rounded">restore</span> Restore
+                                </button>
+
+                                <!-- Delete Permanently Button -->
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="@exercise.ExerciseID">
+                                    <span class="material-symbols-rounded">delete_forever</span> Delete Permanently
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No archived exercises found.</p>
+        }
+    </div>
+
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                function showToast(message, type) {
+                    const toastId = Date.now();
+                    const toastHtml = `
+                        <div id="toast-${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">${message}</div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+                    $("#toastContainer").append(toastHtml);
+                    const toastElement = new bootstrap.Toast(document.getElementById(`toast-${toastId}`));
+                    toastElement.show();
+                    setTimeout(() => { $(`#toast-${toastId}`).remove(); }, 4000);
+                }
+
+                function loadArchivedExercises(page = 1) {
+                    const searchTerm = $('#searchInput').val();
+                    $.ajax({
+                        url: '/Admin/ArchivedExercises',
+                        type: 'GET',
+                        data: { search: searchTerm, page: page },
+                        success: function (response) {
+                            $('.archived-content').html($(response).find('.archived-content').html());
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching archived exercises:', error);
+                        }
+                    });
+                }
+
+                let timeoutId;
+                $('#searchInput').on('input', function () {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        loadArchivedExercises();
+                    }, 300);
+                });
+
+                $(document).on('click', '.pagination-link', function (e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    loadArchivedExercises(page);
+                });
+
+                $(document).on('click', '.restore-btn', function () {
+                    const exerciseID = $(this).data('id');
+                    $.post('/Admin/RestoreExercise', { ExerciseID: exerciseID }, function (response) {
+                        showToast("Exercise restored successfully!", "success");
+                        loadArchivedExercises();
+                    }).fail(function () {
+                        showToast("Failed to restore exercise.", "danger");
+                    });
+                });
+
+                $(document).on('click', '.delete-btn', function () {
+                    const exerciseID = $(this).data('id');
+                    if (confirm("Are you sure you want to delete this exercise permanently?")) {
+                        $.post('/Admin/DeleteExercisePermanent', { ExerciseID: exerciseID }, function (response) {
+                            showToast("Exercise permanently deleted!", "danger");
+                            loadArchivedExercises();
+                        }).fail(function () {
+                            showToast("Failed to delete exercise.", "danger");
+                        });
+                    }
+                });
+            });
+        </script>
+    }
+</main>

@@ -26,6 +26,9 @@
 
         <div class="table-language" id="languageTableContainer">
             @await Html.PartialAsync("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", Model)
+            <a href="@Url.Action("ArchivedLanguage", "Admin")" class="btn btn-warning mb-3">
+                <span class="material-symbols-rounded">archive</span> View Archived Languages
+            </a>
         </div>
 
 

@@ -1,5 +1,6 @@
 using eSaysay.Data;
 using eSaysay.Services;
+using eSaysay.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
@@ -19,7 +20,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<SecurityLogService>();
 builder.Services.AddScoped<NotificationService>();
-builder.Services.AddScoped<BadgeService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -63,14 +63,14 @@ using (var scope = app.Services.CreateScope())
 
 using (var scope = app.Services.CreateScope())
 {
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     string email = "admin@admin.com";
     string password = "eSaysay_123";
 
     if (await userManager.FindByEmailAsync(email) == null)
     {
-        var user = new IdentityUser();
+        var user = new ApplicationUser();
         user.UserName = email;
         user.Email = email;
 

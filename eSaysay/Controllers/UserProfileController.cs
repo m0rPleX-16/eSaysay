@@ -15,22 +15,10 @@ namespace eSaysay.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Profile(string userId)
+        public async Task<IActionResult> Profile()
         {
-            var userBadges = await _context.UserBadges
-                .Where(ub => ub.UserID == userId)
-                .Include(ub => ub.Badge)
-                .ToListAsync();
-
-            var allBadges = await _context.Badges.ToListAsync();
-
-            var viewModel = new BadgeViewModel
-            {
-                EarnedBadges = userBadges.Select(ub => ub.Badge).ToList(),
-                UnearnedBadges = allBadges.Where(b => !userBadges.Any(ub => ub.BadgeID == b.BadgeID)).ToList()
-            };
-
-            return View(viewModel);
+           
+            return View();
         }
     }
 

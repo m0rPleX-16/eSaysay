@@ -245,6 +245,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\assets\audio\" />
     <Folder Include="wwwroot\assets\database\" />
   </ItemGroup>

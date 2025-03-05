@@ -17,19 +17,20 @@ using Microsoft.Extensions.Logging;
 using eSaysay.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using eSaysay.Data;
+using eSaysay.Models;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
     public class AdminLoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<AdminLoginModel> _logger;
         private readonly ApplicationDbContext _context;
 
         public AdminLoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             ILogger<AdminLoginModel> logger,
             ApplicationDbContext context)
         {

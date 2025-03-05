@@ -1,0 +1,180 @@
+﻿@using eSaysay.Models.Entities;
+@model List<Lesson>
+
+@{
+    ViewData["Title"] = "Archived Lessons";
+}
+
+<main class="admin-lessons">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <header class="admin-lessons-header d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold">📁 Archived Lessons</h2>
+        <a asp-controller="Admin" asp-action="Lessons" class="btn btn-primary fw-bold">
+            <i class="fa fa-arrow-left"></i> Back to Lessons
+        </a>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="lessons-searchbar mb-3">
+        <input type="text" id="lessonSearchInput" class="form-control" placeholder="🔍 Search by lesson title..." value="@ViewBag.Search">
+    </div>
+
+    <!-- Lessons Table -->
+    <div id="lessonsTableContainer">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Lesson Type</th>
+                    <th>Difficulty</th>
+                    <th>Language</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="lessonsTableBody">
+                @if (Model.Any())
+                {
+                    @foreach (var lesson in Model)
+                    {
+                        <tr id="lessonRow_@lesson.LessonID">
+                            <td>@lesson.Title</td>
+                            <td>@lesson.LessonType</td>
+                            <td>@lesson.DifficultyLevel</td>
+                            <td>@lesson.Language.LanguageName</td>
+                            <td class="text-center">
+                                <form class="restore-form d-inline" data-id="@lesson.LessonID">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fa fa-undo"></i> Restore
+                                    </button>
+                                </form>
+                                <form class="delete-form d-inline" data-id="@lesson.LessonID">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No archived lessons found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="lessons-pagination text-center mt-3">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <a href="#" class="pagination-link btn btn-outline-secondary btn-sm mx-1" data-page="@i">@i</a>
+            }
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
+        <div id="toastContainer"></div>
+    </div>
+
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                function showToast(message, type = 'success') {
+                    const toastId = `toast-${Date.now()}`;
+                    const toastHtml = `
+                        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">${message}</div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>`;
+
+                    $("#toastContainer").append(toastHtml);
+                    const toastElement = new bootstrap.Toast(document.getElementById(toastId));
+                    toastElement.show();
+
+                    setTimeout(() => {
+                        $(`#${toastId}`).remove();
+                    }, 4000);
+                }
+
+                function loadLessons(page = 1) {
+                    const searchQuery = $('#lessonSearchInput').val();
+                    $.ajax({
+                        url: '/Admin/ArchivedLesson',
+                        type: 'GET',
+                        data: { search: searchQuery, page: page },
+                        success: function (response) {
+                            const newTableContent = $(response).find("#lessonsTableBody").html();
+                            $("#lessonsTableBody").html(newTableContent);
+
+                            const paginationHtml = $(response).find('.lessons-pagination').html();
+                            $('.lessons-pagination').html(paginationHtml);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading lessons:', error);
+                        }
+                    });
+                }
+
+                let timeoutId;
+                $('#lessonSearchInput').on('input', function () {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        loadLessons();
+                    }, 300);
+                });
+
+                $(document).on('click', '.pagination-link', function (e) {
+                    e.preventDefault();
+                    loadLessons($(this).data('page'));
+                });
+
+                $(document).on('submit', '.restore-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to restore this lesson?")) {
+                        const lessonId = $(this).data('id');
+                        $.ajax({
+                            url: '/Admin/RestoreLesson',
+                            type: 'POST',
+                            data: { LessonID: lessonId },
+                            success: function () {
+                                $(`#lessonRow_${lessonId}`).remove();
+                                showToast("✅ Lesson successfully restored!");
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error restoring lesson:', error);
+                                showToast("❌ Error restoring lesson!", 'danger');
+                            }
+                        });
+                    }
+                });
+
+                $(document).on('submit', '.delete-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("⚠️ This action is permanent! Are you sure you want to delete this lesson?")) {
+                        const lessonId = $(this).data('id');
+                        $.ajax({
+                            url: '/Admin/DeleteLessonPermanently',
+                            type: 'POST',
+                            data: { LessonID: lessonId },
+                            success: function () {
+                                $(`#lessonRow_${lessonId}`).remove();
+                                showToast("🗑️ Lesson permanently deleted!", 'warning');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error deleting lesson:', error);
+                                showToast("❌ Error deleting lesson!", 'danger');
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    }
+</main>

@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using eSaysay.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using eSaysay.Models;
+using System.Diagnostics;
 using eSaysay.Models.Entities;
 using eSaysay.Models.ViewModels;
-using System.Security.Claims;
+using eSaysay.Data;
 using eSaysay.Services;
+using System.Text.Json;
 
 namespace eSaysay.Controllers
 {
@@ -14,12 +16,12 @@ namespace eSaysay.Controllers
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly SecurityLogService _logService;
 
-        public DashboardController(ILogger<DashboardController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
+        public DashboardController(ILogger<DashboardController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
             ApplicationDbContext context, SecurityLogService logService)
         {
             _logger = logger;
@@ -48,10 +50,6 @@ namespace eSaysay.Controllers
             _logger.LogInformation($"UserProgress Records (Before Passing to View): {userProgress?.Count ?? 0}");
             var analytics = await _context.Analytics
                 .FirstOrDefaultAsync(a => a.UserID == user.Id);
-            var userBadges = await _context.UserBadges
-                .Include(ub => ub.Badge)
-                .Where(ub => ub.UserID == user.Id)
-                .ToListAsync();
             var adaptiveLearning = await _context.AdaptiveLearning
                 .FirstOrDefaultAsync(al => al.UserID == user.Id);
 
@@ -64,7 +62,6 @@ namespace eSaysay.Controllers
             _logger.LogInformation($"Total Lessons Fetched: {allLessons.Count}");
             _logger.LogInformation($"Notifications Found: {notifications.Count}");
             _logger.LogInformation($"UserProgress Records: {userProgress.Count}");
-            _logger.LogInformation($"UserBadges: {userBadges.Count}");
             _logger.LogInformation($"AdaptiveLearning: {adaptiveLearning != null}");
 
             // Pass data to the view using ViewModel
@@ -74,7 +71,6 @@ namespace eSaysay.Controllers
                 Notifications = notifications,
                 UserProgress = userProgress,
                 Analytics = analytics,
-                UserBadges = userBadges,
                 AdaptiveLearning = adaptiveLearning
             };
 
@@ -168,9 +164,6 @@ namespace eSaysay.Controllers
 
                 // Update Analytics
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect);
-
-                // Check and assign badges
-                await CheckAndAssignBadges(userResponse.UserID);
 
                 // Update Adaptive Learning
                 await UpdateAdaptiveLearning(userResponse.UserID, exercise.LessonID);
@@ -268,29 +261,7 @@ namespace eSaysay.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private async Task CheckAndAssignBadges(string userId)
-        {
-            // Example: Assign a badge if the user completes 5 lessons
-            var completedLessons = await _context.UserProgress
-                .CountAsync(up => up.UserID == userId && up.CompletionStatus == "Completed");
-
-            if (completedLessons >= 5)
-            {
-                var badge = await _context.Badges.FirstOrDefaultAsync(b => b.BadgeID == 1); // Example badge ID
-                if (badge != null)
-                {
-                    var userBadge = new UserBadge
-                    {
-                        UserID = userId,
-                        BadgeID = badge.BadgeID,
-                        DateEarned = DateTime.UtcNow
-                    };
-                    _context.UserBadges.Add(userBadge);
-                    await _context.SaveChangesAsync();
-                }
-            }
-        }
-
+     
         public IActionResult Profile()
         {
             return View("~/Views/User/Dashboard/Profile.cshtml");
@@ -299,6 +270,11 @@ namespace eSaysay.Controllers
         public IActionResult Translator()
         {
             return View("~/Views/User/Dashboard/Translator.cshtml");
+        }
+
+        public IActionResult PracticeSpeech()
+        {
+            return View("~/Views/User/Dashboard/PracticeSpeech.cshtml");
         }
 
         public IActionResult StartExercise(int exerciseId)
@@ -343,10 +319,6 @@ namespace eSaysay.Controllers
                 .Include(up => up.Lesson)
                 .Where(up => up.UserID == user.Id)
                 .ToListAsync() ?? new List<UserProgress>();
-            var userBadges = await _context.UserBadges
-                .Include(ub => ub.Badge)
-                .Where(ub => ub.UserID == user.Id)
-                .ToListAsync();
             var adaptiveLearning = await _context.AdaptiveLearning
                 .FirstOrDefaultAsync(al => al.UserID == user.Id);
 
@@ -354,7 +326,6 @@ namespace eSaysay.Controllers
             {
                 Analytics = analytics,
                 UserProgress = userProgress,
-                UserBadges = userBadges,
                 AdaptiveLearning = adaptiveLearning
             };
 
@@ -374,7 +345,7 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Logs.cshtml", logs);
         }
 
-        public async Task<IActionResult> UpdateProfile(IdentityUser updatedUser)
+        public async Task<IActionResult> UpdateProfile(ApplicationUser updatedUser)
         {
             // Update user logic here...
 

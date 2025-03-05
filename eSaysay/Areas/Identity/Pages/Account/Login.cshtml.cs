@@ -15,20 +15,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using eSaysay.Data;
+using eSaysay.Models;
 using eSaysay.Models.Entities;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager; 
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager; 
         private readonly ILogger<LoginModel> _logger;
         private readonly ApplicationDbContext _context;
 
         public LoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, 
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager, 
             ILogger<LoginModel> logger,
             ApplicationDbContext context)
         {

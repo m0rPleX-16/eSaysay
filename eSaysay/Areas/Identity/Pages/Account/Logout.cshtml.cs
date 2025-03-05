@@ -12,16 +12,16 @@ using Microsoft.Extensions.Logging;
 using eSaysay.Data;
 using System.Security.Claims;
 using eSaysay.Models.Entities;
-
+using eSaysay.Models;
 namespace eSaysay.Areas.Identity.Pages.Account
 {
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
         private readonly ApplicationDbContext _context;
 
-        public LogoutModel(SignInManager<IdentityUser> signInManager, ILogger<LogoutModel> logger, ApplicationDbContext context)
+        public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger, ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _logger = logger;

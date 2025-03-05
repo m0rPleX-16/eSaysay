@@ -10,7 +10,7 @@ namespace eSaysay.Models.Entities
         public int ResponseID { get; set; } 
         [ForeignKey("User")]
         public string UserID { get; set; } // Foreign Key referencing Users (Identity framework uses string GUID)
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         [Required]
         [ForeignKey("InteractiveExercise")]

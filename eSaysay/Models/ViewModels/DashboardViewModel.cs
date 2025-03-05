@@ -7,7 +7,6 @@ namespace eSaysay.Models.ViewModels
         public List<Lesson> Lessons { get; set; }
         public List<Notification> Notifications { get; set; }
         public Analytics? Analytics { get; set; }
-        public List<UserBadge> UserBadges { get; set; }
         public AdaptiveLearning AdaptiveLearning { get; set; }
         public List<UserProgress> UserProgress { get; set; }
     }

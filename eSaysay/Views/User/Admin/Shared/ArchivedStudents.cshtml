@@ -1,0 +1,176 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model List<ApplicationUser>
+
+@{
+    ViewData["Title"] = "Archived Students";
+}
+
+<main class="admin-students">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <header class="admin-students-header d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold">📁 Archived Students</h2>
+        <a asp-controller="Admin" asp-action="Students" class="btn btn-primary fw-bold">
+            <i class="fa fa-arrow-left"></i> Back to Students
+        </a>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="students-searchbar mb-3">
+        <input type="text" id="studentSearchInput" class="form-control" placeholder="🔍 Search by email...">
+    </div>
+
+    <!-- Students Table -->
+    <div id="studentsTableContainer">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Email</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+                @if (Model.Any())
+                {
+                    @foreach (var student in Model)
+                    {
+                        <tr id="studentRow_@student.Id">
+                            <td>@student.Email</td>
+                            <td class="text-center">
+                                <form class="restore-form d-inline" data-id="@student.Id">
+                                    <input type="hidden" name="Id" value="@student.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fa fa-undo"></i> Restore
+                                    </button>
+                                </form>
+                                <form class="delete-form d-inline" data-id="@student.Id">
+                                    <input type="hidden" name="Id" value="@student.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">No archived students found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="students-pagination text-center mt-3">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <a href="#" class="pagination-link btn btn-outline-secondary btn-sm mx-1" data-page="@i">@i</a>
+            }
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
+        <div id="toastContainer"></div>
+    </div>
+
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                function showToast(message, type = 'success') {
+                    const toastId = `toast-${Date.now()}`;
+                    const toastHtml = `
+                        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">${message}</div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>`;
+
+                    $("#toastContainer").append(toastHtml);
+                    const toastElement = new bootstrap.Toast(document.getElementById(toastId));
+                    toastElement.show();
+
+                    setTimeout(() => {
+                        $(`#${toastId}`).remove(); // Remove toast after it disappears
+                    }, 4000);
+                }
+
+                function loadStudents(page = 1) {
+                    const searchQuery = $('#studentSearchInput').val();
+                    $.ajax({
+                        url: '/Admin/ArchivedStudents',
+                        type: 'GET',
+                        data: { search: searchQuery, page: page },
+                        success: function (response) {
+                            const newTableContent = $(response).find("#studentsTableBody").html();
+                            $("#studentsTableBody").html(newTableContent);
+
+                            const paginationHtml = $(response).find('.students-pagination').html();
+                            $('.students-pagination').html(paginationHtml);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading students:', error);
+                        }
+                    });
+                }
+
+                let timeoutId;
+                $('#studentSearchInput').on('input', function () {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        loadStudents();
+                    }, 300);
+                });
+
+                $(document).on('click', '.pagination-link', function (e) {
+                    e.preventDefault();
+                    loadStudents($(this).data('page'));
+                });
+
+                $(document).on('submit', '.restore-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to restore this student?")) {
+                        const studentId = $(this).data('id');
+                        $.ajax({
+                            url: '/Admin/RestoreStudent',
+                            type: 'POST',
+                            data: { Id: studentId },
+                            success: function () {
+                                $(`#studentRow_${studentId}`).remove();
+                                showToast("✅ Student successfully restored!");
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error restoring student:', error);
+                                showToast("❌ Error restoring student!", 'danger');
+                            }
+                        });
+                    }
+                });
+
+                $(document).on('submit', '.delete-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("⚠️ This action is permanent! Are you sure you want to delete this student?")) {
+                        const studentId = $(this).data('id');
+                        $.ajax({
+                            url: '/Admin/DeleteStudentPermanently',
+                            type: 'POST',
+                            data: { Id: studentId },
+                            success: function () {
+                                $(`#studentRow_${studentId}`).remove();
+                                showToast("🗑️ Student permanently deleted!", 'warning');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error deleting student:', error);
+                                showToast("❌ Error deleting student!", 'danger');
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    }
+</main>

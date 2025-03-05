@@ -16,7 +16,7 @@ namespace eSaysay.Models.Entities
         [Required]
         [ForeignKey("User")]
         public string UserID { get; set; } = string.Empty; 
-        public IdentityUser User { get; set; } = new IdentityUser();
+        public ApplicationUser User { get; set; } = new ApplicationUser();
 
         [Required]
         [Range(1, 15)]

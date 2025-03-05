@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@model List<IdentityUser>
+@model List<ApplicationUser>
 
 @{
     ViewData["Title"] = "Registered Students";
@@ -19,6 +19,9 @@
     <!-- Students Table Container (AJAX Loaded) -->
     <div id="studentsTableContainer">
         @await Html.PartialAsync("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", Model)
+        <a href="@Url.Action("ArchivedStudents", "Admin")" class="btn btn-warning fw-bold mt-3">
+            <i class="fa fa-archive" aria-hidden="true"></i> View Archived Students
+        </a>
     </div>
 
     @section Scripts {

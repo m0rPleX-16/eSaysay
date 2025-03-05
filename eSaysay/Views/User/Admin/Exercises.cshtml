@@ -70,7 +70,6 @@
                                                 <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
                                                 <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
                                                 <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
-                                                <option value="Pairing Exercise" selected="@(exercise.ExerciseType == "Pairing Exercise")">Pairing Exercise</option>
                                             </select>
                                         </div>
                                         <div class="mb-3">
@@ -110,6 +109,9 @@
                     </div>
                 }
             </tbody>
+            <a href="@Url.Action("ArchivedExercises", "Admin")" class="btn btn-warning mb-3">
+                <span class="material-symbols-rounded">archive</span> View Archived Exercises
+            </a>
         </table>
 
         <!-- Add Exercise Modal -->
@@ -132,7 +134,6 @@
                                     <option value="Listening Exercise">Listening Exercise</option>
                                     <option value="Correct Translation">Correct Translation</option>
                                     <option value="Complete Translation">Complete Translation</option>
-                                    <option value="Pairing Exercise">Pairing Exercise</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -175,30 +176,3 @@
     </div>
 
 </main>
-
-
-<script>
-    function handleExerciseTypeChange(selectElement) {
-        const exerciseType = selectElement.value;
-        const answerChoicesSection = document.getElementById("answerChoicesSection");
-
-        // Show or hide Answer Choices based on the selected exercise type
-        if (exerciseType === "Listening Exercise") {
-            answerChoicesSection.style.display = "none"; // Hide for Listening Exercise
-        } else if (exerciseType === "Pairing Exercise") {
-            answerChoicesSection.style.display = "block"; // Show for Pairing Exercise
-            answerChoicesSection.querySelector("input").setAttribute("required", "true");
-        } else {
-            answerChoicesSection.style.display = "block"; // Show for Complete and Correct Translation
-            answerChoicesSection.querySelector("input").removeAttribute("required");
-        }
-    }
-
-    // Initialize the modal based on the default selected exercise type
-    document.addEventListener("DOMContentLoaded", function () {
-        const exerciseTypeSelect = document.querySelector("select[name='ExerciseType']");
-        if (exerciseTypeSelect) {
-            handleExerciseTypeChange(exerciseTypeSelect);
-        }
-    });
-</script>

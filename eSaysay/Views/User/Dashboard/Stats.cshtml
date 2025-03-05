@@ -102,27 +102,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom Section: UserBadge -->
-            <div class="user-badges-section">
-                <h2>My Badges</h2>
-                <div class="badges-grid">
-                    @if (Model.UserBadges != null && Model.UserBadges.Any())
-                    {
-                        foreach (var badge in Model.UserBadges)
-                        {
-                            <div class="badge-card">
-                                <h3>@(badge.Badge?.BadgeName ?? "Unnamed Badge")</h3>
-                                <p>Earned on: @(badge.DateEarned != DateTime.MinValue ? badge.DateEarned.ToString("MM/dd/yyyy") : "N/A")</p>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No badges earned yet.</p>
-                    }
-                </div>
-            </div>
         </div>
     </main>
 </div>

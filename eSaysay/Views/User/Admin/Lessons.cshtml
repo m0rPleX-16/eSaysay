@@ -25,6 +25,9 @@
 
         <div id="lessonTableContainer">
             @await Html.PartialAsync("~/Views/User/Admin/Partial/_LessonsTablePartial.cshtml", Model)
+            <a href="@Url.Action("ArchivedLessons", "Admin")" class="btn btn-warning fw-bold mt-3">
+                <i class="fa fa-archive" aria-hidden="true"></i> View Archived Lessons
+            </a>
         </div>
 
          
