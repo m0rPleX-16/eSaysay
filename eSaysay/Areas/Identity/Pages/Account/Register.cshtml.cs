@@ -36,7 +36,7 @@ using System.Text.Json;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
-        private const string hCaptchaSecretKey = "ES_888792c6dd5344dea7bd802f2b290bab";
+        //private const string hCaptchaSecretKey = "ES_888792c6dd5344dea7bd802f2b290bab";
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -62,7 +62,7 @@ using System.Text.Json;
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-            public InputModel Input { get; set; }
+        public InputModel Input { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -136,13 +136,17 @@ using System.Text.Json;
                 [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
                 public string ConfirmPassword { get; set; }
 
-            [Required]
-            [Display(Name = "hCaptcha Token")]
-            public string RecaptchaToken { get; set; }
+                [Required]
+                [Display(Name = "CAPTCHA Code")]
+                public string CaptchaCode { get; set; }
 
-            [Required]
-            [Display(Name = "hCaptcha Response")]
-            public string hCaptchaResponse { get; set; }
+            //[Required]
+            //[Display(Name = "hCaptcha Token")]
+            //public string RecaptchaToken { get; set; }
+
+            //[Required]
+            //[Display(Name = "hCaptcha Response")]
+            //public string hCaptchaResponse { get; set; }
         }
 
             public async Task OnGetAsync(string returnUrl = null)
@@ -156,9 +160,12 @@ using System.Text.Json;
                 returnUrl ??= Url.Content("~/");
                 ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            if (!await VerifyHCaptcha(Input.hCaptchaResponse))
+            var storedCaptcha = HttpContext.Session.GetString("CaptchaCode");
+
+            if (!string.Equals(Input.CaptchaCode, storedCaptcha, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(string.Empty, "hCaptcha validation failed.");
+                _logger.LogInformation($"CAPTCHA validation failed. Input: {Input.CaptchaCode}, Stored: {storedCaptcha}");
+                ModelState.AddModelError(string.Empty, "CAPTCHA verification failed.");
                 return Page();
             }
 
@@ -239,22 +246,6 @@ using System.Text.Json;
                 // If we got this far, something failed, redisplay form
                 return Page();
             }
-
-
-        private async Task<bool> VerifyHCaptcha(string hCaptchaResponse)
-        {
-            var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsync("https://hcaptcha.com/siteverify",
-                new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "secret", hCaptchaSecretKey },
-                    { "response", hCaptchaResponse }
-                }));
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
-            return result.GetProperty("success").GetBoolean();
-        }
-
         private ApplicationUser CreateUser()
             {
                 try

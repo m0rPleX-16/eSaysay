@@ -279,7 +279,7 @@ namespace eSaysay.Controllers
             var analytics = await _context.Analytics
                 .FirstOrDefaultAsync(a => a.UserID == userId);
             var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == userId);
+                .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
 
             var beginnerLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Beginner", StringComparison.OrdinalIgnoreCase)).ToList();
             var intermediateLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Intermediate", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -308,7 +308,7 @@ namespace eSaysay.Controllers
                 .Where(up => up.UserID == userId)
                 .ToListAsync() ?? new List<UserProgress>();
             var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == userId);
+                .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
 
             return new DashboardViewModel
             {
