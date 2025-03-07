@@ -30,7 +30,7 @@
             }
             else if (Model.RecoveryCodesLeft <= 3)
             {
-                <div class="alert alert-warning">
+                <div class="alert alert-warning">               
                     <strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong>
                     <p>You should <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
                 </div>

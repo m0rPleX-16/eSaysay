@@ -3,6 +3,7 @@ using eSaysay.Services;
 using eSaysay.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +13,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings");
+builder.Services.AddSingleton<IEmailSender>(new SmtpEmailSender(
+    smtpSettings["Server"],
+    int.Parse(smtpSettings["Port"]),
+    smtpSettings["Username"],
+    smtpSettings["Password"]
+));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
