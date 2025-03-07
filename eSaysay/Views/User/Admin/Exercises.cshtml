@@ -59,6 +59,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form method="post" action="/Admin/EditExercise">
+                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
                                         <div class="mb-3">
                                             <label class="form-label">Content</label>
@@ -124,6 +125,7 @@
                     </div>
                     <div class="modal-body">
                         <form method="post" action="/Admin/CreateExercise">
+                            @Html.AntiForgeryToken()
                             <div class="mb-3">
                                 <label class="form-label">Content</label>
                                 <input type="text" class="form-control" name="Content" required>

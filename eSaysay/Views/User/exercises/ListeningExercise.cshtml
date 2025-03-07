@@ -16,7 +16,6 @@
         <div class="progress-bar"><div class="progress-bar-inner"></div></div>
     </div>
 
-    
     <div class="title title-question">What does this sound make?</div>
 
     <div class="list-question row">
@@ -28,21 +27,17 @@
                     </span>
                 </button>
             </div>
-
         </div>
-     <div class="col">
+        <div class="col">
             <div class="justify-content-start container listening-content">
                 <h6 id="content-text">@Model.Content</h6>
             </div>
-     </div>
-        
-        
-       
+        </div>
     </div>
-   
 
     <!-- Form for submitting the answer -->
     <form id="answer-form">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
         <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
         <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
@@ -53,9 +48,9 @@
             @if (!string.IsNullOrEmpty(Model.AnswerChoices))
             {
                 var choices = Model.AnswerChoices.Split(',').Select(c => c.Trim()).ToList();
-                for (int i = 0; i < choices.Count; i++)
+                foreach (var choice in choices)
                 {
-                    <button type="button" class="list-ans" onclick="selectAnswer('@choices[i]')">@choices[i]</button>
+                    <button type="button" class="list-ans" onclick="selectAnswer('@choice', event)">@choice</button>
                 }
             }
             else
@@ -64,7 +59,6 @@
             }
         </div>
 
-       
         <hr class="list-hr" />
         <div class="footer list-footer">
             <button type="button" class="skip" onclick="skip()">Skip</button>
@@ -83,21 +77,6 @@
     </div>
 </div>
 
-<!-- Modal Styles -->
-<style>
-    .completion-input {
-        margin-top: 15px;
-        text-align: center;
-    }
-
-        .completion-input input {
-            width: 80%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-</style>
-
 <script src="https://code.responsivevoice.org/responsivevoice.js?key=OEKkx4ur"></script>
 <script>
     function playAudio() {
@@ -108,27 +87,36 @@
         });
     }
 
-    function selectAnswer(answer) {
-        document.getElementById("user-answer").value = answer;
-        const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
-        const isCorrect = answer.toLowerCase() === correctAnswer;
-        document.getElementById("is-correct").value = isCorrect;
-        document.querySelectorAll('#answer-grid button').forEach(button => button.classList.remove('selected'));
-        event.target.classList.add('selected');
-    }
+    function selectAnswer(answer, event) {
+        const userAnswerInput = document.getElementById("user-answer");
+        const isCorrectInput = document.getElementById("is-correct");
+        const clickedButton = event.target;
 
-    function updateCompletionAnswer() {
-        document.getElementById("user-answer").value = document.getElementById("completion-answer").value;
+        document.querySelectorAll('#answer-grid button').forEach(button => button.classList.remove('selected'));
+
+        if (clickedButton.classList.contains("selected")) {
+            clickedButton.classList.remove("selected");
+            userAnswerInput.value = "";
+            isCorrectInput.value = "false";
+        } else {
+            clickedButton.classList.add("selected");
+            userAnswerInput.value = answer;
+            isCorrectInput.value = (answer.toLowerCase() === "@Model.CorrectAnswer".toLowerCase());
+        }
     }
 
     function checkAnswer() {
         const selectedAnswer = document.getElementById("user-answer").value;
         if (!selectedAnswer) {
-            alert('Please select or type an answer first!');
+            alert('Please select an answer first!');
             return;
         }
 
+        let endTime = new Date().getTime();
+        let timeSpent = Math.floor((endTime - startTime) / 1000);
+
         const formData = new FormData(document.getElementById("answer-form"));
+        formData.append("TimeSpent", timeSpent);
 
         fetch('/Dashboard/SaveUserResponse', {
             method: 'POST',
@@ -148,26 +136,41 @@
         });
     }
 
-    const successModal = document.getElementById("successModal");
-    const closeModal = document.getElementsByClassName("close")[0];
-    const goToDashboard = document.getElementById("goToDashboard");
-
     function showSuccessModal() {
-        successModal.style.display = "block";
+        document.getElementById("successModal").style.display = "block";
     }
 
     function hideSuccessModal() {
-        successModal.style.display = "none";
+        document.getElementById("successModal").style.display = "none";
     }
 
-    closeModal.onclick = hideSuccessModal;
+    document.getElementsByClassName("close")[0].onclick = hideSuccessModal;
     window.onclick = function (event) {
-        if (event.target === successModal) {
+        if (event.target === document.getElementById("successModal")) {
             hideSuccessModal();
         }
     };
 
-    goToDashboard.onclick = function () {
+    document.getElementById("goToDashboard").onclick = function () {
         window.location.href = "/Dashboard/Index";
     };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        startTime = new Date().getTime();
+        let allottedTime = 10;
+        let progressBar = document.querySelector(".progress-bar-inner");
+
+        progressBar.style.transition = `width ${allottedTime}s linear`;
+        progressBar.style.width = "100%";
+
+        setTimeout(() => {
+            progressBar.style.width = "0%";
+        }, allottedTime * 1000);
+    });
+
+    function skip() {
+        if (confirm("Are you sure you want to skip this exercise?")) {
+            window.location.href = "/Dashboard/Index";
+        }
+    }
 </script>

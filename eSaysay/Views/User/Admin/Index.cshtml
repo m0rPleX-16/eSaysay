@@ -1,12 +1,12 @@
-﻿@{
+﻿@model eSaysay.Models.ViewModels.AdminDashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
 }
+
 <div class="admin-dashboard">
     @await Html.PartialAsync("_AdminSidebar")
     <main class="admin-content">
-        <!-- Main Content -->
         <div class="flex-grow-1 d-flex flex-column">
-            <!-- Top Bar -->
             <div class="admin-dashboard-topbar">
                 <span id="admin-dashboard-sidebar-toggle"><i class="bi bi-list" style="font-size: 1.5rem;"></i></span>
                 <h2>Administrator Dashboard</h2>
@@ -15,45 +15,67 @@
             </div>
         </div>
 
-        <!-- Page Content -->
         <main class="admin-dashboard-content flex-grow-1 p-3">
-            <!-- Stats Boxes -->
             <section class="admin-dashboard-stats-boxes">
                 <div class="admin-dashboard-stats-box">
-                    <h3>50</h3>
-                    <span>Learners</span>
+                    <h3>@Model.TotalUsers</h3>
+                    <span>Total Users</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>39%</h3>
-                    <span>Avg. User Progress</span>
+                    <h3>@Model.AverageScore%</h3>
+                    <span>Avg. Score</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>3:2</h3>
-                    <span>Completed vs. Unfinished</span>
+                    <h3>@Model.CompletedLessons / @Model.TotalLessons</h3>
+                    <span>Completed vs. Total Lessons</span>
                 </div>
             </section>
 
             <div class="admin-dashboard-stats-boxes mt-4">
                 <div class="admin-dashboard-stats-box">
-                    <h3>Time Consumed</h3>
-                    <span>Overall usage stats</span>
+                    <h3>@Model.TotalTimeSpent mins</h3>
+                    <span>Overall Usage Time</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>Finished Lessons</h3>
-                    <span>Frequency of lesson completions</span>
+                    <h3>@Model.RecentActivity.Count</h3>
+                    <span>Recent Activities</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>Export to PDF</h3>
-                    <span>Download progress reports</span>
+                    <h3><a href="@Url.Action("ExportProgressReport", "Admin")">Export to PDF</a></h3>
+                    <span>Download Progress Reports</span>
                 </div>
             </div>
+
+            <section class="admin-dashboard-graph mt-5">
+                <h3>Progress Overview</h3>
+                <canvas id="progressChart"></canvas>
+            </section>
         </main>
     </main>
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.getElementById("admin-dashboard-sidebar-toggle").addEventListener("click", function() {
-        document.getElementById("admin-dashboard-sidebar").classList.toggle("closed");
-        document.querySelector(".admin-dashboard-main").classList.toggle("shifted");
+    var ctx = document.getElementById('progressChart').getContext('2d');
+    var progressChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Lessons'],
+            datasets: [{
+                label: 'Average Scores',
+                data: [@Model.AverageScore],
+                backgroundColor: ['#36A2EB'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
     });
 </script>

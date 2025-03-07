@@ -1,6 +1,7 @@
-﻿@page
-@model eSaysay.Views.User.Admin.AnalyticsModel
+﻿@model eSaysay.Models.ViewModels.AnalyticsModel
+
 @{
+    ViewData["Title"] = "Analytics";
 }
 <main class="admin-analytics">
     @await Html.PartialAsync("_AdminSidebar")
@@ -10,8 +11,92 @@
     </div>
 
     <div class="analytics-content">
+        <!-- KPI Section -->
+        <section class="analytics-stats">
+            <div class="analytics-box">
+                <h3>@Model.TotalUsers</h3>
+                <span>Total Users</span>
+            </div>
+            <div class="analytics-box">
+                <h3>@Model.AvgScore.ToString("0.00")%</h3>
+                <span>Average Score</span>
+            </div>
+            <div class="analytics-box">
+                <h3>@Model.TotalTimeSpent mins</h3>
+                <span>Total Time Spent</span>
+            </div>
+            <div class="analytics-box">
+                <h3>@Model.TotalLessonsCompleted</h3>
+                <span>Lessons Completed</span>
+            </div>
+        </section>
 
-        <!-- INSERT MAIN CONTENT OF ANALYTICS HEREEEEE -V-  -->
-        
+        <!-- Graph Section -->
+        <section class="analytics-graphs mt-5">
+            <h3>User Performance Overview</h3>
+            <canvas id="userAnalyticsChart"></canvas>
+        </section>
+
+        <section class="analytics-graphs mt-5">
+            <h3>Lessons Completed Over Time</h3>
+            <canvas id="lessonsCompletedChart"></canvas>
+        </section>
     </div>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctxAnalytics = document.getElementById('userAnalyticsChart').getContext('2d');
+        var userAnalyticsChart = new Chart(ctxAnalytics, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.AnalyticsDates),
+                datasets: [{
+                    label: 'Average Scores',
+                    data: @Json.Serialize(Model.AnalyticsScores),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }, {
+                    label: 'Time Spent (mins)',
+                    data: @Json.Serialize(Model.AnalyticsTimeSpent),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var ctxLessons = document.getElementById('lessonsCompletedChart').getContext('2d');
+        var lessonsCompletedChart = new Chart(ctxLessons, {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(Model.AnalyticsDates),
+                datasets: [{
+                    label: 'Lessons Completed',
+                    data: @Json.Serialize(Model.LessonsCompleted),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>

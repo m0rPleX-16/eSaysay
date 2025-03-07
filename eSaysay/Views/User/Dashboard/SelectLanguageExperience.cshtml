@@ -1,0 +1,22 @@
+﻿@model string
+
+<h2>Select Your Language Experience Level</h2>
+
+<form asp-action="SelectLanguageExperience" method="post">
+    <div>
+        <label>
+            <input type="radio" name="experience" value="Beginner" required /> Beginner - I am just starting to learn.
+        </label>
+    </div>
+    <div>
+        <label>
+            <input type="radio" name="experience" value="Intermediate" required /> Intermediate - I can understand and form basic sentences.
+        </label>
+    </div>
+    <div>
+        <label>
+            <input type="radio" name="experience" value="Fluent" required /> Fluent - I can speak and understand comfortably.
+        </label>
+    </div>
+    <button type="submit">Continue</button>
+</form>

@@ -1,32 +1,33 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
+    #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
-using eSaysay.Models.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using eSaysay.Data;
-using eSaysay.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using eSaysay.Models.Entities;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.UI.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using eSaysay.Data;
+    using eSaysay.Models;
+using System.Text.Json;
 
-namespace eSaysay.Areas.Identity.Pages.Account
-{
-    public class RegisterModel : PageModel
+    namespace eSaysay.Areas.Identity.Pages.Account
     {
+        public class RegisterModel : PageModel
+        {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
@@ -34,6 +35,8 @@ namespace eSaysay.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private const string hCaptchaSecretKey = "ES_888792c6dd5344dea7bd802f2b290bab";
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -41,7 +44,8 @@ namespace eSaysay.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IHttpClientFactory httpClientFactory)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -50,6 +54,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -57,181 +62,220 @@ namespace eSaysay.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        public InputModel Input { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public string ReturnUrl { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public class InputModel
-        {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-
-            [Required]
-            [Display(Name = "First Name")]
-            public string FirstName { get; set; }
-
-            [Required]
-            [Display(Name = "Last Name")]
-            public string LastName { get; set; }
-
-            [Required]
-            [Display(Name = "Middle Name")]
-            public string MiddleName { get; set; }
-
-            [Required]
-            [Range(1, 120, ErrorMessage = "Age must be between 1 and 120.")]
-            public int Age { get; set; }
-
-            [Required]
-            [Display(Name = "Gender")]
-            public string Gender { get; set; }
-
-            [Required]
-            [DataType(DataType.Date)]
-            [Display(Name = "Birthday")]
-            public DateTime Birthday { get; set; }
-
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
+            public InputModel Input { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
+            public string ReturnUrl { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-        }
+            public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public async Task OnGetAsync(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        }
-
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            ///     directly from your code. This API may change or be removed in future releases.
+            /// </summary>
+            public class InputModel
             {
-                var user = CreateUser();
+                /// <summary>
+                ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+                ///     directly from your code. This API may change or be removed in future releases.
+                /// </summary>
 
-                user.FirstName = Input.FirstName;
-                user.LastName = Input.LastName;
-                user.MiddleName = Input.MiddleName;
-                user.Age = Input.Age;
-                user.Gender = Input.Gender;
-                user.Birthday = Input.Birthday;
-                user.RegistrationDate = DateTime.UtcNow;
+                [Required]
+                [Display(Name = "First Name")]
+                public string FirstName { get; set; }
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                [Required]
+                [Display(Name = "Last Name")]
+                public string LastName { get; set; }
 
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+                [Required]
+                [Display(Name = "Middle Name")]
+                public string MiddleName { get; set; }
 
-                    await _userManager.AddToRoleAsync(user, "Student");
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                [Required]
+                [Range(1, 120, ErrorMessage = "Age must be between 1 and 120.")]
+                public int Age { get; set; }
 
-                    var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                [Required]
+                [Display(Name = "Gender")]
+                public string Gender { get; set; }
 
-                    // Log Registration Event
-                    var log = new SecurityLog
-                    {
-                        UserID = user.Id,
-                        Event = "User Registered",
-                        Timestamp = DateTime.UtcNow,
-                        IPAddress = ipAddress
-                    };
+                [Required]
+                [DataType(DataType.Date)]
+                [Display(Name = "Birthday")]
+                public DateTime Birthday { get; set; }
 
-                    _context.SecurityLog.Add(log);
-                    await _context.SaveChangesAsync();
+                [Required]
+                [EmailAddress]
+                [Display(Name = "Email")]
+                public string Email { get; set; }
 
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                /// <summary>
+                ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+                ///     directly from your code. This API may change or be removed in future releases.
+                /// </summary>
+                [Required]
+                [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+                [DataType(DataType.Password)]
+                [Display(Name = "Password")]
+                public string Password { get; set; }
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                /// <summary>
+                ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+                ///     directly from your code. This API may change or be removed in future releases.
+                /// </summary>
+                [DataType(DataType.Password)]
+                [Display(Name = "Confirm password")]
+                [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+                public string ConfirmPassword { get; set; }
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+            [Required]
+            [Display(Name = "hCaptcha Token")]
+            public string RecaptchaToken { get; set; }
 
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+            [Required]
+            [Display(Name = "hCaptcha Response")]
+            public string hCaptchaResponse { get; set; }
+        }
+
+            public async Task OnGetAsync(string returnUrl = null)
+            {
+                ReturnUrl = returnUrl;
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+            {
+                returnUrl ??= Url.Content("~/");
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (!await VerifyHCaptcha(Input.hCaptchaResponse))
+            {
+                ModelState.AddModelError(string.Empty, "hCaptcha validation failed.");
+                return Page();
+            }
+
+            if (ModelState.IsValid)
+                {
+                    var user = CreateUser();
+
+                    user.FirstName = Input.FirstName;
+                    user.LastName = Input.LastName;
+                    user.MiddleName = Input.MiddleName;
+                    user.Age = Input.Age;
+                    user.Gender = Input.Gender;
+                    user.Birthday = Input.Birthday;
+                    user.RegistrationDate = DateTime.UtcNow;
+
+                    await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                    var result = await _userManager.CreateAsync(user, Input.Password);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User created a new account with password.");
+
+                        await _userManager.AddToRoleAsync(user, "Student");
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                        // Log Registration Event
+                        var log = new SecurityLog
+                        {
+                            UserID = user.Id,
+                            Event = "User Registered",
+                            Timestamp = DateTime.UtcNow,
+                            IPAddress = ipAddress
+                        };
+
+                        _context.SecurityLog.Add(log);
+                        await _context.SaveChangesAsync();
+
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                            protocol: Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+
+                            // Check if the user has already selected their experience level
+                            var registeredUser = await _userManager.FindByIdAsync(userId);
+
+                            if (registeredUser != null && string.IsNullOrEmpty(registeredUser.LanguageExperience))
+                            {
+                                return RedirectToAction("SelectLanguageExperience", "Dashboard"); // No experience level set, redirect to selection
+                            }
+
+                            return RedirectToAction("StudentDashboard", "Dashboard"); // Experience level already set, go to dashboard
+                        }
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+
+                // If we got this far, something failed, redisplay form
+                return Page();
+            }
+
+
+        private async Task<bool> VerifyHCaptcha(string hCaptchaResponse)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.PostAsync("https://hcaptcha.com/siteverify",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "secret", hCaptchaSecretKey },
+                    { "response", hCaptchaResponse }
+                }));
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
+            return result.GetProperty("success").GetBoolean();
         }
 
         private ApplicationUser CreateUser()
-        {
-            try
             {
-                return Activator.CreateInstance<ApplicationUser>();
+                try
+                {
+                    return Activator.CreateInstance<ApplicationUser>();
+                }
+                catch
+                {
+                    throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                        $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                        $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                }
             }
-            catch
-            {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-            }
-        }
 
-        private IUserEmailStore<ApplicationUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
+            private IUserEmailStore<ApplicationUser> GetEmailStore()
             {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
+                if (!_userManager.SupportsUserEmail)
+                {
+                    throw new NotSupportedException("The default UI requires a user store with email support.");
+                }
+                return (IUserEmailStore<ApplicationUser>)_userStore;
             }
-            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
-}

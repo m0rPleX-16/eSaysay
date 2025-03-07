@@ -21,6 +21,7 @@
 
     <!-- Form for submitting the answer -->
     <form id="answer-form">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
         <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
         <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
@@ -62,54 +63,51 @@
 
 
 <script>
-    let startTime;
+    document.addEventListener("DOMContentLoaded", function () {
+        startTime = new Date().getTime(); // Capture start time in milliseconds
+        let allottedTime = 10; // Set allotted time
+        let progressBar = document.querySelector(".progress-bar-inner");
 
-    // Start tracking time when the page loads
-    window.onload = function () {
-        startTime = Date.now();
-    };
+        progressBar.style.transition = `width ${allottedTime}s linear`;
+        progressBar.style.width = "100%"; // Progress bar starts filling
 
-    // Function to select an answer
+        setTimeout(() => {
+            progressBar.style.width = "0%"; // Reset when time is up
+        }, allottedTime * 1000);
+    });
+
     function selectAnswer(button, answer) {
-    const userAnswerInput = document.getElementById("user-answer");
-    const isCorrectInput = document.getElementById("is-correct");
+        const userAnswerInput = document.getElementById("user-answer");
+        const isCorrectInput = document.getElementById("is-correct");
 
-    // Check if the button is already selected
-    if (button.classList.contains("selected")) {
-        // Unselect the button
-        button.classList.remove("selected");
-        userAnswerInput.value = ""; // Clear the selected answer
-        isCorrectInput.value = "false"; // Reset correctness
-    } else {
         // Remove 'selected' class from all buttons
-        document.querySelectorAll('.corr-ans').forEach(btn => btn.classList.remove('selected'));
+        document.querySelectorAll('#answer-grid button').forEach(btn => btn.classList.remove('selected'));
 
-        // Select the clicked button
-        button.classList.add("selected");
-        userAnswerInput.value = answer;
+        // Toggle selection
+        if (button.classList.contains("selected")) {
+            button.classList.remove("selected");
+            userAnswerInput.value = "";
+            isCorrectInput.value = "false";
+        } else {
+            button.classList.add("selected");
+            userAnswerInput.value = answer;
 
-        // Check if the selected answer is correct
-        const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
-        const isCorrect = answer.toLowerCase() === correctAnswer;
-        isCorrectInput.value = isCorrect;
+            // Check if the selected answer is correct
+            const correctAnswer = "@Model.CorrectAnswer".toLowerCase();
+            isCorrectInput.value = answer.toLowerCase() === correctAnswer;
+        }
     }
-}
 
-    // Function to check the answer and submit
     function checkAnswer() {
         const selectedAnswer = document.getElementById("user-answer").value;
-
         if (!selectedAnswer) {
             alert('Please select an answer first!');
             return;
         }
 
-        // Calculate time spent
-        const endTime = Date.now();
-        const timeSpent = Math.floor((endTime - startTime) / 1000); // Convert to seconds
-        document.getElementById("time-spent").value = timeSpent;
-
+        let timeSpent = Math.floor((new Date().getTime() - startTime) / 1000); // Calculate time spent
         const formData = new FormData(document.getElementById("answer-form"));
+        formData.append("TimeSpent", timeSpent);
 
         fetch('/Dashboard/SaveUserResponse', {
             method: 'POST',
@@ -129,9 +127,9 @@
         });
     }
 
-    // Modal Functions
+    // Success Modal Functions
     const successModal = document.getElementById("successModal");
-    const closeModal = document.getElementsByClassName("close")[0];
+    const closeModal = document.querySelector(".close");
     const goToDashboard = document.getElementById("goToDashboard");
 
     function showSuccessModal() {
@@ -144,12 +142,16 @@
 
     closeModal.onclick = hideSuccessModal;
     window.onclick = function (event) {
-        if (event.target === successModal) {
-            hideSuccessModal();
-        }
+        if (event.target === successModal) hideSuccessModal();
     };
 
     goToDashboard.onclick = function () {
         window.location.href = "/Dashboard/Index";
     };
+
+    function skip() {
+        if (confirm("Are you sure you want to skip this exercise?")) {
+            window.location.href = "/Dashboard/Index";
+        }
+    }
 </script>

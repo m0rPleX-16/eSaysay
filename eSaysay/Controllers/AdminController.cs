@@ -9,6 +9,8 @@ using eSaysay.Data;
 using eSaysay.Services;
 using System.Text.Json;
 using System.Net.Http;
+using eSaysay.Views.User.Admin;
+using eSaysay.Models.ViewModels;
 
 namespace eSaysay.Controllers
 {
@@ -36,11 +38,38 @@ namespace eSaysay.Controllers
             _httpClient = httpClient;
         }
 
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View("~/Views/User/Admin/Index.cshtml");
+            var totalUsers = await _context.Users.CountAsync();
+            var totalLessons = await _context.Lessons.CountAsync();
+            var completedLessons = await _context.UserProgress.CountAsync(up => up.CompletionStatus == "Completed");
+            var avgScore = await _context.Analytics.AverageAsync(a => (double?)a.AverageScore) ?? 0;
+            var totalTimeSpent = await _context.Analytics.SumAsync(a => a.TimeSpent);
+
+            var recentActivity = await _context.UserProgress
+                .OrderByDescending(up => up.LastAccessedDate)
+                .Take(5)
+                .Select(up => new RecentActivityModel
+                {
+                    FullName = $"{up.User.FirstName} {up.User.LastName}",
+                    LessonTitle = up.Lesson.Title,
+                    CompletionStatus = up.CompletionStatus,
+                    LastAccessedDate = up.LastAccessedDate
+                }).ToListAsync();
+
+            var model = new AdminDashboardViewModel
+            {
+                TotalUsers = totalUsers,
+                TotalLessons = totalLessons,
+                CompletedLessons = completedLessons,
+                AverageScore = avgScore,
+                TotalTimeSpent = totalTimeSpent,
+                RecentActivity = recentActivity
+            };
+
+            return View("~/Views/User/Admin/Index.cshtml", model);
         }
+
 
         // GET: Admin/Language with pagination and search
         public async Task<IActionResult> Language(string searchTerm, int page = 1, int pageSize = 5)
@@ -92,6 +121,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/AddLanguage
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddLanguage(Language language)
         {
             if (ModelState.IsValid)
@@ -105,6 +135,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/EditLanguage
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditLanguage(Language language)
         {
             if (ModelState.IsValid)
@@ -147,6 +178,7 @@ namespace eSaysay.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveLanguage(int LanguageID)
         {
             var language = await _context.Language.FindAsync(LanguageID);
@@ -162,6 +194,7 @@ namespace eSaysay.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreLanguage(int LanguageID)
         {
             var language = await _context.Language.FindAsync(LanguageID);
@@ -177,6 +210,7 @@ namespace eSaysay.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteLanguagePermanently(int LanguageID)
         {
             var language = await _context.Language.FindAsync(LanguageID);
@@ -192,7 +226,31 @@ namespace eSaysay.Controllers
 
         public IActionResult Analytics()
         {
-            return View("~/Views/User/Admin/Analytics.cshtml");
+            var analyticsData = _context.Analytics
+                .GroupBy(a => a.Date.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    TotalLessonsCompleted = g.Count(),
+                    AvgScore = g.Average(a => a.AverageScore),
+                    TotalTimeSpent = g.Sum(a => a.TimeSpent)
+                })
+                .OrderBy(a => a.Date)
+                .ToList();
+
+            var model = new Models.ViewModels.AnalyticsModel
+            {
+                AnalyticsDates = analyticsData.Select(a => a.Date.ToString("yyyy-MM-dd")).ToList(),
+                LessonsCompleted = analyticsData.Select(a => a.TotalLessonsCompleted).ToList(),
+                AnalyticsScores = analyticsData.Select(a => a.AvgScore).ToList(),
+                AnalyticsTimeSpent = analyticsData.Select(a => a.TotalTimeSpent).ToList(),
+                TotalUsers = _context.Users.Count(),
+                AvgScore = _context.Analytics.Average(a => a.AverageScore),
+                TotalTimeSpent = _context.Analytics.Sum(a => a.TimeSpent),
+                TotalLessonsCompleted = _context.Analytics.Count()
+            };
+
+            return View("~/Views/User/Admin/Analytics.cshtml", model);
         }
 
         // GET: Admin/Exercises
@@ -218,6 +276,7 @@ namespace eSaysay.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateExercise(InteractiveExercise exercise)
         {
             _logger.LogInformation($"Creating exercise: {exercise.ExerciseType}, Lesson ID: {exercise.LessonID}");
@@ -296,6 +355,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/EditExercise
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditExercise(InteractiveExercise exercise)
         {
             var existingExercise = await _context.InteractiveExercises.FirstOrDefaultAsync(e => e.ExerciseID == exercise.ExerciseID);
@@ -399,6 +459,7 @@ namespace eSaysay.Controllers
         }
         // POST: Admin/ArchiveExercise
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveExercise(int ExerciseID)
         {
             var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
@@ -439,6 +500,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/RestoreExercise
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreExercise(int ExerciseID)
         {
             var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
@@ -452,8 +514,8 @@ namespace eSaysay.Controllers
             return RedirectToAction("ArchivedExercises");
         }
 
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteExercisePermanently(int ExerciseID)
         {
             var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
@@ -528,6 +590,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/CreateLesson
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLesson(Lesson lesson)
         {
             _logger.LogInformation($"Creating lesson: {lesson.Title}, Language ID: {lesson.LanguageID}, Type: {lesson.LessonType}");
@@ -546,6 +609,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/EditLesson
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditLesson(Lesson lesson)
         {
             var existingLesson = _context.Lessons.Find(lesson.LessonID);
@@ -571,6 +635,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/ArchiveLesson
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveLesson(int LessonID)
         {
             var lesson = await _context.Lessons.FindAsync(LessonID);
@@ -614,6 +679,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/RestoreLesson
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreLesson(int LessonID)
         {
             var lesson = await _context.Lessons.FindAsync(LessonID);
@@ -629,6 +695,7 @@ namespace eSaysay.Controllers
 
         // POST: Admin/DeleteLessonPermanent
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteLessonPermanent(int LessonID)
         {
             var lesson = await _context.Lessons.FindAsync(LessonID);
@@ -695,9 +762,33 @@ namespace eSaysay.Controllers
             return PartialView("~/Views/User/Admin/Partial/_LogsTablePartial.cshtml", logs);
         }
 
-        public IActionResult Progress()
+        public async Task<IActionResult> Progress()
         {
-            return View("~/Views/User/Admin/Progress.cshtml");
+            var progressData = await _context.UserProgress
+                .Include(up => up.User)
+                .Include(up => up.Lesson)
+                .ToListAsync();
+
+            var viewModel = new ProgressViewModel
+            {
+                TotalUsers = await _context.Users.CountAsync(),
+                TotalLessons = await _context.Lessons.CountAsync(),
+                CompletedLessons = progressData.Count(p => p.CompletionStatus == "Completed"),
+                InProgressLessons = progressData.Count(p => p.CompletionStatus == "In Progress"),
+                NotStartedLessons = progressData.Count(p => p.CompletionStatus == "Not Started"),
+                AverageScore = progressData.Any(p => p.Score.HasValue) ? progressData.Average(p => p.Score ?? 0) : 0,
+                ProgressData = progressData.Select(p => new ProgressDetailViewModel
+                {
+                    UserName = p.User?.FirstName ?? "Student",
+                    LessonName = p.Lesson.Title,
+                    CompletionStatus = p.CompletionStatus,
+                    Score = p.Score ?? 0,
+                    TimeSpent = p.TimeSpent,
+                    LastAccessedDate = p.LastAccessedDate
+                }).ToList()
+            };
+
+            return View("~/Views/User/Admin/Progress.cshtml", viewModel);
         }
 
         // ✅ Fetch Active Students
@@ -760,6 +851,7 @@ namespace eSaysay.Controllers
 
         // ✅ Archive Student
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveStudent(string Id)
         {
             if (string.IsNullOrEmpty(Id))
@@ -787,6 +879,7 @@ namespace eSaysay.Controllers
 
         // ✅ Restore Student
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreStudent(string Id)
         {
             if (string.IsNullOrEmpty(Id))
@@ -814,6 +907,7 @@ namespace eSaysay.Controllers
 
         // ✅ Delete Student Permanently
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteStudentPermanently(string Id)
         {
             if (string.IsNullOrEmpty(Id))

@@ -9,6 +9,7 @@ namespace eSaysay.Models {
         public int Age { get; set; } = 0;
         public string Gender { get; set; } = string.Empty;
         public DateTime Birthday { get; set; } = DateTime.Now;
+        public string LanguageExperience { get; set; } = string.Empty;
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
         public bool IsArchived { get; set; } = false;
     }
