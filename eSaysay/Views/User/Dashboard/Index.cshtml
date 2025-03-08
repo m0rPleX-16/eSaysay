@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
-    var userExperienceLevel = Model.UserExperienceLevel; // Access from the viewModel
+    var userExperienceLevel = Model.UserExperienceLevel;
 }
 
 <!-- Dashboard Content of User -->
@@ -23,11 +23,12 @@
                 @if (Model.Notifications != null && Model.Notifications.Count > 0)
                 {
                     <ul class="notifications-list">
-                        @foreach (var notification in Model.Notifications)
+                        @foreach (var notification in Model.Notifications.Where(n => !n.IsRead))
                         {
-                            <li class="notification-item">
+                            <li class="notification-item" data-notification-id="@notification.NotificationID">
                                 <span class="notification-message">@notification.Message</span>
                                 <span class="notification-date">@notification.DateCreated.ToString("MMM dd, yyyy hh:mm tt")</span>
+                                <button class="mark-as-read-btn" data-notification-id="@notification.NotificationID">Mark as Read</button>
                             </li>
                         }
                     </ul>
@@ -176,3 +177,33 @@
         </div>
     </footer>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Bind the click event to the "Mark as Read" button
+            $(document).on('click', '.mark-as-read-btn', function () {
+                var notificationId = $(this).data('notification-id');
+                var button = $(this);
+
+                // Send an AJAX request to mark the notification as read
+                $.ajax({
+                    url: '@Url.Action("MarkAsRead", "Notification")',
+                    type: 'POST',
+                    data: { notificationId: notificationId },
+                    success: function (response) {
+                        if (response === "OK") {
+                            // Remove the notification item from the DOM
+                            button.closest('.notification-item').fadeOut(300, function () {
+                                $(this).remove();
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error marking notification as read:", error);
+                    }
+                });
+            });
+        });
+    </script>
+}

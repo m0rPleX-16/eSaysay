@@ -35,6 +35,19 @@ body {
     opacity: 60%;
 }
 
+.mark-as-read-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-left: 10px;
+}
+
+    .mark-as-read-btn:hover {
+        background-color: #45a049;
+    }
 /*-----------LESSONS--------------*/
 
 .lesson-section {
