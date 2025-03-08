@@ -59,6 +59,16 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+app.Use(async (context, next) =>
+{
+    await next();
+    if (context.Response.StatusCode == 403)
+    {
+        context.Response.Redirect("/Error/403");
+    }
+});
 
 app.MapControllerRoute(
     name: "default",
