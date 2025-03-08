@@ -57,3 +57,8 @@
     font-weight: 600;
     font-size: 0.8rem;
 }
+@media (max-width: 768px) {
+    .container-fluid.nav-auth-container {
+        display: none;
+    }
+}

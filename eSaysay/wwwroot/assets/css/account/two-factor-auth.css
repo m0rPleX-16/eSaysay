@@ -1,0 +1,72 @@
+﻿.two-factor-auth-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #274052;
+    margin-bottom: 20px;
+}
+
+    .two-factor-auth-title h2 {
+        color: #274052;
+    }
+
+.two-factor-auth-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+
+.btn-auth-app {
+    background-color: #3D76A2;
+    font-weight: 500;
+    color: #FFF;
+    font-size: 1.2rem;
+    border-radius:26px;
+}
+
+    .btn-auth-app:hover {
+        background-color: #629CC7;
+        color: #FFF;
+    }
+
+.btn-auth-app-reset {
+    background-color: #808080;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 26px;
+}
+    .btn-auth-app-reset:hover {
+        background-color: #D7D7D7;
+        color: #274052;
+    }
+
+.btn-cancel-auth {
+    background-color: #808080;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 26px;
+    width: 120px;
+}
+    .btn-cancel-auth:hover {
+        background-color: #D7D7D7;
+        color: #274052;
+    }
+
+.btn-delete-data {
+    background-color: #DF5757;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 26px;
+    width: 120px;
+}
+
+    .btn-delete-data:hover {
+        background-color: #E58080;
+        color: #fff;
+    }

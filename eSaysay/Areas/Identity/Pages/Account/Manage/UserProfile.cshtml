@@ -4,96 +4,104 @@
     ViewData["Title"] = "Manage Profile & Email";
     ViewData["ActivePage"] = ManageNavPages.UserProfile;
 }
+<div class="profile-email">
 
-<h3>@ViewData["Title"]</h3>
-<partial name="_StatusMessage" for="StatusMessage" />
-<div class="row">
-    <div class="col-md-6">
-        <form id="email-form" method="post">
-            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+    <div class="user-profile-title" style="color: #274052;">
+        <h2>Manage <span class="user-profile-span-dashboard">profile and email</span></h2>
+    </div>
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <div class="col-md-6">
+            <form id="email-form" method="post">
+                <div asp-validation-summary="All" class="text-danger" role="alert"></div>
 
-            <fieldset>
-                <legend>Email Management</legend>
-                <div class="form-floating mb-3 input-group">
-                    <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
-                    @if (Model.IsEmailConfirmed)
+                <fieldset>
+                    <legend class="user-profile-legend-title">Email Management</legend>
+                    <div class="form-floating mb-3 input-group">
+                        <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
+                        @if (Model.IsEmailConfirmed)
+                        {
+                            <div class="input-group-append">
+                                <span class="h-100 input-group-text text-success font-weight-bold">
+                                    <span class="material-symbols-rounded check-user-profile">
+                                        check
+                                    </span>
+                                </span>
+                            </div>
+                        }
+                        <label asp-for="Email" class="form-label"></label>
+                    </div>
+                    @if (!Model.IsEmailConfirmed)
                     {
-                        <div class="input-group-append">
-                            <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
-                        </div>
+                        <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
                     }
-                    <label asp-for="Email" class="form-label"></label>
-                </div>
-                @if (!Model.IsEmailConfirmed)
-                {
-                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
-                }
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Enter new email." />
-                    <label asp-for="Input.NewEmail" class="form-label"></label>
-                    <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
-                </div>
-                <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-lg btn-primary">Change Email</button>
-            </fieldset>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Enter new email." />
+                        <label asp-for="Input.NewEmail" class="form-label"></label>
+                        <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
+                    </div>
+                    <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-change-email">Change Email</button>
+                </fieldset>
 
-            <fieldset class="mt-4">
-                <legend>Profile Details</legend>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" required />
-                            <label asp-for="Input.FirstName">First Name</label>
-                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                <fieldset class="mt-4">
+                    <legend class="user-profile-legend-title">Profile Details</legend>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" required />
+                                <label asp-for="Input.FirstName">First Name</label>
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Input.MiddleName" class="form-control" placeholder="Middle Name" required />
+                                <label asp-for="Input.MiddleName">Middle Name</label>
+                                <span asp-validation-for="Input.MiddleName" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input asp-for="Input.MiddleName" class="form-control" placeholder="Middle Name" required />
-                            <label asp-for="Input.MiddleName">Middle Name</label>
-                            <span asp-validation-for="Input.MiddleName" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" required />
+                                <label asp-for="Input.LastName">Last Name</label>
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <select asp-for="Input.Gender" class="form-control" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label asp-for="Input.Gender">Gender</label>
+                                <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" required />
-                            <label asp-for="Input.LastName">Last Name</label>
-                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Input.Age" type="number" class="form-control" placeholder="Age" required />
+                                <label asp-for="Input.Age">Age</label>
+                                <span asp-validation-for="Input.Age" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Input.Birthday" type="date" class="form-control" required />
+                                <label asp-for="Input.Birthday">Birthday</label>
+                                <span asp-validation-for="Input.Birthday" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <select asp-for="Input.Gender" class="form-control" required>
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <label asp-for="Input.Gender">Gender</label>
-                            <span asp-validation-for="Input.Gender" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input asp-for="Input.Age" type="number" class="form-control" placeholder="Age" required />
-                            <label asp-for="Input.Age">Age</label>
-                            <span asp-validation-for="Input.Age" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input asp-for="Input.Birthday" type="date" class="form-control" required />
-                            <label asp-for="Input.Birthday">Birthday</label>
-                            <span asp-validation-for="Input.Birthday" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" asp-page-handler="UpdateProfile" class="w-100 btn btn-lg btn-success">Update Profile</button>
-            </fieldset>
-        </form>
+                    <button type="submit" asp-page-handler="UpdateProfile" class="w-100 btn btn-update-profile">Update Profile</button>
+                </fieldset>
+            </form>
+        </div>
     </div>
 </div>
 

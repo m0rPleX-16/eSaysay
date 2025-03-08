@@ -5,7 +5,11 @@
     <header class="sidebar-header">
         <a href="#" class="header-logo">
             <img src="~/assets/img/eSaysay-logo.png" alt="eSaysay">
-        </a>
+        </a>@* 
+        <div class="nav-user-info">
+            <span id="nav-user-role"></span>
+            <span id="nav-auth-username"></span>
+        </div> *@
         <button class="toggler sidebar-toggler">
             <span class="material-symbols-rounded">chevron_left</span>
         </button>
@@ -45,7 +49,7 @@
             </li>
             <p id="sidebar-title">Settings</p>
             <li class="class-item">
-                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">
+                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/UserProfile">
                     <span class="nav-icon material-symbols-rounded">account_circle</span>
                     <span class="nav-label">Profile</span>
                 </a>
@@ -64,4 +68,21 @@
          
         </ul>
     </nav>
+ @*    <script>
+            window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('nav-user-role').textContent = document.querySelector('.navbar .nav-user-role').textContent;
+                document.getElementById('nav-auth-username').textContent = document.querySelector('.navbar .nav-auth-username').textContent;
+            } else {
+                document.getElementById('nav-user-role').textContent = '';
+                document.getElementById('nav-auth-username').textContent = '';
+            }
+        });
+
+        // Initial check
+        if (window.innerWidth <= 768) {
+            document.getElementById('nav-user-role').textContent = document.querySelector('.navbar .nav-user-role').textContent;
+            document.getElementById('nav-auth-username').textContent = document.querySelector('.navbar .nav-auth-username').textContent;
+        }
+    </script> *@
 </aside>
