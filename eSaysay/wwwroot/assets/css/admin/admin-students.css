@@ -1,20 +1,30 @@
 ﻿
 .admin-students {
     margin-left: 200px;
+    color: #274052;
+    min-height: 92vh;
 }
 
-.admin-students-header { /* header top area*/
+.admin-students-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
 }
 
-.students-content {
-    margin: 16px;
-    padding: 0 100px 0 100px;
+    .admin-students-topbar h2{
+        color: #274052;
+    }
+
+.students-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
 }
 
 /*SEARCH BAR*/
@@ -23,10 +33,64 @@
     padding: 40px 115px 10px 115px;
 }
 
+.students-search-form {
+    border: 1px solid #B5C4CE;
+    color: #274052;
+    background: #FFFCF7;
+}
+
+.students-view-archive {
+    display: flex;
+    justify-content: end;
+    padding: 20px 115px 2px 115px;
+}
+
+.btn-students-view-archive {
+    background-color: #DFB757;
+    color: #274052;
+    font-weight: 600;
+    font-style: italic;
+}
+
+    .btn-students-view-archive:hover {
+        background-color: #FFE4A3;
+        color: #274052;
+    }
+
 .table-students {
     margin: 16px;
     padding: 0 100px 0 100px;
 }
+
+.table-students-content {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #FEF6ED;
+    color: #274052;
+    overflow: hidden;
+}
+    .table-students-content thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+    .table-students-content thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table-students-content thead tr:first-child th {
+        background-color: #F4EADD;
+        border: 1px solid #B5C4CE;
+        padding: 10px;
+    }
+    .table-students-content th {
+        background-color: #FFFCF7;
+        color: #274052;
+    }
+    .table-students-content td {
+        border: 0.8px solid #B5C4CE;
+        color: #274052;
+        background-color: #FFFCF7;
+    }
+
 
 /*ACTION BUTTON*/
 .btn-students-edit {
@@ -41,6 +105,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #FAF3E2;
     }
 
     .btn-students-edit:hover {
@@ -60,6 +125,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #FAF3E2;
     }
 
     .btn-students-archive:hover {
@@ -97,3 +163,12 @@
             background-color: #E0D3C5;
             color: #274052;
         }
+
+.students-error {
+    margin: 16px;
+    padding: 0 100px 0 100px;
+    color: #274052;
+    font-style: italic;
+    font-weight:600;
+    opacity:60%;
+}

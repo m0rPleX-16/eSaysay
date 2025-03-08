@@ -5,59 +5,66 @@
     </header>
     <nav class="admin-sidebar-nav">
         <ul class="admin-dashboard-nav-list">
-            <li><a asp-controller="Admin" asp-action="Index">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item"><a class="admin-nav-link" asp-controller="Admin" asp-action="Index">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         dashboard
                     </span> Dashboard
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Students">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Students">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         group
                     </span> Students
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Exercises">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Exercises">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         library_books
                     </span> Exercises
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Language">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Language">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         language
                     </span> Languages
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Lessons">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Lessons">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         book
                     </span> Lessons
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Progress">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Progress">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         monitoring
                     </span> Progress
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Analytics">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Analytics">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         insert_chart
                     </span>Analytics
                 </a>
             </li>
-            <li><a asp-controller="Admin" asp-action="Logs">
-                    <span class="material-symbols-rounded">
+            <li class="admin-class-item">
+                <a class="admin-nav-link" asp-controller="Admin" asp-action="Logs">
+                    <span class="admin-nav-icon material-symbols-rounded">
                         history
                     </span> Logs
                 </a>
             </li>
-            <hr />
+            <hr class="admin-sidebar-hr">
             <li class="admin-btn-logout">
                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="admin-dashboard-logout-form">
                     <button type="submit" class="admin-dashboard-logout-btn">
-                        <span class="material-symbols-rounded">
+                        <span class="admin-nav-icon material-symbols-rounded">
                             logout
                         </span>Logout
                     </button>

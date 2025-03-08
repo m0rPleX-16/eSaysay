@@ -1,15 +1,21 @@
 ﻿
 .admin-lessons {
     margin-left: 200px;
+    width: calc(100% - 200px);
+    min-height: 92vh;
 }
 
-.admin-lessons-header { /* header top area*/
+.admin-lessons-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
+}
+.admin-lessons-topbar h2 {
+    color: #274052;
 }
 
 .lessons-content {
@@ -17,22 +23,16 @@
     padding: 0 100px 0 100px;
 }
 
-
 /*SEARCH BAR*/
-
 .lessons-searchbar {
     padding: 40px 115px 10px 115px;
 }
 
-.btn-lessons-search {
-    background-color: #DFB757;
+.lessons-search-form {
+    border: 1px solid #B5C4CE;
     color: #274052;
+    background: #FFFCF7;
 }
-
-    .btn-lessons-search:hover {
-        background-color: #FFE4A3;
-        color: #274052;
-    }
 
 /*ADD BUTTON*/
 .btn-lessons-add {
@@ -46,6 +46,62 @@
         background-color: #5A9A3D;
         color: #fefefe;
     }
+
+
+.btn-lessons-view-archive {
+    background-color: #DFB757;
+    color: #274052;
+    font-weight: 600;
+    font-style: italic;
+}
+
+    .btn-lessons-view-archive:hover {
+        background-color: #FFE4A3;
+        color: #274052;
+    }
+
+
+/* TABLE */
+
+.table-lessons {
+    margin: 16px;
+    padding: 0 100px 0 100px;
+}
+
+.table-lessons-content {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #FEF6ED;
+    color: #274052;
+    overflow: hidden;
+}
+
+
+    .table-lessons-content thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .table-lessons-content thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table-lessons-content thead tr:first-child th {
+        background-color: #F4EADD;
+        border: 1px solid #B5C4CE;
+        padding: 10px;
+    }
+
+    .table-lessons-content th {
+        background-color: #FFFCF7;
+        color: #274052;
+    }
+
+    .table-lessons-content td {
+        border: 0.8px solid #B5C4CE;
+        color: #274052;
+        background-color: #FFFCF7;
+    }
+
 /*ACTION BUTTON*/
 .btn-lessons-edit {
     background-color: #488EC3;

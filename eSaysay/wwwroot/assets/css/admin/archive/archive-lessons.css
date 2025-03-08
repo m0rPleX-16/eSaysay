@@ -1,0 +1,162 @@
+﻿.archive-page-lessons-content {
+    margin-left: 200px;
+    min-height: 92vh;
+}
+
+.archive-lessons-topbar { /* header top area*/
+    background: #FEF6ED;
+    padding: 1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
+}
+
+    .archive-lessons-topbar h2 {
+        color: #274052;
+    }
+
+.archive-lessons-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.exit-admin-archive-lessons {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    color: #274052;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+    .exit-admin-archive-lessons:hover {
+        background-color: #DFB757;
+    }
+
+/* MAIN CONTENT */
+
+.lessons-searchbar {
+    padding: 40px 115px 10px 115px;
+}
+
+.lessons-archive-search {
+    border: 1px solid #B5C4CE;
+    color: #274052;
+    background: #FFFCF7;
+}
+
+#lessonsArchiveTableContainer {
+    padding: 10px 115px 10px 115px;
+}
+
+
+.table-lessons-archive-content {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #FEF6ED;
+    color: #274052;
+    overflow: hidden;
+}
+
+    .table-lessons-archive-content thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .table-lessons-archive-content thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table-lessons-archive-content thead tr:first-child th {
+        background-color: #F4EADD;
+        border: 1px solid #B5C4CE;
+        padding: 10px;
+    }
+
+    .table-lessons-archive-content th {
+        background-color: #FFFCF7;
+        color: #274052;
+    }
+
+    .table-lessons-archive-content td {
+        border: 0.8px solid #B5C4CE;
+        color: #274052;
+        background-color: #FFFCF7;
+    }
+/* ACTION BUTTONS */
+.btn-archive-lessons-restore {
+    background-color: #DFA257;
+    height: 42px;
+    width: 42px;
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+    .btn-archive-lessons-restore:hover {
+        background-color: #FFE4A3;
+    }
+
+    .btn-archive-lessons-restore span {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+.btn-archive-lessons-delete {
+    background-color: #DF5757;
+    height: 42px;
+    width: 42px;
+    font-weight: 700;
+}
+
+    .btn-archive-lessons-delete:hover {
+        background-color: #FFA3A3;
+    }
+
+    .btn-archive-lessons-delete span {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+
+/*PAGINATIONNN*/
+
+.lesson-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+    .lesson-pagination .pagination {
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+        .lesson-pagination .pagination .page-link {
+            color: #446277;
+            background-color: transparent;
+            border: 2px solid #E0D3C5;
+        }
+
+        .lesson-pagination .pagination .page-item.active .page-link {
+            background-color: #DFB757;
+            color: #274052;
+            border: 2px solid #DFB757;
+            font-weight: 700;
+        }
+
+        .lesson-pagination.pagination .page-item .page-link:hover {
+            background-color: #E0D3C5;
+            color: #274052;
+        }
+

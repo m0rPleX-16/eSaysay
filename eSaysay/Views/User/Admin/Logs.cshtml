@@ -8,14 +8,14 @@
 <main class="admin-logs">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="admin-logs-header">
-        <h2>Security Logs</h2>
+    <div class="admin-logs-topbar">
+        <h2>Security <span class="logs-span-dashboard">logs</span></h2>
     </div>
 
     <!-- Search Bar -->
     <div class="logs-searchbar">
 
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by user or event..." value="@ViewBag.SearchQuery">
+        <input type="text" id="searchInput" class="form-control logs-search-form" placeholder="Search by user or event..." value="@ViewBag.SearchQuery">
     </div>
 
     <!-- Logs Table Container (loaded via AJAX) -->

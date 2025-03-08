@@ -1,0 +1,124 @@
+﻿@using eSaysay.Models.Entities
+@model List<InteractiveExercise>
+
+<div class="table-exercises">
+    <table class="table table-exercises-content">
+        <thead>
+            <tr>
+                <th>Content (English)</th>
+                <th>Content (Korean)</th>
+                <th>Lesson</th>
+                <th>Type</th>
+                <th>Correct Answer</th>
+                <th>Answer Choices</th>
+                <th>Hint</th>
+                <th>Difficulty</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var exercise in Model)
+                {
+                    <tr>
+                        <td>@exercise.Content</td>
+                        <td>@exercise.ContentTranslate</td>
+                        <td>@exercise.Lesson.Title</td>
+                        <td>@exercise.ExerciseType</td>
+                        <td>@exercise.CorrectAnswer</td>
+                        <td>@exercise.AnswerChoices</td>
+                        <td>@exercise.Hint</td>
+                        <td>@exercise.DifficultyLevel</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-exercises-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
+                                    <span class="material-symbols-rounded">edit</span>
+                                </button>
+                                <button class="btn btn-exercises-archive btn-sm" data-bs-toggle="modal" data-bs-target="#deleteExerciseModal-@exercise.ExerciseID">
+                                    <span class="material-symbols-rounded">archive</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">No exercises found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <nav class="exercises-pagination">
+        <ul class="pagination">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                </li>
+            }
+
+            @{
+                int totalPages = ViewBag.TotalPages;
+                int currentPage = ViewBag.CurrentPage;
+                int startPage = Math.Max(1, currentPage - 2);
+                int endPage = Math.Min(totalPages, currentPage + 2);
+
+                // Ensure exactly 5 links are shown
+                if (endPage - startPage + 1 < 5)
+                {
+                    if (startPage == 1)
+                    {
+                        endPage = Math.Min(5, totalPages);
+                    }
+                    else if (endPage == totalPages)
+                    {
+                        startPage = Math.Max(1, totalPages - 4);
+                    }
+                }
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                </li>
+            }
+
+            @if (endPage < totalPages)
+            {
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+                <li class="page-item">
+                    <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
+                </li>
+            }
+
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

@@ -5,76 +5,134 @@
     ViewData["Title"] = "Archived Students";
 }
 
-<main class="admin-students">
+<main class="archive-page-students">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <header class="admin-students-header d-flex justify-content-between align-items-center">
-        <h2 class="fw-bold">📁 Archived Students</h2>
-        <a asp-controller="Admin" asp-action="Students" class="btn btn-primary fw-bold">
-            <i class="fa fa-arrow-left"></i> Back to Students
-        </a>
-    </header>
+    <div class="archive-page-students-content">
+        
+            <div class="archive-students-topbar d-flex justify-content-between">
+                <h2>Archived <span class="archive-students-dashboard">students</span></h2>
+                <a asp-controller="Admin" asp-action="Students" class="btn exit-admin-archive-students">
+                <span class="material-symbols-rounded">
+                    close
+                </span>
+                </a>
+            </div>
+        
+        <!-- Search Bar -->
+        <div class="students-searchbar mb-3">
+            <input type="text" id="studentSearchInput" class="form-control students-archive-search" placeholder="Search by email...">
+        </div>
 
-    <!-- Search Bar -->
-    <div class="students-searchbar mb-3">
-        <input type="text" id="studentSearchInput" class="form-control" placeholder="🔍 Search by email...">
-    </div>
-
-    <!-- Students Table -->
-    <div id="studentsTableContainer">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Email</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="studentsTableBody">
-                @if (Model.Any())
-                {
-                    @foreach (var student in Model)
+        <!-- Students Table -->
+        <div class="table-responsive" id="studentsArchiveTableContainer">
+            <table class="table table-students-archive-content">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="col-10">Email</th>
+                        <th class="col-2 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsArchiveTableBody">
+                    @if (Model.Any())
                     {
-                        <tr id="studentRow_@student.Id">
-                            <td>@student.Email</td>
-                            <td class="text-center">
-                                <form class="restore-form d-inline" data-id="@student.Id">
-                                    <input type="hidden" name="Id" value="@student.Id" />
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        <i class="fa fa-undo"></i> Restore
-                                    </button>
-                                </form>
-                                <form class="delete-form d-inline" data-id="@student.Id">
-                                    <input type="hidden" name="Id" value="@student.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fa fa-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </td>
+                        @foreach (var student in Model)
+                        {
+                            <tr id="studentRow_@student.Id" >
+                                <td>@student.Email</td>
+                                <td class="text-center">
+                                    <form class="restore-form d-inline" data-id="@student.Id">
+                                        <input type="hidden" name="Id" value="@student.Id" />
+                                        <button type="submit" class="btn btn-archive-students-restore">
+                                            <span class="material-symbols-rounded">
+                                                settings_backup_restore
+                                            </span>
+                                        </button>
+                                    </form>
+                                    <form class="delete-form d-inline" data-id="@student.Id">
+                                        <input type="hidden" name="Id" value="@student.Id" />
+                                        <button type="submit" class="btn btn-archive-students-delete">
+                                            <span class="material-symbols-rounded">delete</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">No archived students found.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="2" class="text-center text-muted">No archived students found.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
-        <!-- Pagination -->
-        <div class="students-pagination text-center mt-3">
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
-            {
-                <a href="#" class="pagination-link btn btn-outline-secondary btn-sm mx-1" data-page="@i">@i</a>
-            }
+            <!-- Pagination -->
+            <div class="students-pagination text-center mt-3">
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+
+                            @if (ViewBag.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                                </li>
+                            }
+
+                            @{
+                                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+
+                                if (startPage > 1)
+                                {
+                                    <li class="page-item"><a href="#" class="page-link pagination-link" data-page="1">1</a></li>
+                                    if (startPage > 2)
+                                    {
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    }
+                                }
+
+                                for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                        <a href="#" class="page-link pagination-link" data-page="@i">@i</a>
+                                    </li>
+                                }
+
+                                if (endPage < ViewBag.TotalPages)
+                                {
+                                    if (endPage < ViewBag.TotalPages - 1)
+                                    {
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    }
+                                    <li class="page-item">
+                                        <a href="#" class="page-link pagination-link" data-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
+                                    </li>
+                                }
+                            }
+
+                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            </div>
+
+        </div>
+
+        <!-- Toast Notifications -->
+        <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
+            <div id="toastContainer"></div>
         </div>
     </div>
-
-    <!-- Toast Notifications -->
-    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
-        <div id="toastContainer"></div>
-    </div>
+    
 
     @section Scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -99,37 +157,37 @@
                     }, 4000);
                 }
 
-                function loadStudents(page = 1) {
-                    const searchQuery = $('#studentSearchInput').val();
-                    $.ajax({
-                        url: '/Admin/ArchivedStudents',
-                        type: 'GET',
-                        data: { search: searchQuery, page: page },
-                        success: function (response) {
-                            const newTableContent = $(response).find("#studentsTableBody").html();
-                            $("#studentsTableBody").html(newTableContent);
+                    function loadStudents(page = 1) {
+                const searchQuery = $('#studentSearchInput').val().trim();
+                $.ajax({
+                    url: '/Admin/ArchivedStudents',
+                    type: 'GET',
+                    data: { search: searchQuery, page: page },
+                    success: function (response) {
+                        const newTableContent = $(response).find("#studentsArchiveTableBody").html();
+                        $("#studentsArchiveTableBody").html(newTableContent);
 
-                            const paginationHtml = $(response).find('.students-pagination').html();
-                            $('.students-pagination').html(paginationHtml);
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error loading students:', error);
-                        }
-                    });
-                }
-
-                let timeoutId;
-                $('#studentSearchInput').on('input', function () {
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(() => {
-                        loadStudents();
-                    }, 300);
+                        const paginationHtml = $(response).find('.students-pagination').html();
+                        $('.students-pagination').html(paginationHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading students:', error);
+                    }
                 });
+            }
 
-                $(document).on('click', '.pagination-link', function (e) {
-                    e.preventDefault();
-                    loadStudents($(this).data('page'));
-                });
+                    let timeoutId;
+            $('#studentSearchInput').on('input', function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    loadStudents();
+                }, 300);
+            });
+
+            $(document).on('click', '.pagination-link', function (e) {
+                e.preventDefault();
+                loadStudents($(this).data('page'));
+            });
 
                 $(document).on('submit', '.restore-form', function (e) {
                     e.preventDefault();

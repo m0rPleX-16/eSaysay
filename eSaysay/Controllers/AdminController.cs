@@ -68,9 +68,12 @@ namespace eSaysay.Controllers
         }
 
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> FilterLanguages(string searchTerm, int page = 1, int pageSize = 5)
         {
-            var query = _context.Language.AsQueryable();
+            var query = _context.Language
+                .Where(l => !l.IsArchived) // Exclude archived languages
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -84,11 +87,12 @@ namespace eSaysay.Controllers
                 .ToListAsync();
 
             ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)System.Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             ViewBag.SearchTerm = searchTerm;
 
             return PartialView("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", languages);
         }
+
 
         // POST: Admin/AddLanguage
         [HttpPost]
@@ -117,7 +121,7 @@ namespace eSaysay.Controllers
         }
 
         // GET: Admin/ArchivedLanguage
-        public async Task<IActionResult> ArchivedLanguage(string search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> ArchivedLanguage(string search, int page = 1, int pageSize = 5)
         {
             // Fetch only archived languages
             var archivedLanguagesQuery = _context.Language
@@ -128,7 +132,7 @@ namespace eSaysay.Controllers
             if (!string.IsNullOrEmpty(search))
             {
                 archivedLanguagesQuery = archivedLanguagesQuery
-                    .Where(l => l.LanguageName.Contains(search, StringComparison.OrdinalIgnoreCase));
+                    .Where(l => EF.Functions.Like(l.LanguageName, $"%{search}%"));
             }
 
             // Pagination
@@ -196,26 +200,64 @@ namespace eSaysay.Controllers
         }
 
         // GET: Admin/Exercises
-        public IActionResult Exercises()
+        public IActionResult Exercises(string searchTerm, int page = 1, int pageSize = 5)
         {
-            var exercises = _context.InteractiveExercises
+            
+
+            var query = _context.InteractiveExercises
                 .Include(e => e.Lesson)
-                .Where(e => !e.IsArchived)  
-                .ToList();
+                .Where(e => !e.IsArchived);
 
-            var lessons = _context.Lessons.ToList();
-
-            _logger.LogInformation($"Lessons count: {lessons.Count}");
-
-            if (!lessons.Any())
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                _logger.LogWarning("ViewBag.Lessons is empty even though the database has data!");
+                query = query.Where(e => 
+                e.Content.Contains(searchTerm) ||
+                e.ExerciseType.Contains(searchTerm) ||
+                e.DifficultyLevel.Contains(searchTerm));
             }
 
-            ViewBag.Lessons = lessons;
+            var totalRecords = query.Count();
+            var exercises = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.Lessons = _context.Lessons.ToList();
 
             return View("~/Views/User/Admin/Exercises.cshtml", exercises);
         }
+
+        public IActionResult FilterExercises(string searchTerm, int page = 1, int pageSize = 5)
+        {
+            var query = _context.InteractiveExercises
+                .Include(e => e.Lesson)
+                .Where(e => !e.IsArchived);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(e =>
+                    e.Content.Contains(searchTerm) ||
+                    e.ExerciseType.Contains(searchTerm) ||
+                    e.DifficultyLevel.Contains(searchTerm));
+            }
+
+            var totalRecords = query.Count();
+            var exercises = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchTerm = searchTerm;
+
+            return PartialView("~/Views/User/Admin/Partial/_ExercisesTablePartial.cshtml", exercises);
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateExercise(InteractiveExercise exercise)
@@ -413,7 +455,7 @@ namespace eSaysay.Controllers
         }
 
         // GET: Admin/ArchivedExercises with pagination and search
-        public async Task<IActionResult> ArchivedExercises(string search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> ArchivedExercises(string search, int page = 1, int pageSize = 5)
         {
             var archivedExercises = await _context.InteractiveExercises
                 .Include(e => e.Lesson)
@@ -478,8 +520,8 @@ namespace eSaysay.Controllers
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 lessonsQuery = lessonsQuery.Where(l => l.Title.Contains(searchQuery)
-                                                   || l.Language.LanguageName.Contains(searchQuery)
-                                                   || l.LessonType.Contains(searchQuery));
+                || l.Language.LanguageName.Contains(searchQuery)
+                || l.LessonType.Contains(searchQuery));
             }
 
             int totalLessons = lessonsQuery.Count();
@@ -500,7 +542,10 @@ namespace eSaysay.Controllers
         {
             try
             {
-                var lessonsQuery = _context.Lessons.Include(l => l.Language).AsQueryable();
+                var lessonsQuery = _context.Lessons
+                    .Include(l => l.Language)
+                    .Where(l => !l.IsArchived) // Add this to match your partial view
+                    .AsQueryable();
 
                 if (!string.IsNullOrEmpty(searchQuery))
                 {
@@ -508,7 +553,7 @@ namespace eSaysay.Controllers
                         l.Title.Contains(searchQuery) ||
                         l.LessonType.Contains(searchQuery) ||
                         l.DifficultyLevel.Contains(searchQuery) ||
-                        (l.Language != null && l.Language.LanguageName.Contains(searchQuery))
+                        l.Language.LanguageName.Contains(searchQuery)
                     );
                 }
 
@@ -516,6 +561,7 @@ namespace eSaysay.Controllers
                 var lessons = lessonsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
                 ViewBag.CurrentPage = page;
+                ViewBag.Languages = _context.Language.ToList();
                 ViewBag.TotalPages = (int)Math.Ceiling(totalLessons / (double)pageSize);
 
                 return PartialView("~/Views/User/Admin/Partial/_LessonsTablePartial.cshtml", lessons);
@@ -595,8 +641,8 @@ namespace eSaysay.Controllers
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 archivedLessonsQuery = archivedLessonsQuery.Where(l => l.Title.Contains(searchQuery)
-                                                                    || l.Language.LanguageName.Contains(searchQuery)
-                                                                    || l.LessonType.Contains(searchQuery));
+                 || l.Language.LanguageName.Contains(searchQuery)
+                 || l.LessonType.Contains(searchQuery));
             }
 
             int totalArchivedLessons = await archivedLessonsQuery.CountAsync();
@@ -701,26 +747,29 @@ namespace eSaysay.Controllers
         }
 
         // ✅ Fetch Active Students
-        public async Task<IActionResult> Students(string search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Students(string search, int page = 1, int pageSize = 5)
         {
-            var allUsers = await _userManager.Users.Where(u => !u.IsArchived).ToListAsync(); // ✅ Only active users
+            var studentIds = (await _userManager.GetUsersInRoleAsync("Student")).Select(s => s.Id);
 
-            var students = new List<ApplicationUser>();
-            foreach (var user in allUsers)
-            {
-                if (await _userManager.IsInRoleAsync(user, "Student"))
-                {
-                    students.Add(user);
-                }
-            }
+            var query = _userManager.Users
+                .Where(u => studentIds.Contains(u.Id) && !u.IsArchived)
+                .AsQueryable();
 
+            // Apply search filter (Email, First Name, Last Name)
             if (!string.IsNullOrEmpty(search))
             {
-                students = students.Where(u => u.Email.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                query = query.Where(u =>
+                    u.Email.Contains(search) ||
+                    u.FirstName.Contains(search) ||
+                    u.LastName.Contains(search) ||
+                    u.Gender.Contains(search));
             }
 
-            int totalStudents = students.Count;
-            students = students.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            int totalStudents = await query.CountAsync();
+            var students = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             ViewBag.Search = search;
             ViewBag.CurrentPage = page;
@@ -729,8 +778,40 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Students.cshtml", students);
         }
 
+        // to search students on searchbar
+        public async Task<IActionResult> FilterStudents(string search, int page = 1, int pageSize = 5)
+        {
+            var studentIds = (await _userManager.GetUsersInRoleAsync("Student")).Select(s => s.Id);
+
+            var query = _userManager.Users
+                .Where(u => studentIds.Contains(u.Id) && !u.IsArchived)
+                .AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(u =>
+                    u.Email.Contains(search) ||
+                    u.FirstName.Contains(search) ||
+                    u.LastName.Contains(search) ||
+                u.Gender.Contains(search));
+            }
+
+            int totalStudents = await query.CountAsync();
+            var students = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
+            return PartialView("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", students);
+        }
+
+
         // ✅ Fetch Archived Students
-            public async Task<IActionResult> ArchivedStudents(string search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> ArchivedStudents(string search, int page = 1, int pageSize = 5)
             {
                 var allUsers = await _userManager.Users.Where(u => u.IsArchived).ToListAsync(); // ✅ Only archived users
 

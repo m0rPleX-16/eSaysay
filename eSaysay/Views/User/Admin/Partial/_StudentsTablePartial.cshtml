@@ -4,7 +4,7 @@
 @if (Model != null && Model.Any())
 {
     <div class="table-students">
-        <table class="table table-bordered">
+        <table class="table table-students-content">
             <thead>
                 <tr>
                     <th>Email</th>
@@ -31,7 +31,9 @@
                         <td>
                             <!-- Edit Button -->
                             <button class="btn btn-students-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editModal-@student.Id">
-                                <span class="material-symbols-rounded">edit</span>
+                                <span class="material-symbols-rounded">
+                                        edit
+                                </span>
                             </button>
 
                             <!-- Archive Button -->
@@ -128,7 +130,7 @@
         </script>
     }
 
-    @if (ViewBag.TotalPages >= 1)
+    @if (ViewBag.TotalPages > 1)
     {
         <nav class="students-pagination">
             <ul class="pagination">
@@ -139,10 +141,52 @@
                     </li>
                 }
 
-                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                @{
+                    int totalPages = ViewBag.TotalPages;
+                    int currentPage = ViewBag.CurrentPage;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, currentPage + 2);
+
+                    // Ensure exactly 5 links are shown
+                    if (endPage - startPage + 1 < 5)
+                    {
+                        if (startPage == 1)
+                        {
+                            endPage = Math.Min(5, totalPages);
+                        }
+                        else if (endPage == totalPages)
+                        {
+                            startPage = Math.Max(1, totalPages - 4);
+                        }
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
                         <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (endPage < totalPages)
+                {
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
                     </li>
                 }
 
@@ -155,8 +199,12 @@
             </ul>
         </nav>
     }
+
 }
 else
 {
-    <p>No students found.</p>
+    <div class="students-error">
+        <p>No students found.</p>
+    </div>
+    
 }
