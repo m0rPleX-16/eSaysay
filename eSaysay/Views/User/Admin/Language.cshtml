@@ -9,28 +9,32 @@
 <main class="admin-languages">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="admin-languages-header">
-        <h2>Manage Languages</h2>
+    <div class="admin-languages-topbar">
+        <h2>Manage <span class="languages-span-dashboard">languages</span></h2>
     </div>
     <!-- Search Bar -->
     <div class="language-searchbar">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search Languages..." value="@ViewBag.SearchTerm">
+        <input type="text" id="searchInput" class="form-control languages-search-form" placeholder="Search Languages..." value="@ViewBag.SearchTerm">
     </div>
 
-    <div class="languages-content">
+    <div class="languages-content d-flex justify-content-between">
 
         <!-- Button to Open Add Language Modal -->
         <button type="button" class="btn btn-language-add mb-3" data-bs-toggle="modal" data-bs-target="#addLanguageModal">
             Add Language
         </button>
-
-        <div class="table-language" id="languageTableContainer">
-            @await Html.PartialAsync("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", Model)
-            <a href="@Url.Action("ArchivedLanguage", "Admin")" class="btn btn-warning mb-3">
-                <span class="material-symbols-rounded">archive</span> View Archived Languages
+        <div class="languages-view-archive">
+            <a href="@Url.Action("ArchivedLanguage", "Admin")" class="btn btn-languages-view-archive">
+                View Archived Languages
             </a>
         </div>
+            
+    </div>
 
+    <div class="languageContainer">
+        @await Html.PartialAsync("~/Views/User/Admin/Partial/_LanguageTablePartial.cshtml", Model)
+    </div>
+    
 
         <!-- Add Language Modal -->
         <div class="modal fade" id="addLanguageModal" tabindex="-1" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
@@ -53,7 +57,7 @@
                 </div>
             </div>
         </div>
-    </div>
+   
 
 
 
@@ -68,7 +72,7 @@
                         type: 'GET',
                         data: { searchTerm: searchTerm, page: page },
                         success: function (response) {
-                            $('#languageTableContainer').html(response);
+                            $('.languageContainer').html(response);
                             $('.language-pagination').html($(response).find('.language-pagination').html());
                         },
                         error: function (xhr, status, error) {

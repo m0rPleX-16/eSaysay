@@ -1,15 +1,15 @@
 ﻿@using eSaysay.Models.Entities;
 @model List<Lesson>
 
-<div id="lessons-content">
-    <table class="table table-lessons table-bordered">
+<div class="table-lessons" id="lessons-content">
+    <table class="table table-lessons-content">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Lesson Type</th>
-                <th>Difficulty</th>
-                <th>Language</th>
-                <th>Actions</th>
+                <th class="col-4">Title</th>
+                <th class ="col-2">Lesson Type</th>
+                <th class="col-2">Difficulty</th>
+                <th class="col-2">Language</th>
+                <th class="col-1">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -20,8 +20,8 @@
                     <td>@lesson.LessonType</td>
                     <td>@lesson.DifficultyLevel</td>
                     <td>@lesson.Language.LanguageName</td>
-                    <td>
-                        <button class="btn btn-lessons-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editLessonModal-@lesson.LessonID">
+                    <td class="d-flex justify-content-between">
+                        <button class="btn btn-lessons-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editLessonModal-@lesson.LessonID" >
                             <span class="material-symbols-rounded">edit</span>
                         </button>
                         <button class="btn btn-lessons-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveLessonModal-@lesson.LessonID">
@@ -122,10 +122,52 @@
                     </li>
                 }
 
-                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                @{
+                    int totalPages = ViewBag.TotalPages;
+                    int currentPage = ViewBag.CurrentPage;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, currentPage + 2);
+
+                    // Ensure there are always exactly 5 links displayed
+                    if (endPage - startPage + 1 < 5)
+                    {
+                        if (startPage == 1)
+                        {
+                            endPage = Math.Min(5, totalPages);
+                        }
+                        else if (endPage == totalPages)
+                        {
+                            startPage = Math.Max(1, totalPages - 4);
+                        }
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
                         <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (endPage < totalPages)
+                {
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
                     </li>
                 }
 

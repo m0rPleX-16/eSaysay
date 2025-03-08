@@ -3,15 +3,183 @@
     margin-left: 200px;
 }
 
-.admin-exercise-header { /* header top area*/
+.admin-exercises-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
 }
+
+.admin-exercises-topbar h2 {
+    color: #274052;
+}
+
+.exercises-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+
+/*SEARCH BAR*/
+
+.exercises-searchbar {
+    padding: 40px 115px 10px 115px;
+}
+
+.exercises-search-form {
+    border: 1px solid #B5C4CE;
+    color: #274052;
+    background: #FFFCF7;
+}
+
+/* MAIN CONTENT*/
 
 .exercise-content {
     margin: 16px;
+    padding: 0 100px 0 100px;
 }
+
+.btn-exercises-add {
+    background-color: #367C1E;
+    color: #fefefe;
+    font-weight: 600;
+    width: 150px;
+}
+.btn-exercises-add:hover {
+    background-color: #5A9A3D;
+    color: #fefefe;
+}
+
+.btn-exercises-view-archive {
+    background-color: #DFB757;
+    color: #274052;
+    font-weight: 600;
+    font-style: italic;
+    height:38px;
+}
+
+    .btn-exercises-view-archive:hover {
+        background-color: #FFE4A3;
+        color: #274052;
+    }
+
+/* TABLE */
+
+
+.table-exercises {
+    margin: 16px;
+    padding: 0 100px 0 100px;
+}
+
+.table-exercises-content {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #FEF6ED;
+    color: #274052;
+    overflow: hidden;
+}
+
+    .table-exercises-content thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .table-exercises-content thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table-exercises-content thead tr:first-child th {
+        background-color: #F4EADD;
+        border: 1px solid #B5C4CE;
+        padding: 10px;
+    }
+
+    .table-exercises-content th {
+        background-color: #FFFCF7;
+        color: #274052;
+    }
+
+    .table-exercises-content td {
+        border: 0.8px solid #B5C4CE;
+        color: #274052;
+        background-color: #FFFCF7;
+    }
+
+/*ACTION BUTTON*/
+.btn-exercises-edit {
+    background-color: #488EC3;
+    color: #FAF3E2;
+    font-weight: 700;
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+}
+
+    .btn-exercises-edit span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FAF3E2;
+    }
+
+    .btn-exercises-edit:hover {
+        background-color: #C3DFF4;
+        color: #274052;
+    }
+
+.btn-exercises-archive {
+    background-color: #808080;
+    color: #FAF3E2;
+    font-weight: 700;
+    height: 40px;
+    width: 40px;
+}
+
+    .btn-exercises-archive span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FAF3E2;
+    }
+
+    .btn-exercises-archive:hover {
+        background-color: #DEDEDE;
+        color: #274052;
+    }
+
+
+/*PAGINATIONNN*/
+
+.exercises-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+    .exercises-pagination .pagination {
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+        .exercises-pagination .pagination .page-link {
+            color: #446277;
+            background-color: transparent;
+            border: 2px solid #E0D3C5;
+        }
+
+        .exercises-pagination .pagination .page-item.active .page-link {
+            background-color: #DFB757;
+            color: #274052;
+            border: 2px solid #DFB757;
+            font-weight: 700;
+        }
+
+        .exercises-pagination.pagination .page-item .page-link:hover {
+            background-color: #E0D3C5;
+            color: #274052;
+        }

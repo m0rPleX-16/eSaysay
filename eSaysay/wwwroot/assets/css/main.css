@@ -89,6 +89,24 @@ h6 {
     font-family: var(--heading-font);
 }
 
+.tooltip-inner {
+    background-color: #274052;
+    color: #fff; 
+    font-size: 0.875rem; 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); 
+    font-family: Poppins, sans-serif;
+    font-weight:500;
+}
+
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-bottom .tooltip-arrow::before {
+    border-top-color: #274052;
+    border-bottom-color: #274052;
+}
+
+
 /* PHP Email Form Messages
 ------------------------------*/
 .php-email-form .error-message {
@@ -371,6 +389,7 @@ h6 {
         .navmenu .active,
         .navmenu .active:focus {
             color: #274052;
+            font-weight: 600;
         }
 
         .navmenu .dropdown ul {

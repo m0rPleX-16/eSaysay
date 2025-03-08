@@ -1,8 +1,8 @@
 ﻿@using eSaysay.Models.Entities;
 @model List<Language>
 
-<div id="languageTableContainer">
-    <table class="table table-bordered">
+<div class="table-languages">
+    <table class="table table-languages-content">
         <thead>
             <tr>
                 <th class="col-10">Language Name</th>
@@ -82,7 +82,7 @@
     }
 
     <!-- Pagination Controls -->
-    @if (ViewBag.TotalPages >= 1)
+    @if (ViewBag.TotalPages > 1)
     {
         <nav class="language-pagination">
             <ul class="pagination">
@@ -93,10 +93,52 @@
                     </li>
                 }
 
-                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                @{
+                    int totalPages = ViewBag.TotalPages;
+                    int currentPage = ViewBag.CurrentPage;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, currentPage + 2);
+
+                    // Ensure there are always exactly 5 links displayed
+                    if (endPage - startPage + 1 < 5)
+                    {
+                        if (startPage == 1)
+                        {
+                            endPage = Math.Min(5, totalPages);
+                        }
+                        else if (endPage == totalPages)
+                        {
+                            startPage = Math.Max(1, totalPages - 4);
+                        }
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
                         <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (endPage < totalPages)
+                {
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
                     </li>
                 }
 
@@ -109,4 +151,6 @@
             </ul>
         </nav>
     }
+
+
 </div>

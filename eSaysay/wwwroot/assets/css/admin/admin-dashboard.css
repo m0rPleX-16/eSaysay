@@ -1,7 +1,20 @@
 ﻿
+.admin-dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 92vh;
+}
+
 .admin-content {
-    /* background-color: #fff;*/
     margin-left: 200px;
+}
+
+.admin-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
 }
 
 #admin-dashboard-sidebar-toggle {
@@ -9,36 +22,61 @@
 }
 
 /* Main Content */
+
 .admin-dashboard-content {
     flex-grow: 1;
     transition: margin-left 0.3s ease;
-    width: 100%;
+    padding-right: 80px;
+    padding-left: 80px;
 }
 
 .admin-dashboard-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
 }
+
+    .admin-dashboard-topbar h2 {
+        color: #274052;
+    }
 
 .admin-dashboard-stats-boxes {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-top: 1rem;
+    background-color: #FEF6ED;
+    color: #274052;
 }
 
 .admin-dashboard-stats-box {
     flex: 1;
     min-width: 180px;
-    background: #fff;
-    border: 1px solid #dee2e6;
+    background-color: transparent;
+    border: 1px solid #274052;
     border-radius: 5px;
-    padding: 1rem;
+    padding: 1.8rem;
     text-align: center;
+}
+
+    .admin-dashboard-stats-box h3 {
+        color: #274052;
+        font-size: 2.4rem;
+    }
+
+    .admin-dashboard-stats-box span {
+        color: #274052;
+        display: flex;
+        text-align: left;
+    }
+
+.admin-dashboard-stats-box-2 h3 {
+    color: #274052;
+    font-size: 1.8rem;
 }
 
 /* Responsive Design */
@@ -69,7 +107,8 @@
     }
 
     .footer {
-        margin-left: 0px;
+        padding: 1rem;
+        text-align: center;
     }
 
     .admin-dashboard-sidebar.collapsed ~ .footer {
@@ -79,4 +118,8 @@
     #admin-dashboard-sidebar-toggle {
         display: inline-block;
     }
+}
+
+.footer-admin{
+    margin-left: 200px;
 }

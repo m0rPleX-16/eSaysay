@@ -1,24 +1,34 @@
 ﻿
 .admin-languages {
     margin-left: 200px;
+    width: calc(100% - 200px);
+    min-height: 92vh;
 }
 
-.admin-languages-header { /* header top area*/
+.admin-languages-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
 }
 
+.admin-languages-topbar h2 {
+    color: #274052;
+}
+
+.languages-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
 .languages-content {
     margin: 16px;
     padding: 0 100px 0 100px;
-}
-
-.table-language{
-  
 }
 
 /*SEARCH BAR*/
@@ -27,12 +37,21 @@
     padding: 40px 115px 10px 115px;
 }
 
-.btn-language-search {
-    background-color: #DFB757;
+.languages-search-form {
+    border: 1px solid #B5C4CE;
     color: #274052;
+    background: #FFFCF7;
 }
 
-    .btn-language-search:hover {
+
+.btn-languages-view-archive {
+    background-color: #DFB757;
+    color: #274052;
+    font-weight: 600;
+    font-style: italic;
+}
+
+    .btn-languages-view-archive:hover {
         background-color: #FFE4A3;
         color: #274052;
     }
@@ -49,6 +68,49 @@
         background-color: #5A9A3D;
         color: #fefefe;
     }
+
+    /* TABLE */
+
+.table-languages {
+    margin: 16px;
+    padding: 0 100px 0 100px;
+}
+
+.table-languages-content {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #FEF6ED;
+    color: #274052;
+    overflow: hidden;
+}
+
+
+    .table-languages-content thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .table-languages-content thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table-languages-content thead tr:first-child th {
+        background-color: #F4EADD;
+        border: 1px solid #B5C4CE;
+        padding: 10px;
+    }
+
+    .table-languages-content th {
+        background-color: #FFFCF7;
+        color: #274052;
+    }
+
+    .table-languages-content td {
+        border: 0.8px solid #B5C4CE;
+        color: #274052;
+        background-color: #FFFCF7;
+    }
+
+
 /*ACTION BUTTON*/
 .btn-language-edit {
     background-color: #488EC3;
