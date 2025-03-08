@@ -37,5 +37,28 @@ namespace eSaysay.Controllers
             }
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SendNotification(string userId, string message)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(message))
+            {
+                return BadRequest("Invalid notification data.");
+            }
+
+            var notification = new Notification
+            {
+                UserID = userId,
+                Message = message,
+                IsRead = false,
+                DateCreated = DateTime.UtcNow
+            };
+
+            _context.Notification.Add(notification);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
     }
 }

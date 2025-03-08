@@ -6,9 +6,7 @@
 }
 
 <div class="register-page">
-
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
-
         <div class="row w-100">
             <div class="col-lg-6 register-style d-none d-lg-flex align-items-center justify-content-center">
                 <div class="text-center">
@@ -23,6 +21,7 @@
                 </div>
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
@@ -39,6 +38,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
@@ -60,6 +60,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
@@ -76,46 +77,54 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-floating mb-3">
                         <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" required />
                         <label asp-for="Input.Email">Email</label>
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
+
                     <div class="form-floating mb-3">
                         <input asp-for="Input.Password" type="password" class="form-control" placeholder="Password" required />
                         <label asp-for="Input.Password">Password</label>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
+
                     <div class="form-floating mb-3">
                         <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" required />
                         <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2" style="background: var(--accent-color); border: none;">Register</button>
+
+                    <!-- Custom CAPTCHA -->
+                    <div class="mb-3 text-center">
+                        <img id="captchaImage" src="/Captcha/Generate" alt="CAPTCHA" />
+                        <button type="button" onclick="reloadCaptcha()">↻</button>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.CaptchaCode" class="form-control" placeholder="Enter CAPTCHA" required />
+                        <label asp-for="Input.CaptchaCode">Enter CAPTCHA</label>
+                        <span asp-validation-for="Input.CaptchaCode" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2" style="background: var(--accent-color); border: none;">
+                        Register
+                    </button>
+
                     <div class="text-center mt-3">
                         <span>Already have an account?</span> <a asp-page="./Login" class="text-decoration-none">Log in</a>
                     </div>
                 </form>
-
-                @if (Model.ExternalLogins?.Count > 0)
-                {
-                    <div class="text-center">
-                        <p>Or sign up with</p>
-                        @foreach (var provider in Model.ExternalLogins!)
-                        {
-                            <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-outline-primary me-2" name="provider" value="@provider.Name" style="border-color: var(--accent-color); color: var(--accent-color);">
-                                    @provider.DisplayName
-                                </button>
-                            </form>
-                        }
-                    </div>
-                }
             </div>
         </div>
     </div>
-
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function reloadCaptcha() {
+            document.getElementById("captchaImage").src = "/Captcha/Generate?" + new Date().getTime();
+        }
+    </script>
 }

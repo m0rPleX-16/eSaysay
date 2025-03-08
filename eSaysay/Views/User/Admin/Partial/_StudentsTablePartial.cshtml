@@ -58,6 +58,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form method="post" asp-action="EditStudent">
+                        @Html.AntiForgeryToken()
                         <div class="modal-body">
                             <input type="hidden" name="Id" value="@student.Id" />
 
@@ -113,6 +114,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form method="post" asp-action="ArchiveStudent">
+                        @Html.AntiForgeryToken()
                         <div class="modal-body">
                             <p>Are you sure you want to archive <strong>@student.FirstName @student.LastName</strong>?</p>
                             <input type="hidden" name="Id" value="@student.Id" />

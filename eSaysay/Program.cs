@@ -3,6 +3,7 @@ using eSaysay.Services;
 using eSaysay.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,15 +13,30 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings");
+builder.Services.AddSingleton<IEmailSender>(new SmtpEmailSender(
+    smtpSettings["Server"],
+    int.Parse(smtpSettings["Port"]),
+    smtpSettings["Username"],
+    smtpSettings["Password"]
+));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<SecurityLogService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -38,9 +54,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -70,14 +87,20 @@ using (var scope = app.Services.CreateScope())
 
     if (await userManager.FindByEmailAsync(email) == null)
     {
-        var user = new ApplicationUser();
-        user.UserName = email;
-        user.Email = email;
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true 
+        };
 
-        await userManager.CreateAsync(user, password);
+        var result = await userManager.CreateAsync(user, password);
 
-        await userManager.AddToRoleAsync(user, "Admin");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
     }
-}   
+}
 
 app.Run();

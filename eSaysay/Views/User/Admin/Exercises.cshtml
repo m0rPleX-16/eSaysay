@@ -48,6 +48,7 @@
                 </div>
                 <div class="modal-body">
                     <form method="post" action="/Admin/CreateExercise">
+                       @Html.AntiForgeryToken()
                         <div class="mb-3">
                             <label class="form-label">Content</label>
                             <input type="text" class="form-control" name="Content" required>

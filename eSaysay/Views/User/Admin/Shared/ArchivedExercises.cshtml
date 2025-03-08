@@ -19,8 +19,6 @@
             </a>
         </div>
 
-       
-
         <!-- Search Bar -->
         <div class="exercises-searchbar mb-3">
             <input type="text" id="exerciseSearchInput" class="form-control exercises-archive-search" placeholder="Search Archived Exercises..." value="@ViewBag.Search">
@@ -51,14 +49,20 @@
                                     <td>@exercise.DateCreated.ToShortDateString()</td>
                                     <td>
                                         <!-- Restore Button -->
-                            <button class="btn btn-archive-exercises-restore" data-id="@exercise.ExerciseID">
-                                            <span class="material-symbols-rounded">restore</span>
-                                        </button>
-
-                                        <!-- Delete Permanently Button -->
-                            <button class="btn btn-archive-exercises-delete" data-id="@exercise.ExerciseID">
-                                            <span class="material-symbols-rounded">delete</span>
-                                        </button>
+                            <form class="restore-form d-inline" data-id="@exercise.ExerciseID">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <span class="material-symbols-rounded">restore</span> Restore
+                                    </button>
+                                </form>
+                                <form class="delete-form d-inline" data-id="@exercise.ExerciseID">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <span class="material-symbols-rounded">delete_forever</span> Delete Permanently
+                                    </button>
+                                </form>
                                     </td>
                                 </tr>
                             }
@@ -186,7 +190,6 @@
                     $('#exerciseSearchInput, #exerciseTypeFilter, #difficultyFilter').on('change', function () {
                         loadExercises();
                     });
-
                     loadExercises(); // Initial load
                 });
 

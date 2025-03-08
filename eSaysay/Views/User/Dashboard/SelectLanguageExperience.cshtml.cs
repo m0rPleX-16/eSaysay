@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace eSaysay.Views.User.Exercises
+namespace eSaysay.Views.User.Dashboard
 {
-    public class pairingModel : PageModel
+    public class SelectLanguageExperienceModel : PageModel
     {
         public void OnGet()
         {

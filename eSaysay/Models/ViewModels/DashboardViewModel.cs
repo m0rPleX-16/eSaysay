@@ -9,5 +9,6 @@ namespace eSaysay.Models.ViewModels
         public Analytics? Analytics { get; set; }
         public AdaptiveLearning AdaptiveLearning { get; set; }
         public List<UserProgress> UserProgress { get; set; }
+        public string UserExperienceLevel { get; set; }
     }
 }

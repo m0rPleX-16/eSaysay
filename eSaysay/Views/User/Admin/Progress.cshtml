@@ -1,17 +1,102 @@
-﻿@page
-@model eSaysay.Views.User.Admin.ProgressModel
+﻿@model eSaysay.Models.ViewModels.ProgressViewModel
 @{
+    ViewData["Title"] = "User Progress";
 }
 <main class="admin-progress">
     @await Html.PartialAsync("_AdminSidebar")
 
     <div class="admin-progress-header">
-        <h2> Progress </h2>
+        <h2> User Progress </h2>
     </div>
 
     <div class="progress-content">
+        <!-- Summary Statistics -->
+        <section class="progress-summary d-flex justify-content-between">
+            <div class="progress-box">
+                <h3>@Model.TotalUsers</h3>
+                <span>Total Users</span>
+            </div>
+            <div class="progress-box">
+                <h3>@Model.TotalLessons</h3>
+                <span>Total Lessons</span>
+            </div>
+            <div class="progress-box">
+                <h3>@Model.CompletedLessons</h3>
+                <span>Completed Lessons</span>
+            </div>
+            <div class="progress-box">
+                <h3>@Model.InProgressLessons</h3>
+                <span>In Progress</span>
+            </div>
+            <div class="progress-box">
+                <h3>@Model.NotStartedLessons</h3>
+                <span>Not Started</span>
+            </div>
+            <div class="progress-box">
+                <h3>@Model.AverageScore.ToString("0.00")%</h3>
+                <span>Average Score</span>
+            </div>
+        </section>
 
-        <!-- INSERT MAIN CONTENT OF PROGRESS HEREEEEE -V-  -->
+        <!-- User Progress Table -->
+        <section class="progress-table mt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Lesson</th>
+                        <th>Completion Status</th>
+                        <th>Score</th>
+                        <th>Time Spent (mins)</th>
+                        <th>Last Accessed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var progress in Model.ProgressData)
+                    {
+                        <tr>
+                            <td>@progress.UserName</td>
+                            <td>@progress.LessonName</td>
+                            <td>@progress.CompletionStatus</td>
+                            <td>@(progress.Score > 0 ? progress.Score.ToString("0.00") : "N/A")</td>
+                            <td>@(progress.TimeSpent / 60)</td>
+                            <td>@progress.LastAccessedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
 
+        <!-- Progress Chart -->
+        <section class="progress-graphs mt-5">
+            <h3>User Progress Overview</h3>
+            <canvas id="progressChart"></canvas>
+        </section>
     </div>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctxProgress = document.getElementById('progressChart').getContext('2d');
+    var progressChart = new Chart(ctxProgress, {
+        type: 'bar',
+        data: {
+            labels: @Json.Serialize(Model.ProgressData.Select(p => p.LessonName)),
+            datasets: [{
+                label: 'Average Scores',
+                data: @Json.Serialize(Model.ProgressData.Select(p => p.Score)),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

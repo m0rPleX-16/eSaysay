@@ -42,6 +42,7 @@
                                 <td>@student.Email</td>
                                 <td class="text-center">
                                     <form class="restore-form d-inline" data-id="@student.Id">
+                                       @Html.AntiForgeryToken()
                                         <input type="hidden" name="Id" value="@student.Id" />
                                         <button type="submit" class="btn btn-archive-students-restore">
                                             <span class="material-symbols-rounded">
@@ -50,6 +51,7 @@
                                         </button>
                                     </form>
                                     <form class="delete-form d-inline" data-id="@student.Id">
+                                       @Html.AntiForgeryToken()
                                         <input type="hidden" name="Id" value="@student.Id" />
                                         <button type="submit" class="btn btn-archive-students-delete">
                                             <span class="material-symbols-rounded">delete</span>
@@ -61,6 +63,7 @@
                     }
                     else
                     {
+
                         <tr>
                             <td colspan="2" class="text-center text-muted">No archived students found.</td>
                         </tr>
@@ -193,10 +196,12 @@
                     e.preventDefault();
                     if (confirm("Are you sure you want to restore this student?")) {
                         const studentId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
+
                         $.ajax({
                             url: '/Admin/RestoreStudent',
                             type: 'POST',
-                            data: { Id: studentId },
+                            data: { Id: studentId, __RequestVerificationToken: token },
                             success: function () {
                                 $(`#studentRow_${studentId}`).remove();
                                 showToast("✅ Student successfully restored!");
@@ -213,10 +218,12 @@
                     e.preventDefault();
                     if (confirm("⚠️ This action is permanent! Are you sure you want to delete this student?")) {
                         const studentId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
+
                         $.ajax({
                             url: '/Admin/DeleteStudentPermanently',
                             type: 'POST',
-                            data: { Id: studentId },
+                            data: { Id: studentId, __RequestVerificationToken: token },
                             success: function () {
                                 $(`#studentRow_${studentId}`).remove();
                                 showToast("🗑️ Student permanently deleted!", 'warning');

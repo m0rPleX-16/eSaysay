@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> UserManager
+@inject UserManager<ApplicationUser> UserManager
 @model eSaysay.Models.Entities.InteractiveExercise
 @{
     ViewData["Title"] = "Complete Translation";
@@ -39,6 +39,7 @@
 
 <!-- Form for submitting the answer -->
 <form id="answer-form">
+        @Html.AntiForgeryToken()
     <input type="hidden" name="UserID" value="@UserManager.GetUserId(User)" />
     <input type="hidden" name="ExerciseID" value="@Model.ExerciseID" />
     <input type="hidden" name="IsCorrect" id="is-correct" value="false" />
@@ -181,4 +182,10 @@
             progressBar.style.width = "0%"; // Reset when time is up
         }, allottedTime * 1000);
     });
+
+    function skip() {
+        if (confirm("Are you sure you want to skip this exercise?")) {
+            window.location.href = "/Dashboard/Index";
+        }
+    }
 </script>

@@ -9,6 +9,7 @@ using eSaysay.Models.ViewModels;
 using eSaysay.Data;
 using eSaysay.Services;
 using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace eSaysay.Controllers
 {
@@ -31,89 +32,86 @@ namespace eSaysay.Controllers
             _logService = logService;
         }
 
+        // Dashboard Index
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-            // Fetch all necessary data
-            var allLessons = await _context.Lessons.ToListAsync() ?? new List<Lesson>();
-            var notifications = await _context.Notification
-                .Where(n => n.UserID == user.Id)
-                .OrderByDescending(n => n.DateCreated)
-                .ToListAsync();
-            var userProgress = await _context.UserProgress
-                .Include(up => up.Lesson)
-                .Where(up => up.UserID == user.Id)
-                .ToListAsync() ?? new List<UserProgress>();
+            if (string.IsNullOrEmpty(user.LanguageExperience))
+                return RedirectToAction("SelectLanguageExperience");
 
-            _logger.LogInformation($"UserProgress Records (Before Passing to View): {userProgress?.Count ?? 0}");
-            var analytics = await _context.Analytics
-                .FirstOrDefaultAsync(a => a.UserID == user.Id);
-            var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == user.Id);
-
-            // Categorize lessons by difficulty
-            var beginnerLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Beginner", StringComparison.OrdinalIgnoreCase)).ToList();
-            var intermediateLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Intermediate", StringComparison.OrdinalIgnoreCase)).ToList();
-            var advancedLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Advanced", StringComparison.OrdinalIgnoreCase)).ToList();
-
-            // Logging for debugging
-            _logger.LogInformation($"Total Lessons Fetched: {allLessons.Count}");
-            _logger.LogInformation($"Notifications Found: {notifications.Count}");
-            _logger.LogInformation($"UserProgress Records: {userProgress.Count}");
-            _logger.LogInformation($"AdaptiveLearning: {adaptiveLearning != null}");
-
-            // Pass data to the view using ViewModel
-            var viewModel = new DashboardViewModel
-            {
-                Lessons = allLessons,
-                Notifications = notifications,
-                UserProgress = userProgress,
-                Analytics = analytics,
-                AdaptiveLearning = adaptiveLearning
-            };
-
-            // ViewBag for categorized lessons
-            ViewBag.BeginnerLessons = beginnerLessons;
-            ViewBag.IntermediateLessons = intermediateLessons;
-            ViewBag.AdvancedLessons = advancedLessons;
+            var viewModel = await GetDashboardViewModel(user.Id);
 
             return View("~/Views/User/Dashboard/Index.cshtml", viewModel);
         }
 
-        public async Task<IActionResult> MarkAsRead(int id)
+        // Select Language Experience
+        [HttpGet]
+        public async Task<IActionResult> SelectLanguageExperience()
         {
-            var notification = await _context.Notification.FindAsync(id);
-            if (notification != null)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            if (!string.IsNullOrEmpty(user.LanguageExperience))
+                return RedirectToAction("Index");
+
+            return View("~/Views/User/Dashboard/SelectLanguageExperience.cshtml");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SelectLanguageExperience([Required] string experience)
+        {
+            if (!ModelState.IsValid)
             {
-                notification.IsRead = true;
-                await _context.SaveChangesAsync();
+                return BadRequest(ModelState);
             }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            user.LanguageExperience = experience;
+            await _userManager.UpdateAsync(user);
+
             return RedirectToAction("Index");
         }
 
+        // Mark Notification as Read
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var notification = await _context.Notification.FindAsync(id);
+            if (notification == null || notification.UserID != _userManager.GetUserId(User))
+            {
+                return Forbid();
+            }
+
+            notification.IsRead = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        // Lesson Details
         public IActionResult LessonDetails(int id)
         {
             var lesson = _context.Lessons.FirstOrDefault(l => l.LessonID == id);
             if (lesson == null)
             {
-                return NotFound("Lesson not found.");
+                return NotFound();
             }
 
             var exercises = _context.InteractiveExercises
                 .Where(e => e.LessonID == id)
+                .OrderBy(x => Guid.NewGuid()) // Shuffle the exercises for variety
                 .ToList();
-
-            // Shuffle the exercises for variety
-            var random = new Random();
-            exercises = exercises.OrderBy(x => random.Next()).ToList();
 
             ViewBag.Lesson = lesson;
             return View("~/Views/User/Dashboard/LessonDetails.cshtml", exercises);
         }
 
+        // Save User Response
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveUserResponse([FromForm] UserResponse userResponse, [FromForm] int TimeSpent)
         {
             if (userResponse == null || string.IsNullOrEmpty(userResponse.UserID))
@@ -128,9 +126,8 @@ namespace eSaysay.Controllers
                 return BadRequest(new { message = "Invalid TimeSpent value." });
             }
 
-            // Check if the UserID exists in AspNetUsers
-            var userExists = _context.Users.Any(u => u.Id == userResponse.UserID);
-            if (!userExists)
+            // Ensure the user exists before proceeding
+            if (!await UserExists(userResponse.UserID))
             {
                 _logger.LogWarning($"UserID {userResponse.UserID} does not exist in AspNetUsers.");
                 return BadRequest(new { message = "Invalid UserID." });
@@ -138,13 +135,10 @@ namespace eSaysay.Controllers
 
             _logger.LogInformation($"UserID: {userResponse.UserID}");
             _logger.LogInformation($"ExerciseID: {userResponse.ExerciseID}");
-            _logger.LogInformation($"UserAnswer: {userResponse.UserAnswer}");
-            _logger.LogInformation($"IsCorrect: {userResponse.IsCorrect}");
             _logger.LogInformation($"TimeSpent: {TimeSpent}");
 
             try
             {
-                // Fetch the exercise to get the LessonID
                 var exercise = await _context.InteractiveExercises
                     .FirstOrDefaultAsync(e => e.ExerciseID == userResponse.ExerciseID);
 
@@ -154,18 +148,13 @@ namespace eSaysay.Controllers
                     return BadRequest(new { message = "Invalid ExerciseID." });
                 }
 
-                // Save the user response
                 userResponse.AttemptDate = DateTime.UtcNow;
                 _context.UserResponse.Add(userResponse);
                 await _context.SaveChangesAsync();
 
-                // Update UserProgress with time tracking
                 await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
-
-                // Update Analytics
-                await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect);
-
-                // Update Adaptive Learning
+                await UpdateLanguageExperience(userResponse.UserID);
+                await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
                 await UpdateAdaptiveLearning(userResponse.UserID, exercise.LessonID);
 
                 _logger.LogInformation("Response saved successfully.");
@@ -182,101 +171,29 @@ namespace eSaysay.Controllers
                 return StatusCode(500, new { message = "An error occurred while saving your response." });
             }
         }
-        private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
+
+        // Profile
+        public async Task<IActionResult> ProfileAsync()
         {
-            var progress = await _context.UserProgress
-                .FirstOrDefaultAsync(p => p.UserID == userId && p.LessonID == lessonId);
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.LanguageExperience = user?.LanguageExperience ?? "Not Set";
 
-            if (progress == null)
-            {
-                progress = new UserProgress
-                {
-                    UserID = userId,
-                    LessonID = lessonId,
-                    CompletionStatus = isCorrect ? "Completed" : "In Progress",
-                    Score = isCorrect ? 100 : 0,
-                    TimeSpent = TimeSpent,
-                    LastAccessedDate = DateTime.UtcNow
-                };
-                _context.UserProgress.Add(progress);
-            }
-            else
-            {
-                progress.CompletionStatus = isCorrect ? "Completed" : "In Progress";
-                progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2; // Update average score
-                progress.LastAccessedDate = DateTime.UtcNow;
-                progress.TimeSpent += TimeSpent;
-            }
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task UpdateAnalytics(string userId, int lessonId, bool isCorrect)
-        {
-            var analytics = await _context.Analytics
-                .FirstOrDefaultAsync(a => a.UserID == userId && a.LessonCompleted == lessonId);
-
-            if (analytics == null)
-            {
-                analytics = new Analytics
-                {
-                    UserID = userId,
-                    Date = DateTime.UtcNow,
-                    LessonCompleted = lessonId,
-                    AverageScore = isCorrect ? 100 : 0,
-                    TimeSpent = 0 // You can track time spent using a timer
-                };
-                _context.Analytics.Add(analytics);
-            }
-            else
-            {
-                analytics.AverageScore = (analytics.AverageScore + (isCorrect ? 100 : 0)) / 2; // Update average score
-                analytics.Date = DateTime.UtcNow;
-            }
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task UpdateAdaptiveLearning(string userId, int lessonId)
-        {
-            var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == userId);
-
-            if (adaptiveLearning == null)
-            {
-                adaptiveLearning = new AdaptiveLearning
-                {
-                    UserID = userId,
-                    CurrentLevel = 1, // Starting level
-                    RecommendedLessons = new List<int> { lessonId }, // Example recommendation
-                    LastUpdated = DateTime.UtcNow
-                };
-                _context.AdaptiveLearning.Add(adaptiveLearning);
-            }
-            else
-            {
-                // Update the current level and recommended lessons based on user performance
-                adaptiveLearning.CurrentLevel += 1; // Example logic
-                adaptiveLearning.RecommendedLessons.Add(lessonId); // Add the completed lesson to recommendations
-                adaptiveLearning.LastUpdated = DateTime.UtcNow;
-            }
-            await _context.SaveChangesAsync();
-        }
-
-     
-        public IActionResult Profile()
-        {
             return View("~/Views/User/Dashboard/Profile.cshtml");
         }
 
+        // Translator
         public IActionResult Translator()
         {
             return View("~/Views/User/Dashboard/Translator.cshtml");
         }
 
+        // Practice Speech
         public IActionResult PracticeSpeech()
         {
             return View("~/Views/User/Dashboard/PracticeSpeech.cshtml");
         }
 
+        // Start Exercise
         public IActionResult StartExercise(int exerciseId)
         {
             var exercise = _context.InteractiveExercises.FirstOrDefault(e => e.ExerciseID == exerciseId);
@@ -286,54 +203,34 @@ namespace eSaysay.Controllers
                 return NotFound("Exercise not found.");
             }
 
-            switch (exercise.ExerciseType)
+            return exercise.ExerciseType switch
             {
-                case "Complete Translation":
-                    return View("~/Views/User/Exercises/CompleteTranslation.cshtml", exercise);
-
-                case "Correct Translation":
-                    return View("~/Views/User/Exercises/CorrectTranslation.cshtml", exercise);
-
-                case "Listening Exercise":
-                    return View("~/Views/User/Exercises/ListeningExercise.cshtml", exercise);
-
-                case "Pairing":
-                    return View("~/Views/User/Exercises/PairingExercise.cshtml", exercise);
-
-                default:
-                    return NotFound($"Invalid exercise type: {exercise.ExerciseType}");
-            }
+                "Complete Translation" => View("~/Views/User/Exercises/CompleteTranslation.cshtml", exercise),
+                "Correct Translation" => View("~/Views/User/Exercises/CorrectTranslation.cshtml", exercise),
+                "Listening Exercise" => View("~/Views/User/Exercises/ListeningExercise.cshtml", exercise),
+                "Pairing" => View("~/Views/User/Exercises/PairingExercise.cshtml", exercise),
+                _ => NotFound($"Invalid exercise type: {exercise.ExerciseType}"),
+            };
         }
 
+        // Success
         public IActionResult Success()
         {
             return View();
         }
+
+        // Stats
         public async Task<IActionResult> Stats()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-            var analytics = await _context.Analytics.FirstOrDefaultAsync(a => a.UserID == user.Id);
-            var userProgress = await _context.UserProgress
-                .Include(up => up.Lesson)
-                .Where(up => up.UserID == user.Id)
-                .ToListAsync() ?? new List<UserProgress>();
-            var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == user.Id);
-
-            var viewModel = new DashboardViewModel
-            {
-                Analytics = analytics,
-                UserProgress = userProgress,
-                AdaptiveLearning = adaptiveLearning
-            };
+            var viewModel = await GetStatsViewModel(user.Id);
 
             return View("~/Views/User/Dashboard/Stats.cshtml", viewModel);
         }
 
-
-
+        // Logs
         [HttpGet]
         public async Task<IActionResult> Logs()
         {
@@ -345,13 +242,234 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Logs.cshtml", logs);
         }
 
+        // Update Profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(ApplicationUser updatedUser)
         {
-            // Update user logic here...
+            try
+            {
+                // Update user logic here...
 
-            await _logService.LogEvent("User updated profile");
+                await _logService.LogEvent("User updated profile");
 
-            return RedirectToAction("Profile");
+                return RedirectToAction("Profile");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating profile: {ex.Message}");
+                return StatusCode(500, "An error occurred while updating your profile.");
+            }
+        }
+
+        // Helper Methods
+        private async Task<DashboardViewModel> GetDashboardViewModel(string userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var userExperienceLevel = user?.LanguageExperience ?? "Beginner";
+
+            var allLessons = await _context.Lessons.ToListAsync() ?? new List<Lesson>();
+            var notifications = await _context.Notification
+                .Where(n => n.UserID == userId)
+                .OrderByDescending(n => n.DateCreated)
+                .ToListAsync();
+            var userProgress = await _context.UserProgress
+                .Include(up => up.Lesson)
+                .Where(up => up.UserID == userId)
+                .ToListAsync() ?? new List<UserProgress>();
+            var analytics = await _context.Analytics
+                .FirstOrDefaultAsync(a => a.UserID == userId);
+            var adaptiveLearning = await _context.AdaptiveLearning
+                .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
+
+            var beginnerLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Beginner", StringComparison.OrdinalIgnoreCase)).ToList();
+            var intermediateLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Intermediate", StringComparison.OrdinalIgnoreCase)).ToList();
+            var advancedLessons = allLessons.Where(l => string.Equals(l.DifficultyLevel?.Trim(), "Advanced", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            ViewBag.BeginnerLessons = beginnerLessons;
+            ViewBag.IntermediateLessons = intermediateLessons;
+            ViewBag.AdvancedLessons = advancedLessons;
+
+            return new DashboardViewModel
+            {
+                Lessons = allLessons,
+                Notifications = notifications,
+                UserProgress = userProgress,
+                Analytics = analytics,
+                AdaptiveLearning = adaptiveLearning,
+                UserExperienceLevel = userExperienceLevel 
+            };
+        }
+
+        private async Task<DashboardViewModel> GetStatsViewModel(string userId)
+        {
+            var analytics = await _context.Analytics.FirstOrDefaultAsync(a => a.UserID == userId);
+            var userProgress = await _context.UserProgress
+                .Include(up => up.Lesson)
+                .Where(up => up.UserID == userId)
+                .ToListAsync() ?? new List<UserProgress>();
+            var adaptiveLearning = await _context.AdaptiveLearning
+                .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
+
+            return new DashboardViewModel
+            {
+                Analytics = analytics,
+                UserProgress = userProgress,
+                AdaptiveLearning = adaptiveLearning
+            };
+        }
+
+        private async Task<bool> UserExists(string userId)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId);
+        }
+
+        private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
+        {
+            if (!await UserExists(userId)) return;
+
+            var totalExercises = await _context.InteractiveExercises.CountAsync(e => e.LessonID == lessonId);
+            var completedExercises = await _context.UserResponse
+                .Where(r => r.UserID == userId && r.Exercise.LessonID == lessonId && r.IsCorrect)
+                .Select(r => r.ExerciseID)
+                .Distinct()
+                .CountAsync();
+
+            var progress = await _context.UserProgress.FirstOrDefaultAsync(p => p.UserID == userId && p.LessonID == lessonId);
+            bool wasAlreadyCompleted = progress?.CompletionStatus == "Completed";
+
+            if (progress == null)
+            {
+                progress = new UserProgress
+                {
+                    UserID = userId,
+                    LessonID = lessonId,
+                    CompletionStatus = (completedExercises >= totalExercises) ? "Completed" : "In Progress",
+                    Score = isCorrect ? 100 : 0,
+                    TimeSpent = TimeSpent,
+                    LastAccessedDate = DateTime.UtcNow
+                };
+                _context.UserProgress.Add(progress);
+            }
+            else
+            {
+                progress.CompletionStatus = (completedExercises >= totalExercises) ? "Completed" : "In Progress";
+                progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2;
+                progress.LastAccessedDate = DateTime.UtcNow;
+                progress.TimeSpent += TimeSpent;
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Send a notification if the lesson is now completed
+            if (progress.CompletionStatus == "Completed" && !wasAlreadyCompleted)
+            {
+                var lesson = await _context.Lessons.FindAsync(lessonId);
+                var message = $"Great job! You have completed the lesson: {lesson?.Title}.";
+                await SendNotification(userId, message);
+            }
+        }
+
+        private async Task UpdateLanguageExperience(string userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return;
+
+            var beginnerLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Beginner").Select(l => l.LessonID).ToListAsync();
+            var intermediateLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Intermediate").Select(l => l.LessonID).ToListAsync();
+            var advancedLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Advanced").Select(l => l.LessonID).ToListAsync();
+
+            var completedLessons = await _context.UserProgress
+                .Where(up => up.UserID == userId && up.CompletionStatus == "Completed")
+                .Select(up => up.LessonID)
+                .ToListAsync();
+
+            string newLevel = user.LanguageExperience; // Track if the level changes
+
+            if (user.LanguageExperience == "Beginner" && beginnerLessons.All(l => completedLessons.Contains(l)))
+            {
+                user.LanguageExperience = "Intermediate";
+                newLevel = "Intermediate";
+            }
+            else if (user.LanguageExperience == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
+            {
+                user.LanguageExperience = "Advanced";
+                newLevel = "Advanced";
+            }
+
+            if (newLevel != user.LanguageExperience) // If the level was upgraded, notify the user
+            {
+                var message = $"Congratulations! You have unlocked {newLevel} level lessons.";
+                await SendNotification(userId, message);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        // Helper method to send notifications
+        private async Task SendNotification(string userId, string message)
+        {
+            var notification = new Notification
+            {
+                UserID = userId,
+                Message = message,
+                IsRead = false,
+                DateCreated = DateTime.UtcNow
+            };
+
+            _context.Notification.Add(notification);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task UpdateAnalytics(string userId, int lessonId, bool isCorrect, int TimeSpent)
+        {
+            if (!await UserExists(userId)) return;
+
+            var analytics = await _context.Analytics.FirstOrDefaultAsync(a => a.UserID == userId && a.LessonCompleted == lessonId);
+            if (analytics == null)
+            {
+                analytics = new Analytics
+                {
+                    UserID = userId,
+                    Date = DateTime.UtcNow,
+                    LessonCompleted = lessonId,
+                    AverageScore = isCorrect ? 100 : 0,
+                    TimeSpent = TimeSpent
+                };
+                _context.Analytics.Add(analytics);
+            }
+            else
+            {
+                analytics.AverageScore = (analytics.AverageScore + (isCorrect ? 100 : 0)) / 2;
+                analytics.TimeSpent += TimeSpent; // Add new time to existing time
+                analytics.Date = DateTime.UtcNow;
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task UpdateAdaptiveLearning(string userId, int lessonId)
+        {
+            if (!await UserExists(userId)) return;
+
+            var adaptiveLearning = await _context.AdaptiveLearning.FirstOrDefaultAsync(al => al.UserID == userId);
+            if (adaptiveLearning == null)
+            {
+                _logger.LogWarning($"Adaptive learning record missing for user {userId}, skipping update.");
+                return; // Don't create a new user, just skip the update
+            }
+
+            // Update adaptive learning based on user's progress
+            adaptiveLearning.CurrentLevel += 1;
+            adaptiveLearning.RecommendedLessons.Add(lessonId);
+            adaptiveLearning.LastUpdated = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

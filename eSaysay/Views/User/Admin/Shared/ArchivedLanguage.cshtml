@@ -42,6 +42,7 @@
                                 <td>@language.LanguageName</td>
                                 <td class="text-center">
                                     <form class="restore-form d-inline" data-id="@language.LanguageID">
+                                      @Html.AntiForgeryToken()
                                         <input type="hidden" name="LanguageID" value="@language.LanguageID" />
                                         <button type="submit" class="btn btn-archive-languages-restore">
                                             <span class="material-symbols-rounded">
@@ -50,6 +51,7 @@
                                         </button>
                                     </form>
                                     <form class="delete-form d-inline" data-id="@language.LanguageID">
+                                      @Html.AntiForgeryToken()
                                         <input type="hidden" name="LanguageID" value="@language.LanguageID" />
                                         <button type="submit" class="btn btn-archive-languages-delete">
                                             <span class="material-symbols-rounded">delete</span>
@@ -63,6 +65,7 @@
                     {
                         <tr>
                             <td colspan="2" class="text-center text-muted">No archived languages found.</td>
+
                         </tr>
                     }
                 </tbody>
@@ -153,7 +156,7 @@
                     toastElement.show();
 
                     setTimeout(() => {
-                        $(`#${toastId}`).remove(); // Remove toast after it disappears
+                        $(`#${toastId}`).remove();
                     }, 4000);
                 }
 
@@ -199,10 +202,12 @@
                     e.preventDefault();
                     if (confirm("Are you sure you want to restore this language?")) {
                         const languageId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
+
                         $.ajax({
                             url: '/Admin/RestoreLanguage',
                             type: 'POST',
-                            data: { LanguageID: languageId },
+                            data: { LanguageID: languageId, __RequestVerificationToken: token },
                             success: function () {
                                 $(`#languageRow_${languageId}`).remove();
                                 showToast("✅ Language successfully restored!");
@@ -219,10 +224,12 @@
                     e.preventDefault();
                     if (confirm("⚠️ This action is permanent! Are you sure you want to delete this language?")) {
                         const languageId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
+
                         $.ajax({
                             url: '/Admin/DeleteLanguagePermanently',
                             type: 'POST',
-                            data: { LanguageID: languageId },
+                            data: { LanguageID: languageId, __RequestVerificationToken: token },
                             success: function () {
                                 $(`#languageRow_${languageId}`).remove();
                                 showToast("🗑️ Language permanently deleted!", 'warning');

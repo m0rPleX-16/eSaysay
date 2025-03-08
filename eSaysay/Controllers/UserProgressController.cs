@@ -23,6 +23,7 @@ namespace eSaysay.Controllers
             {
                 progress.CompletionStatus = "Completed";
                 progress.LastAccessedDate = DateTime.UtcNow;
+                progress.TimeSpent = 0;
                 await _context.SaveChangesAsync();
             }
 

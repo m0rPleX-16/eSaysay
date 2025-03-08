@@ -40,6 +40,7 @@
                             </div>
                             <div class="modal-body">
                                 <form method="post" action="/Admin/EditLesson">
+                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="LessonID" value="@lesson.LessonID" />
                                     <div class="mb-3">
                                         <label class="form-label">Title</label>
@@ -96,6 +97,7 @@
                             </div>
                             <div class="modal-footer">
                                 <form method="post" action="/Admin/ArchiveLesson">
+                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="LessonID" value="@lesson.LessonID" />
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-danger">Archive</button>

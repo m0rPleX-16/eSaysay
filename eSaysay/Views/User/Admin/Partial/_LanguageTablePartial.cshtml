@@ -41,6 +41,7 @@
                     </div>
                     <div class="modal-body">
                         <form method="post" action="/Admin/EditLanguage">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="LanguageID" value="@language.LanguageID">
                             <div class="mb-3">
                                 <label for="languageName-@language.LanguageID" class="form-label">Language Name</label>
@@ -69,6 +70,7 @@
                     </div>
                     <div class="modal-footer">
                         <form method="post" action="/Admin/ArchiveLanguage">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="LanguageID" value="@language.LanguageID">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-danger">Archive</button>

@@ -30,6 +30,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
+
         public async Task<IActionResult> OnGetAsync(string userId, string code)
         {
             if (userId == null || code == null)
@@ -45,8 +46,26 @@ namespace eSaysay.Areas.Identity.Pages.Account
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
-            return Page();
+
+            if (result.Succeeded)
+            {
+                StatusMessage = "Thank you for confirming your email.";
+
+                // Check if the user has already selected their experience level
+                if (string.IsNullOrEmpty(user.LanguageExperience))
+                {
+                    return RedirectToAction("SelectLanguageExperience", "Dashboard"); // No experience level set, redirect to selection
+                }
+                else
+                {
+                    return RedirectToAction("StudentDashboard", "Dashboard"); // Experience level already set, go to dashboard
+                }
+            }
+            else
+            {
+                StatusMessage = "Error confirming your email.";
+                return Page();
+            }
         }
     }
 }
