@@ -56,20 +56,23 @@
                     <div class="lesson-cards">
                         @foreach (var lesson in ViewBag.BeginnerLessons)
                         {
-                            <div class="lesson-card">
-                                <h3>@lesson.Title</h3>
-                                <p>@lesson.Description</p>
-                                @if (userExperienceLevel == "Beginner" || userExperienceLevel == "Intermediate" || userExperienceLevel == "Advanced")
-                                {
-                                    <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@lesson.LessonID" class="btn btn-start-lessons">
-                                        Start
-                                    </a>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-start-lessons" disabled>Start</button>
-                                }
-                            </div>
+                            @if (!lesson.IsArchived)
+                            {
+                                <div class="lesson-card">
+                                    <h3>@lesson.Title</h3>
+                                    <p>@lesson.Description</p>
+                                    @if (userExperienceLevel == "Beginner" || userExperienceLevel == "Intermediate" || userExperienceLevel == "Advanced")
+                                    {
+                                        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@lesson.LessonID" class="btn btn-start-lessons">
+                                            Start
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-start-lessons" disabled>Start</button>
+                                    }
+                                </div>
+                            }
                         }
                     </div>
                     <button class="carousel-control next">&#10095;</button>
@@ -98,18 +101,21 @@
                     <div class="lesson-cards">
                         @foreach (var lesson in ViewBag.IntermediateLessons)
                         {
-                            <div class="lesson-card">
-                                <h3>@lesson.Title</h3>
-                                <p>@lesson.Description</p>
-                                @if (userExperienceLevel == "Intermediate" || userExperienceLevel == "Advanced")
-                                {
-                                    <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@lesson.LessonID" class="btn btn-start-lessons">Start</a>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-start-lessons" disabled>Start</button>
-                                }
-                            </div>
+                            @if (!lesson.IsArchived)
+                            {
+                                <div class="lesson-card">
+                                    <h3>@lesson.Title</h3>
+                                    <p>@lesson.Description</p>
+                                    @if (userExperienceLevel == "Intermediate" || userExperienceLevel == "Advanced")
+                                    {
+                                        <a asp-controller="Dashboard" asp-action="LessonDetails" asp-route-id="@lesson.LessonID" class="btn btn-start-lessons">Start</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-start-lessons" disabled>Start</button>
+                                    }
+                                </div>
+                            }
                         }
                     </div>
                     <button class="carousel-control next">&#10095;</button>
@@ -138,6 +144,7 @@
                     <div class="lesson-cards">
                         @foreach (var lesson in ViewBag.AdvancedLessons)
                         {
+                            @if (!lesson.IsArchived) {
                             <div class="lesson-card">
                                 <h3>@lesson.Title</h3>
                                 <p>@lesson.Description</p>
@@ -150,6 +157,7 @@
                                     <button class="btn btn-start-lessons" disabled>Start</button>
                                 }
                             </div>
+                            }
                         }
                     </div>
                     <button class="carousel-control next">&#10095;</button>

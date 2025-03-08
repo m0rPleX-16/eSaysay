@@ -540,7 +540,7 @@ namespace eSaysay.Controllers
             var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
             if (exercise != null)
             {
-                exercise.IsArchived = true; // Mark as archived instead of deleting
+                exercise.IsArchived = true;
                 await _context.SaveChangesAsync();
 
                 await _logService.LogEvent($"Archived exercise ID: {ExerciseID}");
@@ -586,22 +586,32 @@ namespace eSaysay.Controllers
                 await _context.SaveChangesAsync();
                 await _logService.LogEvent($"Restored exercise: {exercise.Content}");
             }
-            return RedirectToAction("ArchivedExercises");
+            return Json(new { redirect = Url.Action("ArchivedExercises") });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteExercisePermanently(int ExerciseID)
         {
-            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
-            if (exercise != null)
+            try
             {
-                _context.InteractiveExercises.Remove(exercise);
-                await _context.SaveChangesAsync();
+                var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
+                if (exercise != null)
+                {
+                    _context.InteractiveExercises.Remove(exercise);
+                    await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}");
+                    await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}");
+                    return Ok(); 
+                }
+                return NotFound();
             }
-            return Ok();
+            catch (Exception ex)
+            {
+                // Log the exception
+                await _logService.LogEvent($"Error deleting exercise: {ex.Message}");
+                return StatusCode(500, "An error occurred while deleting the exercise."); 
+            }
         }
         public IActionResult Lessons(string searchQuery, int page = 1, int pageSize = 5)
         {
@@ -780,7 +790,7 @@ namespace eSaysay.Controllers
             var lesson = await _context.Lessons.FindAsync(LessonID);
             if (lesson != null)
             {
-                _context.Lessons.Remove(lesson); // Permanently delete the lesson
+                _context.Lessons.Remove(lesson); 
                 await _context.SaveChangesAsync();
 
                 await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}");
@@ -969,7 +979,7 @@ namespace eSaysay.Controllers
         // ✅ Fetch Archived Students
         public async Task<IActionResult> ArchivedStudents(string search, int page = 1, int pageSize = 5)
             {
-                var allUsers = await _userManager.Users.Where(u => u.IsArchived).ToListAsync(); // ✅ Only archived users
+                var allUsers = await _userManager.Users.Where(u => u.IsArchived).ToListAsync(); 
 
                 var students = new List<ApplicationUser>();
                 foreach (var user in allUsers)
@@ -994,6 +1004,95 @@ namespace eSaysay.Controllers
 
                 return View("~/Views/User/Admin/Shared/ArchivedStudents.cshtml", students);
             }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStudent(
+            string Id,
+            string FirstName,
+            string MiddleName,
+            string LastName,
+            string Gender,
+            int Age,
+            DateTime Birthday)
+        {
+            // Trim all string inputs to avoid whitespace issues
+            Id = Id?.Trim();
+            FirstName = FirstName?.Trim();
+            MiddleName = MiddleName?.Trim();
+            LastName = LastName?.Trim();
+            Gender = Gender?.Trim();
+
+            // Log received values for debugging
+            _logger.LogInformation($"[EditStudent] Received - ID: {Id}, First Name: {FirstName}, Last Name: {LastName}, Gender: {Gender}, Age: {Age}, Birthday: {Birthday}");
+
+            // Validate required fields
+            if (string.IsNullOrEmpty(Id)) return BadRequest("Invalid input: ID is required.");
+            if (string.IsNullOrEmpty(FirstName)) return BadRequest("Invalid input: First Name is required.");
+            if (string.IsNullOrEmpty(LastName)) return BadRequest("Invalid input: Last Name is required.");
+            if (string.IsNullOrEmpty(Gender)) return BadRequest("Invalid input: Gender is required.");
+            if (Age < 1 || Age > 150) return BadRequest("Invalid input: Age must be between 1 and 150.");
+            if (Birthday > DateTime.UtcNow) return BadRequest("Invalid input: Birthday cannot be in the future.");
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                _logger.LogWarning($"[EditStudent] Attempted to edit non-existing student (ID: {Id})");
+                return NotFound("Student not found.");
+            }
+
+            // Update fields only if changes were made
+            bool isUpdated = false;
+
+            if (user.FirstName != FirstName)
+            {
+                user.FirstName = FirstName;
+                isUpdated = true;
+            }
+            if (user.MiddleName != MiddleName)
+            {
+                user.MiddleName = MiddleName;
+                isUpdated = true;
+            }
+            if (user.LastName != LastName)
+            {
+                user.LastName = LastName;
+                isUpdated = true;
+            }
+            if (user.Gender != Gender)
+            {
+                user.Gender = Gender;
+                isUpdated = true;
+            }
+            if (user.Age != Age)
+            {
+                user.Age = Age;
+                isUpdated = true;
+            }
+            if (user.Birthday != Birthday)
+            {
+                user.Birthday = Birthday;
+                isUpdated = true;
+            }
+
+            if (!isUpdated)
+            {
+                _logger.LogInformation($"[EditStudent] No changes detected for student (ID: {Id}).");
+                return RedirectToAction("Students");
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation($"[EditStudent] Successfully updated student (ID: {Id}).");
+                await _logService.LogEvent($"Updated student details: {FirstName} {LastName}");
+                return RedirectToAction("Students");
+            }
+
+            _logger.LogError($"[EditStudent] Failed to update student (ID: {Id}). Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            return BadRequest($"Failed to update student. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
+
 
         // ✅ Archive Student
         [HttpPost]

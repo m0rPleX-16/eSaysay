@@ -1,69 +1,65 @@
 ﻿@using eSaysay.Models.Entities;
-@model List<Lesson>
+@model List<InteractiveExercise>
 
 @{
-    ViewData["Title"] = "Archived Lessons";
+    ViewData["Title"] = "Archived Exercises";
 }
 
-<main class="archive-page-lessons">
+<main class="archive-page-exercises">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="archive-page-lessons-content">
-        <div class="archive-lessons-topbar d-flex justify-content-between">
-            <h2>Archived <span class="archive-lessons-dashboard">lessons</span></h2>
-            <a asp-controller="Admin" asp-action="Lessons" class="btn exit-admin-archive-lessons">
-                <span class="material-symbols-rounded">
-                    close
-                </span>
+    <div class="archive-page-exercises-content">
+        <div class="archive-exercises-topbar d-flex justify-content-between">
+            <h2>Archived <span class="archive-exercises-dashboard">exercises</span></h2>
+            <a asp-controller="Admin" asp-action="Exercises" class="btn exit-admin-archive-exercises">
+                <span class="material-symbols-rounded">close</span>
             </a>
         </div>
 
         <!-- Search Bar -->
-        <div class="lessons-searchbar mb-3">
-            <input type="text" id="lessonSearchInput" class="form-control" placeholder="Search by archived lessons..." value="@ViewBag.Search">
+        <div class="exercises-searchbar mb-3">
+            <input type="text" id="exerciseSearchInput" class="form-control" placeholder="Search by archived exercises..." value="@ViewBag.Search">
         </div>
 
-        <!-- Lessons Table -->
-        <div class="table-responsive" id="lessonsArchiveTableContainer">
-            <table class="table table-lessons-archive-content">
+        <!-- Exercises Table -->
+        <div class="table-responsive" id="exercisesArchiveTableContainer">
+            <table class="table table-exercises-archive-content">
                 <thead class="table-dark">
                     <tr>
-                        <th class="col-4">Title</th>
-                        <th class="col-2">Lesson Type</th>
-                        <th class="col-2">Difficulty</th>
-                        <th class="col-2">Language</th>
+                        <th class="col-3">Exercise Type</th>
+                        <th class="col-4">Content</th>
+                        <th class="col-2">Lesson</th>
+                        <th class="col-1">Difficulty</th>
                         <th class="col-2 text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="lessonsTableBody">
+                <tbody id="exercisesTableBody">
                     @if (Model.Any())
                     {
-                        @foreach (var lesson in Model)
+                        @foreach (var exercise in Model)
                         {
-                            <tr id="lessonRow_@lesson.LessonID">
-                                <td>@lesson.Title</td>
-                                <td>@lesson.LessonType</td>
-                                <td>@lesson.DifficultyLevel</td>
-                                <td>@lesson.Language.LanguageName</td>
+                            <tr id="exerciseRow_@exercise.ExerciseID">
+                                <td>@exercise.ExerciseType</td>
+                                <td>@exercise.Content</td>
+                                <td>@exercise.Lesson.Title</td>
+                                <td>@exercise.DifficultyLevel</td>
                                 <td class="text-center">
-                                    <form class="restore-form d-inline" data-id="@lesson.LessonID">
-                                       @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-archive-lessons-restore" data-bs-toggle="tooltip"
+                                    <!-- Restore Button -->
+                                    <form class="restore-form d-inline" data-id="@exercise.ExerciseID">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-archive-exercises-restore" data-bs-toggle="tooltip"
                                                 data-bs-placement="right"
                                                 title="Restore">
-                                            <span class="material-symbols-rounded">
-                                                settings_backup_restore
-                                            </span>
+                                            <span class="material-symbols-rounded">settings_backup_restore</span>
                                         </button>
                                     </form>
-                                    <form class="delete-form d-inline" data-id="@lesson.LessonID">
-                                       @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-archive-lessons-delete" data-bs-toggle="tooltip"
+                                    <!-- Delete Button -->
+                                    <form class="delete-form d-inline" data-id="@exercise.ExerciseID">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-archive-exercises-delete" data-bs-toggle="tooltip"
                                                 data-bs-placement="right"
                                                 title="Delete">
-                                            <span class="material-symbols-rounded">
-                                                delete
-                                            </span>
+                                            <span class="material-symbols-rounded">delete</span>
                                         </button>
                                     </form>
                                 </td>
@@ -73,85 +69,77 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No archived lessons found.</td>
-
+                            <td colspan="5" class="text-center text-muted">No archived exercises found.</td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
 
-            <!-- Pagination -->
-            <div class="lesson-pagination text-center mt-3">
-                @if (ViewBag.TotalPages > 1)
-                {
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
+        <!-- Pagination -->
+        <div class="exercises-pagination text-center mt-3">
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                            </li>
+                        }
+                        @{
+                            int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                            int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
 
-                            @if (ViewBag.CurrentPage > 1)
+                            if (startPage > 1)
                             {
-                                <li class="page-item">
-                                    <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                                <li class="page-item"><a href="#" class="page-link pagination-link" data-page="1">1</a></li>
+                                if (startPage > 2)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+                            }
+
+                            for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a href="#" class="page-link pagination-link" data-page="@i">@i</a>
                                 </li>
                             }
 
-                            @{
-                                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
-                                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
-
-                                if (startPage > 1)
-                                {
-                                    <li class="page-item"><a href="#" class="page-link pagination-link" data-page="1">1</a></li>
-                                    if (startPage > 2)
-                                    {
-                                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                                    }
-                                }
-
-                                for (int i = startPage; i <= endPage; i++)
-                                {
-                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                        <a href="#" class="page-link pagination-link" data-page="@i">@i</a>
-                                    </li>
-                                }
-
-                                if (endPage < ViewBag.TotalPages)
-                                {
-                                    if (endPage < ViewBag.TotalPages - 1)
-                                    {
-                                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                                    }
-                                    <li class="page-item">
-                                        <a href="#" class="page-link pagination-link" data-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
-                                    </li>
-                                }
-                            }
-
-                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            if (endPage < ViewBag.TotalPages)
                             {
+                                if (endPage < ViewBag.TotalPages - 1)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
                                 <li class="page-item">
-                                    <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                                    <a href="#" class="page-link pagination-link" data-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
                                 </li>
                             }
-                        </ul>
-                    </nav>
-                }
-            </div>
+                        }
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a href="#" class="page-link pagination-link" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
         </div>
 
         <!-- Toast Notifications -->
         <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3">
             <div id="toastContainer"></div>
         </div>
-
     </div>
-    
-
 
     @section Scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function () {
-
                 $('[data-bs-toggle="tooltip"]').tooltip();
 
                 function showToast(message, type = 'success') {
@@ -163,7 +151,6 @@
                                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                         </div>`;
-
                     $("#toastContainer").append(toastHtml);
                     const toastElement = new bootstrap.Toast(document.getElementById(toastId));
                     toastElement.show();
@@ -173,83 +160,82 @@
                     }, 4000);
                 }
 
-                function loadLessons(page = 1) {
-                    const searchQuery = $('#lessonSearchInput').val();
+                function loadExercises(page = 1) {
+                    const searchQuery = $('#exerciseSearchInput').val();
                     $.ajax({
-                        url: '/Admin/ArchivedLessons',
+                        url: '/Admin/ArchivedExercises',
                         type: 'GET',
                         data: { searchQuery: searchQuery, page: page },
                         success: function (response) {
-                            const newTableContent = $(response).find("#lessonsTableBody").html();
-                            $("#lessonsTableBody").html(newTableContent);
+                            const newTableContent = $(response).find("#exercisesTableBody").html();
+                            $("#exercisesTableBody").html(newTableContent);
 
-                            const paginationHtml = $(response).find('.lesson-pagination').html();
-                            $('.lesson-pagination').html(paginationHtml);
+                            const paginationHtml = $(response).find('.exercises-pagination').html();
+                            $('.exercises-pagination').html(paginationHtml);
                         },
                         error: function (xhr, status, error) {
-                            console.error('Error loading lessons:', error);
+                            console.error('Error loading exercises:', error);
                         }
                     });
                 }
 
                 let timeoutId;
-                $('#lessonSearchInput').on('input', function () {
+                $('#exerciseSearchInput').on('input', function () {
                     clearTimeout(timeoutId);
                     timeoutId = setTimeout(() => {
-                        loadLessons();
+                        loadExercises();
                     }, 300);
                 });
 
                 $(document).on('click', '.pagination-link', function (e) {
                     e.preventDefault();
-                    loadLessons($(this).data('page'));
+                    loadExercises($(this).data('page'));
                 });
 
-                            $(document).on('submit', '.restore-form', function (e) {
-                e.preventDefault();
-                if (confirm("Are you sure you want to restore this lesson?")) {
-                    const lessonId = $(this).data('id');
-                    const token = $('input[name="__RequestVerificationToken"]', this).val();
+                $(document).on('submit', '.restore-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to restore this exercise?")) {
+                        const exerciseId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
 
-                    $.ajax({
-                        url: '/Admin/RestoreLesson',
-                        type: 'POST',
-                        data: { LessonID: lessonId, __RequestVerificationToken: token },
-                        success: function () {
-                            $(`#lessonRow_${lessonId}`).remove();
-                            showToast("✅ Lesson successfully restored!");
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error restoring lesson:', error);
-                            showToast("❌ Error restoring lesson!", 'danger');
-                        }
-                    });
-                }
-            });
+                        $.ajax({
+                            url: '/Admin/RestoreExercise',
+                            type: 'POST',
+                            data: { ExerciseID: exerciseId, __RequestVerificationToken: token },
+                            success: function () {
+                                $(`#exerciseRow_${exerciseId}`).remove();
+                                showToast("✅ Exercise successfully restored!");
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error restoring exercise:', error);
+                                showToast("❌ Error restoring exercise!", 'danger');
+                            }
+                        });
+                    }
+                });
 
-            $(document).on('submit', '.delete-form', function (e) {
-                e.preventDefault();
-                if (confirm("⚠️ This action is permanent! Are you sure you want to delete this lesson?")) {
-                    const lessonId = $(this).data('id');
-                    const token = $('input[name="__RequestVerificationToken"]', this).val();
+                $(document).on('submit', '.delete-form', function (e) {
+                    e.preventDefault();
+                    if (confirm("⚠️ This action is permanent! Are you sure you want to delete this exercise?")) {
+                        const exerciseId = $(this).data('id');
+                        const token = $('input[name="__RequestVerificationToken"]', this).val();
 
-                    $.ajax({
-                        url: '/Admin/DeleteLessonPermanently',
-                        type: 'POST',
-                        data: { LessonID: lessonId, __RequestVerificationToken: token },
-                        success: function () {
-                            $(`#lessonRow_${lessonId}`).remove();
-                            showToast("🗑️ Lesson permanently deleted!", 'warning');
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error deleting lesson:', error);
-                            showToast("❌ Error deleting lesson!", 'danger');
-                        }
-                    });
-                }
-            });
+                        $.ajax({
+                            url: '/Admin/DeleteExercisePermanent',
+                            type: 'POST',
+                            data: { ExerciseID: exerciseId, __RequestVerificationToken: token },
+                            success: function () {
+                                $(`#exerciseRow_${exerciseId}`).remove();
+                                showToast("🗑️ Exercise permanently deleted!", 'warning');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error deleting exercise:', error);
+                                showToast("❌ Error deleting exercise!", 'danger');
+                            }
+                        });
+                    }
+                });
             });
         </script>
     }
 </main>
-KD

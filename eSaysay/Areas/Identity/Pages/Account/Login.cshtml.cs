@@ -111,7 +111,6 @@ namespace eSaysay.Areas.Identity.Pages.Account
 
             ReturnUrl = returnUrl;
         }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -119,25 +118,33 @@ namespace eSaysay.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // Attempt to sign in the user
+                // Retrieve the user first
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
+
+                // Check if the user is archived
+                if (user.IsArchived)
+                {
+                    ModelState.AddModelError(string.Empty, "Your account has been archived. Please contact support.");
+                    return Page();
+                }
+
+                // Proceed with login
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
 
-                    // Retrieve the user
-                    var user = await _userManager.FindByEmailAsync(Input.Email);
-                    if (user == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "User not found.");
-                        return Page();
-                    }
                     var securityLog = new SecurityLog
                     {
                         UserID = user.Id,
                         Event = "Student Logged in",
                         Timestamp = DateTime.UtcNow,
-                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                        IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
                     };
 
                     _context.SecurityLog.Add(securityLog);
@@ -150,6 +157,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "Access denied. You are not a student.");
                         return Page();
                     }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -165,11 +173,11 @@ namespace eSaysay.Areas.Identity.Pages.Account
                         UserID = Input.Email,
                         Event = "User Account Locked",
                         Timestamp = DateTime.UtcNow,
-                        IPAddress = HttpContext.Connection.RemoteIpAddress.ToString()
+                        IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
                     };
+
                     _context.SecurityLog.Add(securityLog);
                     await _context.SaveChangesAsync();
-
 
                     return RedirectToPage("./Lockout");
                 }
@@ -180,8 +188,8 @@ namespace eSaysay.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+
     }
 }
