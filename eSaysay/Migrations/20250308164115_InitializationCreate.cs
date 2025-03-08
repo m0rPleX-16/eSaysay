@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace eSaysay.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitializationCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,7 +36,9 @@ namespace eSaysay.Migrations
                     Age = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LanguageExperience = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -64,7 +66,8 @@ namespace eSaysay.Migrations
                     LanguageID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     LanguageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -255,7 +258,8 @@ namespace eSaysay.Migrations
                     Description = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     LessonType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DifficultyLevel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -311,7 +315,8 @@ namespace eSaysay.Migrations
                     AnswerChoices = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     Hint = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     DifficultyLevel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

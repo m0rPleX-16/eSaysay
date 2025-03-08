@@ -12,8 +12,8 @@ using eSaysay.Data;
 namespace eSaysay.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250305012859_UpdatedOtherTables")]
-    partial class UpdatedOtherTables
+    [Migration("20250308164115_InitializationCreate")]
+    partial class InitializationCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -199,6 +199,10 @@ namespace eSaysay.Migrations
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LanguageExperience")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()

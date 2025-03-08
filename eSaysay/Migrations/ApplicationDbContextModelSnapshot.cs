@@ -102,10 +102,12 @@ namespace eSaysay.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -142,10 +144,12 @@ namespace eSaysay.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -282,7 +286,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("AdaptiveLearning", (string)null);
+                    b.ToTable("AdaptiveLearning");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Analytics", b =>
@@ -315,7 +319,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Analytics", (string)null);
+                    b.ToTable("Analytics");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.InteractiveExercise", b =>
@@ -371,7 +375,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("LessonID");
 
-                    b.ToTable("InteractiveExercises", (string)null);
+                    b.ToTable("InteractiveExercises");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Language", b =>
@@ -395,7 +399,7 @@ namespace eSaysay.Migrations
 
                     b.HasKey("LanguageID");
 
-                    b.ToTable("Language", (string)null);
+                    b.ToTable("Language");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Lesson", b =>
@@ -439,7 +443,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("LanguageID");
 
-                    b.ToTable("Lessons", (string)null);
+                    b.ToTable("Lessons");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Notification", b =>
@@ -473,7 +477,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SecurityLog", b =>
@@ -505,7 +509,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SecurityLog", (string)null);
+                    b.ToTable("SecurityLog");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SpeechAssessment", b =>
@@ -545,7 +549,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SpeechAssessment", (string)null);
+                    b.ToTable("SpeechAssessment");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.UserProgress", b =>
@@ -582,7 +586,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserProgress", (string)null);
+                    b.ToTable("UserProgress");
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.UserResponse", b =>
@@ -616,7 +620,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserResponse", (string)null);
+                    b.ToTable("UserResponse");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

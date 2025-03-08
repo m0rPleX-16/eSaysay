@@ -18,15 +18,15 @@
                 <span>Total Users</span>
             </div>
             <div class="analytics-box">
-                <h3>@Model.AvgScore.ToString("0.00")%</h3>
+                <h3>@(Model.AvgScore.HasValue ? Model.AvgScore.Value.ToString("0.00") + "%" : "0.00%")</h3>
                 <span>Average Score</span>
             </div>
             <div class="analytics-box">
-                <h3>@Model.TotalTimeSpent mins</h3>
+                <h3>@(Model.TotalTimeSpent.HasValue ? Model.TotalTimeSpent.Value + " mins" : "0 mins")</h3>
                 <span>Total Time Spent</span>
             </div>
             <div class="analytics-box">
-                <h3>@Model.TotalLessonsCompleted</h3>
+                <h3>@(Model.TotalLessonsCompleted > 0 ? Model.TotalLessonsCompleted.ToString() : "0")</h3>
                 <span>Lessons Completed</span>
             </div>
         </section>
@@ -47,20 +47,31 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        var analyticsDates = @Json.Serialize(Model.AnalyticsDates);
+        var analyticsScores = @Json.Serialize(Model.AnalyticsScores);
+        var analyticsTimeSpent = @Json.Serialize(Model.AnalyticsTimeSpent);
+        var lessonsCompleted = @Json.Serialize(Model.LessonsCompleted);
+
+        if (analyticsDates.length === 0 || analyticsScores.length === 0 || analyticsTimeSpent.length === 0) {
+            console.warn("No analytics data available.");
+            document.querySelector(".analytics-graphs").innerHTML = "<p class='text-muted'>No data available for analytics.</p>";
+            return;
+        }
+
         var ctxAnalytics = document.getElementById('userAnalyticsChart').getContext('2d');
         var userAnalyticsChart = new Chart(ctxAnalytics, {
             type: 'line',
             data: {
-                labels: @Json.Serialize(Model.AnalyticsDates),
+                labels: analyticsDates,
                 datasets: [{
                     label: 'Average Scores',
-                    data: @Json.Serialize(Model.AnalyticsScores),
+                    data: analyticsScores,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 2
                 }, {
                     label: 'Time Spent (mins)',
-                    data: @Json.Serialize(Model.AnalyticsTimeSpent),
+                    data: analyticsTimeSpent,
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 2
@@ -80,10 +91,10 @@
         var lessonsCompletedChart = new Chart(ctxLessons, {
             type: 'bar',
             data: {
-                labels: @Json.Serialize(Model.AnalyticsDates),
+                labels: analyticsDates,
                 datasets: [{
                     label: 'Lessons Completed',
-                    data: @Json.Serialize(Model.LessonsCompleted),
+                    data: lessonsCompleted,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2

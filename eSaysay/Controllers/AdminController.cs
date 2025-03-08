@@ -227,34 +227,67 @@ namespace eSaysay.Controllers
             }
             return Ok();
         }
-
         public IActionResult Analytics()
         {
-            var analyticsData = _context.Analytics
-                .GroupBy(a => a.Date.Date)
-                .Select(g => new
-                {
-                    Date = g.Key,
-                    TotalLessonsCompleted = g.Count(),
-                    AvgScore = g.Average(a => a.AverageScore),
-                    TotalTimeSpent = g.Sum(a => a.TimeSpent)
-                })
-                .OrderBy(a => a.Date)
-                .ToList();
-
-            var model = new Models.ViewModels.AnalyticsModel
+            try
             {
-                AnalyticsDates = analyticsData.Select(a => a.Date.ToString("yyyy-MM-dd")).ToList(),
-                LessonsCompleted = analyticsData.Select(a => a.TotalLessonsCompleted).ToList(),
-                AnalyticsScores = analyticsData.Select(a => a.AvgScore).ToList(),
-                AnalyticsTimeSpent = analyticsData.Select(a => a.TotalTimeSpent).ToList(),
-                TotalUsers = _context.Users.Count(),
-                AvgScore = _context.Analytics.Average(a => a.AverageScore),
-                TotalTimeSpent = _context.Analytics.Sum(a => a.TimeSpent),
-                TotalLessonsCompleted = _context.Analytics.Count()
-            };
+                var analyticsData = _context.Analytics
+                    .GroupBy(a => a.Date.Date)
+                    .Select(g => new
+                    {
+                        Date = g.Key,
+                        TotalLessonsCompleted = g.Count(),
+                        AvgScore = g.Average(a => a.AverageScore),
+                        TotalTimeSpent = g.Sum(a => a.TimeSpent)
+                    })
+                    .OrderBy(a => a.Date)
+                    .ToList();
 
-            return View("~/Views/User/Admin/Analytics.cshtml", model);
+                if (!analyticsData.Any())
+                {
+                    _logger.LogWarning("[Analytics] No analytics data available.");
+                    return View("~/Views/User/Admin/Analytics.cshtml", new Models.ViewModels.AnalyticsModel
+                    {
+                        AnalyticsDates = new List<string>(),
+                        LessonsCompleted = new List<int>(),
+                        AnalyticsScores = new List<double>(),
+                        AnalyticsTimeSpent = new List<int>(),
+                        TotalUsers = _context.Users.Count(),
+                        AvgScore = 0,
+                        TotalTimeSpent = 0,
+                        TotalLessonsCompleted = 0
+                    });
+                }
+
+                var model = new Models.ViewModels.AnalyticsModel
+                {
+                    AnalyticsDates = analyticsData.Select(a => a.Date.ToString("yyyy-MM-dd")).ToList(),
+                    LessonsCompleted = analyticsData.Select(a => a.TotalLessonsCompleted).ToList(),
+                    AnalyticsScores = analyticsData.Select(a => a.AvgScore).ToList(),
+                    AnalyticsTimeSpent = analyticsData.Select(a => a.TotalTimeSpent).ToList(),
+                    TotalUsers = _context.Users.Count(),
+                    AvgScore = _context.Analytics.Any() ? _context.Analytics.Average(a => a.AverageScore) : 0,
+                    TotalTimeSpent = _context.Analytics.Any() ? _context.Analytics.Sum(a => a.TimeSpent) : 0,
+                    TotalLessonsCompleted = _context.Analytics.Any() ? _context.Analytics.Count() : 0
+                };
+
+                return View("~/Views/User/Admin/Analytics.cshtml", model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Analytics] Error fetching analytics data: {ex.Message}");
+                return View("~/Views/User/Admin/Analytics.cshtml", new Models.ViewModels.AnalyticsModel
+                {
+                    AnalyticsDates = new List<string>(),
+                    LessonsCompleted = new List<int>(),
+                    AnalyticsScores = new List<double>(),
+                    AnalyticsTimeSpent = new List<int>(),
+                    TotalUsers = _context.Users.Count(),
+                    AvgScore = 0,
+                    TotalTimeSpent = 0,
+                    TotalLessonsCompleted = 0
+                });
+            }
         }
 
         // GET: Admin/Exercises
@@ -810,31 +843,63 @@ namespace eSaysay.Controllers
 
         public async Task<IActionResult> Progress()
         {
-            var progressData = await _context.UserProgress
-                .Include(up => up.User)
-                .Include(up => up.Lesson)
-                .ToListAsync();
-
-            var viewModel = new ProgressViewModel
+            try
             {
-                TotalUsers = await _context.Users.CountAsync(),
-                TotalLessons = await _context.Lessons.CountAsync(),
-                CompletedLessons = progressData.Count(p => p.CompletionStatus == "Completed"),
-                InProgressLessons = progressData.Count(p => p.CompletionStatus == "In Progress"),
-                NotStartedLessons = progressData.Count(p => p.CompletionStatus == "Not Started"),
-                AverageScore = progressData.Any(p => p.Score.HasValue) ? progressData.Average(p => p.Score ?? 0) : 0,
-                ProgressData = progressData.Select(p => new ProgressDetailViewModel
-                {
-                    UserName = p.User?.FirstName ?? "Student",
-                    LessonName = p.Lesson.Title,
-                    CompletionStatus = p.CompletionStatus,
-                    Score = p.Score ?? 0,
-                    TimeSpent = p.TimeSpent,
-                    LastAccessedDate = p.LastAccessedDate
-                }).ToList()
-            };
+                var progressData = await _context.UserProgress
+                    .Include(up => up.User)
+                    .Include(up => up.Lesson)
+                    .ToListAsync();
 
-            return View("~/Views/User/Admin/Progress.cshtml", viewModel);
+                if (!progressData.Any())
+                {
+                    _logger.LogWarning("[Progress] No progress data found.");
+                    return View("~/Views/User/Admin/Progress.cshtml", new ProgressViewModel
+                    {
+                        TotalUsers = await _context.Users.CountAsync(),
+                        TotalLessons = await _context.Lessons.CountAsync(),
+                        CompletedLessons = 0,
+                        InProgressLessons = 0,
+                        NotStartedLessons = 0,
+                        AverageScore = 0,
+                        ProgressData = new List<ProgressDetailViewModel>()
+                    });
+                }
+
+                var viewModel = new ProgressViewModel
+                {
+                    TotalUsers = await _context.Users.CountAsync(),
+                    TotalLessons = await _context.Lessons.CountAsync(),
+                    CompletedLessons = progressData.Count(p => p.CompletionStatus == "Completed"),
+                    InProgressLessons = progressData.Count(p => p.CompletionStatus == "In Progress"),
+                    NotStartedLessons = progressData.Count(p => p.CompletionStatus == "Not Started"),
+                    AverageScore = progressData.Any(p => p.Score.HasValue) ? progressData.Average(p => p.Score ?? 0) : 0,
+                    ProgressData = progressData.Select(p => new ProgressDetailViewModel
+                    {
+                        UserName = p.User?.FirstName ?? "Student",
+                        LessonName = p.Lesson?.Title ?? "Unknown Lesson",
+                        CompletionStatus = p.CompletionStatus ?? "Not Started",
+                        Score = p.Score ?? 0, 
+                        TimeSpent = p.TimeSpent,
+                        LastAccessedDate = p.LastAccessedDate
+                    }).ToList()
+                };
+
+                return View("~/Views/User/Admin/Progress.cshtml", viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Progress] Error fetching progress data: {ex.Message}");
+                return View("~/Views/User/Admin/Progress.cshtml", new ProgressViewModel
+                {
+                    TotalUsers = await _context.Users.CountAsync(),
+                    TotalLessons = await _context.Lessons.CountAsync(),
+                    CompletedLessons = 0,
+                    InProgressLessons = 0,
+                    NotStartedLessons = 0,
+                    AverageScore = 0,
+                    ProgressData = new List<ProgressDetailViewModel>()
+                });
+            }
         }
 
         // ✅ Fetch Active Students

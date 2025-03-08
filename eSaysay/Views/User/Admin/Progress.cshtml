@@ -33,6 +33,10 @@
                 <span>Not Started</span>
             </div>
             <div class="progress-box">
+                <h3>@Model.TotalPendingLessons</h3>
+                <span>Pending Lessons</span>
+            </div>
+            <div class="progress-box">
                 <h3>@Model.AverageScore.ToString("0.00")%</h3>
                 <span>Average Score</span>
             </div>
@@ -40,31 +44,38 @@
 
         <!-- User Progress Table -->
         <section class="progress-table mt-4">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Lesson</th>
-                        <th>Completion Status</th>
-                        <th>Score</th>
-                        <th>Time Spent (mins)</th>
-                        <th>Last Accessed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var progress in Model.ProgressData)
-                    {
+            @if (Model.ProgressData != null && Model.ProgressData.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>@progress.UserName</td>
-                            <td>@progress.LessonName</td>
-                            <td>@progress.CompletionStatus</td>
-                            <td>@(progress.Score > 0 ? progress.Score.ToString("0.00") : "N/A")</td>
-                            <td>@(progress.TimeSpent / 60)</td>
-                            <td>@progress.LastAccessedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            <th>User</th>
+                            <th>Lesson</th>
+                            <th>Completion Status</th>
+                            <th>Score</th>
+                            <th>Time Spent (mins)</th>
+                            <th>Last Accessed</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var progress in Model.ProgressData)
+                        {
+                            <tr>
+                                <td>@progress.UserName</td>
+                                <td>@progress.LessonName</td>
+                                <td>@progress.CompletionStatus</td>
+                                <td>@(progress.Score > 0 ? progress.Score.ToString("0.00") : "N/A")</td>
+                                <td>@(progress.TimeSpent.HasValue ? (progress.TimeSpent.Value > 0 ? (progress.TimeSpent.Value / 60) : "0") : "N/A")</td>
+                                <td>@(progress.LastAccessedDate.HasValue ? progress.LastAccessedDate.Value.ToString("yyyy-MM-dd HH:mm") : "Never")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No progress data available.</p>
+            }
         </section>
 
         <!-- Progress Chart -->
@@ -77,26 +88,37 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctxProgress = document.getElementById('progressChart').getContext('2d');
-    var progressChart = new Chart(ctxProgress, {
-        type: 'bar',
-        data: {
-            labels: @Json.Serialize(Model.ProgressData.Select(p => p.LessonName)),
-            datasets: [{
-                label: 'Average Scores',
-                data: @Json.Serialize(Model.ProgressData.Select(p => p.Score)),
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+    document.addEventListener("DOMContentLoaded", function () {
+        var progressLabels = @Json.Serialize(Model.ProgressData?.Select(p => p.LessonName) ?? new List<string>());
+        var progressScores = @Json.Serialize(Model.ProgressData?.Select(p => p.Score) ?? new List<double>());
+
+        if (progressLabels.length === 0) {
+            console.warn("No progress data available for charts.");
+            document.querySelector(".progress-graphs").innerHTML = "<p class='text-muted'>No data available for charts.</p>";
+            return;
+        }
+
+        var ctxProgress = document.getElementById('progressChart').getContext('2d');
+        var progressChart = new Chart(ctxProgress, {
+            type: 'bar',
+            data: {
+                labels: progressLabels,
+                datasets: [{
+                    label: 'Average Scores',
+                    data: progressScores,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
     });
 </script>
