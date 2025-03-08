@@ -44,11 +44,13 @@
                             <td>@lesson.Language.LanguageName</td>
                             <td class="text-center">
                                 <form class="restore-form d-inline" data-id="@lesson.LessonID">
+                                    @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-success btn-sm">
                                         <i class="fa fa-undo"></i> Restore
                                     </button>
                                 </form>
                                 <form class="delete-form d-inline" data-id="@lesson.LessonID">
+                                    @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fa fa-trash"></i> Delete
                                     </button>
@@ -135,46 +137,51 @@
                     loadLessons($(this).data('page'));
                 });
 
-                $(document).on('submit', '.restore-form', function (e) {
-                    e.preventDefault();
-                    if (confirm("Are you sure you want to restore this lesson?")) {
-                        const lessonId = $(this).data('id');
-                        $.ajax({
-                            url: '/Admin/RestoreLesson',
-                            type: 'POST',
-                            data: { LessonID: lessonId },
-                            success: function () {
-                                $(`#lessonRow_${lessonId}`).remove();
-                                showToast("✅ Lesson successfully restored!");
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error restoring lesson:', error);
-                                showToast("❌ Error restoring lesson!", 'danger');
-                            }
-                        });
-                    }
-                });
+                            $(document).on('submit', '.restore-form', function (e) {
+                e.preventDefault();
+                if (confirm("Are you sure you want to restore this lesson?")) {
+                    const lessonId = $(this).data('id');
+                    const token = $('input[name="__RequestVerificationToken"]', this).val();
 
-                $(document).on('submit', '.delete-form', function (e) {
-                    e.preventDefault();
-                    if (confirm("⚠️ This action is permanent! Are you sure you want to delete this lesson?")) {
-                        const lessonId = $(this).data('id');
-                        $.ajax({
-                            url: '/Admin/DeleteLessonPermanently',
-                            type: 'POST',
-                            data: { LessonID: lessonId },
-                            success: function () {
-                                $(`#lessonRow_${lessonId}`).remove();
-                                showToast("🗑️ Lesson permanently deleted!", 'warning');
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error deleting lesson:', error);
-                                showToast("❌ Error deleting lesson!", 'danger');
-                            }
-                        });
-                    }
-                });
+                    $.ajax({
+                        url: '/Admin/RestoreLesson',
+                        type: 'POST',
+                        data: { LessonID: lessonId, __RequestVerificationToken: token },
+                        success: function () {
+                            $(`#lessonRow_${lessonId}`).remove();
+                            showToast("✅ Lesson successfully restored!");
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error restoring lesson:', error);
+                            showToast("❌ Error restoring lesson!", 'danger');
+                        }
+                    });
+                }
+            });
+
+            $(document).on('submit', '.delete-form', function (e) {
+                e.preventDefault();
+                if (confirm("⚠️ This action is permanent! Are you sure you want to delete this lesson?")) {
+                    const lessonId = $(this).data('id');
+                    const token = $('input[name="__RequestVerificationToken"]', this).val();
+
+                    $.ajax({
+                        url: '/Admin/DeleteLessonPermanently',
+                        type: 'POST',
+                        data: { LessonID: lessonId, __RequestVerificationToken: token },
+                        success: function () {
+                            $(`#lessonRow_${lessonId}`).remove();
+                            showToast("🗑️ Lesson permanently deleted!", 'warning');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error deleting lesson:', error);
+                            showToast("❌ Error deleting lesson!", 'danger');
+                        }
+                    });
+                }
+            });
             });
         </script>
     }
 </main>
+KD
