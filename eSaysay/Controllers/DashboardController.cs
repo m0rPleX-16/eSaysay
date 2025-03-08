@@ -153,6 +153,7 @@ namespace eSaysay.Controllers
                 await _context.SaveChangesAsync();
 
                 await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
+                await UpdateLanguageExperience(userResponse.UserID);
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
                 await UpdateAdaptiveLearning(userResponse.UserID, exercise.LessonID);
 
@@ -325,14 +326,17 @@ namespace eSaysay.Controllers
 
         private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
-            if (!await UserExists(userId))
-            {
-                _logger.LogWarning($"UserID {userId} does not exist in AspNetUsers.");
-                return;
-            }
+            if (!await UserExists(userId)) return;
 
-            var progress = await _context.UserProgress
-                .FirstOrDefaultAsync(p => p.UserID == userId && p.LessonID == lessonId);
+            var totalExercises = await _context.InteractiveExercises.CountAsync(e => e.LessonID == lessonId);
+            var completedExercises = await _context.UserResponse
+                .Where(r => r.UserID == userId && r.Exercise.LessonID == lessonId && r.IsCorrect)
+                .Select(r => r.ExerciseID)
+                .Distinct()
+                .CountAsync();
+
+            var progress = await _context.UserProgress.FirstOrDefaultAsync(p => p.UserID == userId && p.LessonID == lessonId);
+            bool wasAlreadyCompleted = progress?.CompletionStatus == "Completed";
 
             if (progress == null)
             {
@@ -340,7 +344,7 @@ namespace eSaysay.Controllers
                 {
                     UserID = userId,
                     LessonID = lessonId,
-                    CompletionStatus = isCorrect ? "Completed" : "In Progress",
+                    CompletionStatus = (completedExercises >= totalExercises) ? "Completed" : "In Progress",
                     Score = isCorrect ? 100 : 0,
                     TimeSpent = TimeSpent,
                     LastAccessedDate = DateTime.UtcNow
@@ -349,25 +353,79 @@ namespace eSaysay.Controllers
             }
             else
             {
-                progress.CompletionStatus = isCorrect ? "Completed" : "In Progress";
-                progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2; // Update average score
+                progress.CompletionStatus = (completedExercises >= totalExercises) ? "Completed" : "In Progress";
+                progress.Score = (progress.Score + (isCorrect ? 100 : 0)) / 2;
                 progress.LastAccessedDate = DateTime.UtcNow;
                 progress.TimeSpent += TimeSpent;
             }
+
+            await _context.SaveChangesAsync();
+
+            // Send a notification if the lesson is now completed
+            if (progress.CompletionStatus == "Completed" && !wasAlreadyCompleted)
+            {
+                var lesson = await _context.Lessons.FindAsync(lessonId);
+                var message = $"Great job! You have completed the lesson: {lesson?.Title}.";
+                await SendNotification(userId, message);
+            }
+        }
+
+        private async Task UpdateLanguageExperience(string userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return;
+
+            var beginnerLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Beginner").Select(l => l.LessonID).ToListAsync();
+            var intermediateLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Intermediate").Select(l => l.LessonID).ToListAsync();
+            var advancedLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Advanced").Select(l => l.LessonID).ToListAsync();
+
+            var completedLessons = await _context.UserProgress
+                .Where(up => up.UserID == userId && up.CompletionStatus == "Completed")
+                .Select(up => up.LessonID)
+                .ToListAsync();
+
+            string newLevel = user.LanguageExperience; // Track if the level changes
+
+            if (user.LanguageExperience == "Beginner" && beginnerLessons.All(l => completedLessons.Contains(l)))
+            {
+                user.LanguageExperience = "Intermediate";
+                newLevel = "Intermediate";
+            }
+            else if (user.LanguageExperience == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
+            {
+                user.LanguageExperience = "Advanced";
+                newLevel = "Advanced";
+            }
+
+            if (newLevel != user.LanguageExperience) // If the level was upgraded, notify the user
+            {
+                var message = $"Congratulations! You have unlocked {newLevel} level lessons.";
+                await SendNotification(userId, message);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        // Helper method to send notifications
+        private async Task SendNotification(string userId, string message)
+        {
+            var notification = new Notification
+            {
+                UserID = userId,
+                Message = message,
+                IsRead = false,
+                DateCreated = DateTime.UtcNow
+            };
+
+            _context.Notification.Add(notification);
             await _context.SaveChangesAsync();
         }
 
         private async Task UpdateAnalytics(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
-            if (!await UserExists(userId))
-            {
-                _logger.LogWarning($"UserID {userId} does not exist in AspNetUsers.");
-                return;
-            }
+            if (!await UserExists(userId)) return;
 
-            var analytics = await _context.Analytics
-                .FirstOrDefaultAsync(a => a.UserID == userId && a.LessonCompleted == lessonId);
-
+            var analytics = await _context.Analytics.FirstOrDefaultAsync(a => a.UserID == userId && a.LessonCompleted == lessonId);
             if (analytics == null)
             {
                 analytics = new Analytics
@@ -382,7 +440,8 @@ namespace eSaysay.Controllers
             }
             else
             {
-                analytics.AverageScore = (analytics.AverageScore + (isCorrect ? 100 : 0)) / 2; // Update average score
+                analytics.AverageScore = (analytics.AverageScore + (isCorrect ? 100 : 0)) / 2;
+                analytics.TimeSpent += TimeSpent; // Add new time to existing time
                 analytics.Date = DateTime.UtcNow;
             }
             await _context.SaveChangesAsync();
@@ -390,35 +449,27 @@ namespace eSaysay.Controllers
 
         private async Task UpdateAdaptiveLearning(string userId, int lessonId)
         {
-            // Ensure the user exists before proceeding
-            if (!await UserExists(userId))
-            {
-                _logger.LogWarning($"UserID {userId} does not exist in AspNetUsers.");
-                return;
-            }
+            if (!await UserExists(userId)) return;
 
-            var adaptiveLearning = await _context.AdaptiveLearning
-                .FirstOrDefaultAsync(al => al.UserID == userId);
-
+            var adaptiveLearning = await _context.AdaptiveLearning.FirstOrDefaultAsync(al => al.UserID == userId);
             if (adaptiveLearning == null)
             {
-                adaptiveLearning = new AdaptiveLearning
-                {
-                    UserID = userId,
-                    CurrentLevel = 1, // Starting level
-                    RecommendedLessons = new List<int> { lessonId }, // Example recommendation
-                    LastUpdated = DateTime.UtcNow
-                };
-                _context.AdaptiveLearning.Add(adaptiveLearning);
+                _logger.LogWarning($"Adaptive learning record missing for user {userId}, skipping update.");
+                return; // Don't create a new user, just skip the update
             }
-            else
-            {
-                // Update the current level and recommended lessons based on user performance
-                adaptiveLearning.CurrentLevel += 1; // Example logic
-                adaptiveLearning.RecommendedLessons.Add(lessonId); // Add the completed lesson to recommendations
-                adaptiveLearning.LastUpdated = DateTime.UtcNow;
-            }
+
+            // Update adaptive learning based on user's progress
+            adaptiveLearning.CurrentLevel += 1;
+            adaptiveLearning.RecommendedLessons.Add(lessonId);
+            adaptiveLearning.LastUpdated = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
