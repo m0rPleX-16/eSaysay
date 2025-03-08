@@ -143,7 +143,7 @@
 
         @section Scripts {
             <script>
-                $(document).ready(function () {
+                               $(document).ready(function () {
                     function showToast(message, type) {
                         const toastId = Date.now();
                         const toastHtml = `
@@ -160,7 +160,6 @@
                         setTimeout(() => { $(`#toast-${toastId}`).remove(); }, 4000);
                     }
 
-                            $(document).ready(function () {
                     function loadExercises() {
                         let searchValue = $('#exerciseSearchInput').val();
                         let exerciseType = $('#exerciseTypeFilter').val();
@@ -191,7 +190,6 @@
                         loadExercises();
                     });
                     loadExercises(); // Initial load
-                });
 
                     function loadArchivedExercises(page = 1) {
                         const searchTerm = $('#searchInput').val();
@@ -224,26 +222,43 @@
 
                     $(document).on('click', '.restore-btn', function () {
                         const exerciseID = $(this).data('id');
-                        $.post('/Admin/RestoreExercise', { ExerciseID: exerciseID }, function (response) {
-                            showToast("Exercise restored successfully!", "success");
-                            loadArchivedExercises();
-                        }).fail(function () {
-                            showToast("Failed to restore exercise.", "danger");
+                        const token = $('input[name="__RequestVerificationToken"]').val();
+
+                        $.ajax({
+                            url: '/Admin/RestoreExercise',
+                            type: 'POST',
+                            data: { ExerciseID: exerciseID, __RequestVerificationToken: token },
+                            success: function () {
+                                showToast("✅ Exercise restored successfully!", "success");
+                                loadArchivedExercises();
+                            },
+                            error: function () {
+                                showToast("❌ Failed to restore exercise.", "danger");
+                            }
                         });
                     });
 
                     $(document).on('click', '.delete-btn', function () {
                         const exerciseID = $(this).data('id');
-                        if (confirm("Are you sure you want to delete this exercise permanently?")) {
-                            $.post('/Admin/DeleteExercisePermanent', { ExerciseID: exerciseID }, function (response) {
-                                showToast("Exercise permanently deleted!", "danger");
-                                loadArchivedExercises();
-                            }).fail(function () {
-                                showToast("Failed to delete exercise.", "danger");
+                        const token = $('input[name="__RequestVerificationToken"]').val();
+
+                        if (confirm("⚠️ This action is permanent! Are you sure you want to delete this exercise?")) {
+                            $.ajax({
+                                url: '/Admin/DeleteExercisePermanent',
+                                type: 'POST',
+                                data: { ExerciseID: exerciseID, __RequestVerificationToken: token },
+                                success: function () {
+                                    showToast("🗑️ Exercise permanently deleted!", "danger");
+                                    loadArchivedExercises();
+                                },
+                                error: function () {
+                                    showToast("❌ Failed to delete exercise.", "danger");
+                                }
                             });
                         }
                     });
                 });
+
             </script>
         }
     </main>

@@ -8,7 +8,6 @@ using eSaysay.Models.Entities;
 using eSaysay.Models.ViewModels;
 using eSaysay.Data;
 using eSaysay.Services;
-using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace eSaysay.Controllers
@@ -318,12 +317,7 @@ namespace eSaysay.Controllers
                 AdaptiveLearning = adaptiveLearning
             };
         }
-
-        private async Task<bool> UserExists(string userId)
-        {
-            return await _context.Users.AnyAsync(u => u.Id == userId);
-        }
-
+    
         private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
             if (!await UserExists(userId)) return;
@@ -361,57 +355,70 @@ namespace eSaysay.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Send a notification if the lesson is now completed
             if (progress.CompletionStatus == "Completed" && !wasAlreadyCompleted)
             {
                 var lesson = await _context.Lessons.FindAsync(lessonId);
-                var message = $"Great job! You have completed the lesson: {lesson?.Title}.";
-                await SendNotification(userId, message);
+                await SendNotification(userId, $"Great job! You have completed the lesson: {lesson?.Title}.");
             }
-        }
 
+            await UpdateLanguageExperience(userId);
+        }
         private async Task UpdateLanguageExperience(string userId)
         {
             var user = await _context.Users.FindAsync(userId);
-            if (user == null) return;
+            if (user == null)
+            {
+                _logger.LogWarning($"[UpdateLanguageExperience] User {userId} not found. Skipping.");
+                return;
+            }
 
-            var beginnerLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Beginner").Select(l => l.LessonID).ToListAsync();
-            var intermediateLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Intermediate").Select(l => l.LessonID).ToListAsync();
-            var advancedLessons = await _context.Lessons.Where(l => l.DifficultyLevel == "Advanced").Select(l => l.LessonID).ToListAsync();
+            var beginnerLessons = await _context.Lessons
+                .Where(l => l.DifficultyLevel == "Beginner")
+                .Select(l => l.LessonID)
+                .ToListAsync();
+
+            var intermediateLessons = await _context.Lessons
+                .Where(l => l.DifficultyLevel == "Intermediate")
+                .Select(l => l.LessonID)
+                .ToListAsync();
 
             var completedLessons = await _context.UserProgress
                 .Where(up => up.UserID == userId && up.CompletionStatus == "Completed")
                 .Select(up => up.LessonID)
                 .ToListAsync();
 
-            string newLevel = user.LanguageExperience; // Track if the level changes
+            _logger.LogInformation($"[UpdateLanguageExperience] User {userId} has completed {completedLessons.Count} lessons.");
 
-            if (user.LanguageExperience == "Beginner" && beginnerLessons.All(l => completedLessons.Contains(l)))
+            string previousLevel = user.LanguageExperience;
+
+            if (previousLevel == "Beginner" && beginnerLessons.All(l => completedLessons.Contains(l)))
             {
+                _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Beginner lessons. Unlocking Intermediate.");
                 user.LanguageExperience = "Intermediate";
-                newLevel = "Intermediate";
+                await SendNotification(userId, "Congratulations! You have unlocked Intermediate lessons.", "Lesson Unlocked");
             }
-            else if (user.LanguageExperience == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
+            else if (previousLevel == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
             {
+                _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Intermediate lessons. Unlocking Advanced.");
                 user.LanguageExperience = "Advanced";
-                newLevel = "Advanced";
+                await SendNotification(userId, "Great work! You have unlocked Advanced lessons.", "Lesson Unlocked");
             }
-
-            if (newLevel != user.LanguageExperience) // If the level was upgraded, notify the user
+            else
             {
-                var message = $"Congratulations! You have unlocked {newLevel} level lessons.";
-                await SendNotification(userId, message);
+                _logger.LogInformation($"[UpdateLanguageExperience] No changes for user {userId}. Current level: {user.LanguageExperience}");
             }
 
             await _context.SaveChangesAsync();
         }
 
-        // Helper method to send notifications
-        private async Task SendNotification(string userId, string message)
+        private async Task SendNotification(string userId, string message, string title = "System Notification")
         {
+            _logger.LogInformation($"[SendNotification] Sending notification to user {userId}: {message}");
+
             var notification = new Notification
             {
                 UserID = userId,
+                Title = title,
                 Message = message,
                 IsRead = false,
                 DateCreated = DateTime.UtcNow
@@ -419,7 +426,21 @@ namespace eSaysay.Controllers
 
             _context.Notification.Add(notification);
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"[SendNotification] Notification saved to database for user {userId}.");
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> TestNotification()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return BadRequest("User not found.");
+
+            await SendNotification(user.Id, "Test notification: You have unlocked Intermediate lessons!");
+
+            return Ok("Notification sent. Check the database.");
+        }
+
 
         private async Task UpdateAnalytics(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
@@ -449,21 +470,59 @@ namespace eSaysay.Controllers
 
         private async Task UpdateAdaptiveLearning(string userId, int lessonId)
         {
-            if (!await UserExists(userId)) return;
-
-            var adaptiveLearning = await _context.AdaptiveLearning.FirstOrDefaultAsync(al => al.UserID == userId);
-            if (adaptiveLearning == null)
+            if (!await UserExists(userId))
             {
-                _logger.LogWarning($"Adaptive learning record missing for user {userId}, skipping update.");
-                return; // Don't create a new user, just skip the update
+                _logger.LogWarning($"[Adaptive Learning] User {userId} does not exist in Users table. Skipping update.");
+                return;
             }
 
-            // Update adaptive learning based on user's progress
-            adaptiveLearning.CurrentLevel += 1;
-            adaptiveLearning.RecommendedLessons.Add(lessonId);
-            adaptiveLearning.LastUpdated = DateTime.UtcNow;
+            // Debugging: Check if the user has an Adaptive Learning entry
+            var adaptiveLearning = await _context.AdaptiveLearning.FirstOrDefaultAsync(al => al.UserID == userId);
 
-            await _context.SaveChangesAsync();
+            if (adaptiveLearning == null)
+            {
+                _logger.LogWarning($"[Adaptive Learning] No existing record found for user {userId} in AdaptiveLearning.");
+                var existingUser = await _context.Users.FindAsync(userId);
+
+                if (existingUser == null)
+                {
+                    _logger.LogError($"[Adaptive Learning] ERROR: User {userId} does not exist in the Users table!");
+                    return;
+                }
+
+                _logger.LogInformation($"[Adaptive Learning] Creating a new entry for user {userId}.");
+
+                adaptiveLearning = new AdaptiveLearning
+                {
+                    UserID = userId,
+                    CurrentLevel = 1,
+                    RecommendedLessons = new List<int> { lessonId },
+                    LastUpdated = DateTime.UtcNow
+                };
+
+                _context.AdaptiveLearning.Add(adaptiveLearning);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"[Adaptive Learning] New entry created for user {userId}.");
+            }
+            else
+            {
+                _logger.LogInformation($"[Adaptive Learning] Updating Adaptive Learning for user {userId}. Previous level: {adaptiveLearning.CurrentLevel}");
+
+                adaptiveLearning.CurrentLevel += 1;
+                if (!adaptiveLearning.RecommendedLessons.Contains(lessonId))
+                {
+                    adaptiveLearning.RecommendedLessons.Add(lessonId);
+                }
+                adaptiveLearning.LastUpdated = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"[Adaptive Learning] Updated Adaptive Learning for user {userId}. New level: {adaptiveLearning.CurrentLevel}");
+            }
+        }
+
+        private async Task<bool> UserExists(string userId)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

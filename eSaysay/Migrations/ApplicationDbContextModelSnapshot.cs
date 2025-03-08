@@ -282,7 +282,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("AdaptiveLearning");
+                    b.ToTable("AdaptiveLearning", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Analytics", b =>
@@ -315,7 +315,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Analytics");
+                    b.ToTable("Analytics", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.InteractiveExercise", b =>
@@ -371,7 +371,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("LessonID");
 
-                    b.ToTable("InteractiveExercises");
+                    b.ToTable("InteractiveExercises", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Language", b =>
@@ -395,7 +395,7 @@ namespace eSaysay.Migrations
 
                     b.HasKey("LanguageID");
 
-                    b.ToTable("Language");
+                    b.ToTable("Language", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Lesson", b =>
@@ -439,7 +439,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("LanguageID");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.Notification", b =>
@@ -473,7 +473,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SecurityLog", b =>
@@ -505,7 +505,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SecurityLog");
+                    b.ToTable("SecurityLog", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.SpeechAssessment", b =>
@@ -545,7 +545,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SpeechAssessment");
+                    b.ToTable("SpeechAssessment", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.UserProgress", b =>
@@ -582,7 +582,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserProgress");
+                    b.ToTable("UserProgress", (string)null);
                 });
 
             modelBuilder.Entity("eSaysay.Models.Entities.UserResponse", b =>
@@ -616,7 +616,7 @@ namespace eSaysay.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserResponse");
+                    b.ToTable("UserResponse", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
