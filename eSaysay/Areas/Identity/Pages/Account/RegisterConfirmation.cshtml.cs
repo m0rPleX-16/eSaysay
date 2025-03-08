@@ -14,6 +14,7 @@ using eSaysay.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.Extensions.Configuration;
+using MailKit.Security;
 
 namespace eSaysay.Areas.Identity.Pages.Account
 {
@@ -92,7 +93,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(smtpServer, int.Parse(smtpPort), true);
+                await client.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
                 await client.AuthenticateAsync(smtpUsername, smtpPassword);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
