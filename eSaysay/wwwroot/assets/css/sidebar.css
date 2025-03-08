@@ -199,7 +199,7 @@
     }
 }
 
-@media (max-width: 1024px){
+@media (max-width: 768px){
     .sidebar {
         height: 56px;
         margin: 13px; /**/
@@ -214,12 +214,12 @@
         }
 
     .sidebar-header {
-        position: sticky; /**/
-        top: 0; /**/
-        z-index: 20; /**/
-        background: #FEF1E1; /**/
-        padding: 8px 10px; /**/
-        border-radius: 16px; /**/
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #274052;
+        padding: 8px 10px;
+        border-radius: 16px;
     }
 
         .sidebar-header .header-logo img {

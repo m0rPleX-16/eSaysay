@@ -1,0 +1,50 @@
+﻿.profle-email{
+    color: #274052;
+}
+.user-profile-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #274052;
+}
+
+    .user-profile-title h2 {
+        color: #274052;
+    }
+
+.user-profile-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.btn-change-email {
+    background-color: #3D76A2;
+    font-weight: 500;
+    color: #FFF;
+    font-size: 1.2rem;
+    border-radius:26px;
+}
+    .btn-change-email:hover {
+        background-color: #629CC7;
+        color: #FFF;
+    }
+
+.user-profile-legend-title {
+    font-size: 1.5rem;
+    margin-top: 5px;
+}
+
+.btn-update-profile {
+    background-color: #367C1E;
+    font-weight: 500;
+    color: #FFF;
+    font-size: 1.2rem;
+    border-radius: 26px;
+}
+.btn-update-profile:hover {
+    background-color: #5A9A3D;
+    color: #FFF;
+}

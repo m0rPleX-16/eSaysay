@@ -7,7 +7,9 @@
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
-<h3>@ViewData["Title"]</h3>
+<div class="two-factor-auth-title" style="color: #274052;">
+    <h2>Two-factor <span class="two-factor-auth-span-dashboard">authentication</span></h2>
+</div>
 @{
     var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
     @if (consentFeature?.CanTrack ?? true)
@@ -39,22 +41,22 @@
             if (Model.IsMachineRemembered)
             {
                 <form method="post" style="display: inline-block">
-                    <button type="submit" class="btn btn-primary">Forget this browser</button>
+                    <button type="submit" class="btn btn-auth-app">Forget this browser</button>
                 </form>
             }
-            <a asp-page="./Disable2fa" class="btn btn-primary">Disable 2FA</a>
-            <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary">Reset recovery codes</a>
+            <a asp-page="./Disable2fa" class="btn btn-auth-app">Disable 2FA</a>
+            <a asp-page="./GenerateRecoveryCodes" class="btn btn-auth-app">Reset recovery codes</a>
         }
 
-        <h4>Authenticator app</h4>
+        <h4 class="mb-4">Authenticator app</h4>
         @if (!Model.HasAuthenticator)
         {
-            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Add authenticator app</a>
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-auth-app">Add authenticator app</a>
         }
         else
         {
-            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Set up authenticator app</a>
-            <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-primary">Reset authenticator app</a>
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-auth-app mb-3">Set up authenticator app</a> <br>
+            <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-auth-app-reset">Reset authenticator app</a>
         }
     }
     else

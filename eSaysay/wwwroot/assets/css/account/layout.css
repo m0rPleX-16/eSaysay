@@ -1,0 +1,83 @@
+﻿.all-manage {
+    margin-left: 220px;
+    padding: 20px 20px 20px 20px;
+    transition: margin-left 0.4s ease;
+}
+
+
+.account-title { /* header top area*/
+    background: #FEF6ED;
+    padding: 0.1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #274052;
+}
+
+    .account-title h2 {
+        color: #274052;
+    }
+
+.account-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.manage-account-page {
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    padding: 40px;
+    border-radius: 16px;
+    background-color: #FFFAF3;
+}
+
+
+
+.sidebar.collapsed ~ .all-manage {
+    margin-left: 100px;
+}
+
+/* -------------- ACCOUNT SETTINGS SIDEBAR */
+
+.account-settings-sidebar .nav-link {
+    color: #274052;
+    font-weight: 500;
+    margin-bottom: 3px;
+    margin-right: 30px;
+    border-radius: 26px;
+}
+
+    .account-settings-sidebar .nav-link:hover {
+        background-color: #F3CF79; /* Warm hover effect */
+        color: #274052;
+        border-radius: 26px;
+    }
+
+    .account-settings-sidebar .nav-link.active {
+        background-color: #F3CF79; /* Warm hover effect */
+        color: #274052;
+        border-radius: 26px;
+    }
+
+    /* ------------------- CONTENT */
+
+.manage-account-content{
+    color: #274052;
+    border-left: 1px dotted #274052;
+    padding-left: 40px;
+}
+
+@media (max-width: 768px) {
+        .all-manage {
+            margin-left: 0;
+        }
+
+        .sidebar.collapsed ~ .all-manage {
+            margin-left: 0;
+        }
+
+
+}
