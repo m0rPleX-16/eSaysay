@@ -9,6 +9,7 @@ using eSaysay.Models.ViewModels;
 using eSaysay.Data;
 using eSaysay.Services;
 using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace eSaysay.Controllers
 {
@@ -340,7 +341,10 @@ namespace eSaysay.Controllers
         {
             if (!await UserExists(userId)) return;
 
-            var totalExercises = await _context.InteractiveExercises.CountAsync(e => e.LessonID == lessonId);
+            var totalExercises = await _context.InteractiveExercises
+    .Where(e => e.LessonID == lessonId && !e.IsArchived) 
+    .CountAsync();
+
             var completedExercises = await _context.UserResponse
                 .Where(r => r.UserID == userId && r.Exercise.LessonID == lessonId && r.IsCorrect)
                 .Select(r => r.ExerciseID)
@@ -376,7 +380,7 @@ namespace eSaysay.Controllers
             if (progress.CompletionStatus == "Completed" && !wasAlreadyCompleted)
             {
                 var lesson = await _context.Lessons.FindAsync(lessonId);
-                await SendNotification(userId, $"Great job! You have completed the lesson: {lesson?.Title}.");
+                await SendNotification(userId, $"Great job! You have completed the lesson: {lesson?.Title}.", "UTC");
             }
 
             await UpdateLanguageExperience(userId);
@@ -429,9 +433,11 @@ namespace eSaysay.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private async Task SendNotification(string userId, string message, string title = "System Notification")
+        private async Task SendNotification(string userId, string message, string timeZone, string title = "System Notification")
         {
             _logger.LogInformation($"[SendNotification] Sending notification to user {userId}: {message}");
+            var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, userTimeZone);
 
             var notification = new Notification
             {
@@ -439,7 +445,7 @@ namespace eSaysay.Controllers
                 Title = title,
                 Message = message,
                 IsRead = false,
-                DateCreated = DateTime.UtcNow
+                DateCreated = localTime
             };
 
             _context.Notification.Add(notification);

@@ -139,7 +139,7 @@ namespace eSaysay.Controllers
             {
                 _context.Language.Add(language);
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Added new language: {language.LanguageName}");
+                await _logService.LogEvent($"Added new language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -153,7 +153,7 @@ namespace eSaysay.Controllers
             {
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Updated language: {language.LanguageName}");
+                await _logService.LogEvent($"Updated language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -199,7 +199,7 @@ namespace eSaysay.Controllers
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived language: {language.LanguageName}");
+                await _logService.LogEvent($"Archived language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -215,7 +215,7 @@ namespace eSaysay.Controllers
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Restored language: {language.LanguageName}");
+                await _logService.LogEvent($"Restored language: {language.LanguageName}", "UTC");
             }
             return Ok();
         }
@@ -230,7 +230,7 @@ namespace eSaysay.Controllers
                 _context.Language.Remove(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Permanently deleted language: {language.LanguageName}");
+                await _logService.LogEvent($"Permanently deleted language: {language.LanguageName}", "UTC");
             }
             return Ok();
         }
@@ -430,7 +430,7 @@ namespace eSaysay.Controllers
             // Save to database
             _context.InteractiveExercises.Add(exercise);
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}");
+            await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}", "UTC");
 
             return RedirectToAction("Exercises");
         }
@@ -472,7 +472,7 @@ namespace eSaysay.Controllers
             existingExercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
 
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}");
+            await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}", "UTC");
             _logger.LogInformation($"Exercise updated: {exercise.ExerciseType}");
 
             return RedirectToAction("Exercises");
@@ -550,7 +550,7 @@ namespace eSaysay.Controllers
                 exercise.IsArchived = true;
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived exercise ID: {ExerciseID}");
+                await _logService.LogEvent($"Archived exercise ID: {ExerciseID}", "UTC");
             }
             return RedirectToAction("Exercises");
         }
@@ -591,7 +591,7 @@ namespace eSaysay.Controllers
                 exercise.IsArchived = false;
                 _context.InteractiveExercises.Update(exercise);
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Restored exercise: {exercise.Content}");
+                await _logService.LogEvent($"Restored exercise: {exercise.Content}", "UTC");
             }
             return Json(new { redirect = Url.Action("ArchivedExercises") });
         }
@@ -608,7 +608,7 @@ namespace eSaysay.Controllers
                     _context.InteractiveExercises.Remove(exercise);
                     await _context.SaveChangesAsync();
 
-                    await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}");
+                    await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}", "UTC");
                     return Ok(); 
                 }
                 return NotFound();
@@ -616,7 +616,7 @@ namespace eSaysay.Controllers
             catch (Exception ex)
             {
                 // Log the exception
-                await _logService.LogEvent($"Error deleting exercise: {ex.Message}");
+                await _logService.LogEvent($"Error deleting exercise: {ex.Message}", "UTC");
                 return StatusCode(500, "An error occurred while deleting the exercise."); 
             }
         }
@@ -699,7 +699,7 @@ namespace eSaysay.Controllers
 
             _context.Lessons.Add(lesson);
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Created lesson: {lesson.Title}");
+            await _logService.LogEvent($"Created lesson: {lesson.Title}", "UTC");
             return RedirectToAction("Lessons");
         }
 
@@ -718,7 +718,7 @@ namespace eSaysay.Controllers
                 existingLesson.LanguageID = lesson.LanguageID;
 
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Updated lesson: {lesson.Title}");
+                await _logService.LogEvent($"Updated lesson: {lesson.Title}", "UTC");
                 _logger.LogInformation($"Lesson updated: {lesson.Title}");
             }
             else
@@ -740,7 +740,7 @@ namespace eSaysay.Controllers
                 lesson.IsArchived = true; // Mark as archived instead of deleting
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived lesson: {lesson.Title}");
+                await _logService.LogEvent($"Archived lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("Lessons");
         }
@@ -784,7 +784,7 @@ namespace eSaysay.Controllers
                 lesson.IsArchived = false; // Unarchive the lesson
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Restored lesson: {lesson.Title}");
+                await _logService.LogEvent($"Restored lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("ArchivedLessons");
         }
@@ -800,7 +800,7 @@ namespace eSaysay.Controllers
                 _context.Lessons.Remove(lesson); 
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}");
+                await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("ArchivedLessons");
         }
@@ -1092,7 +1092,7 @@ namespace eSaysay.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation($"[EditStudent] Successfully updated student (ID: {Id}).");
-                await _logService.LogEvent($"Updated student details: {FirstName} {LastName}");
+                await _logService.LogEvent($"Updated student details: {FirstName} {LastName}", "UTC");
                 return RedirectToAction("Students");
             }
 
@@ -1122,7 +1122,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Archived student ID: {Id}");
+                await _logService.LogEvent($"Archived student ID: {Id}", "UTC");
                 return RedirectToAction("Students");
             }
 
@@ -1150,7 +1150,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Restored student ID: {Id}");
+                await _logService.LogEvent($"Restored student ID: {Id}", "UTC");
                 return RedirectToAction("ArchivedStudents");
             }
 
@@ -1177,7 +1177,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Permanently deleted student ID: {Id}");
+                await _logService.LogEvent($"Permanently deleted student ID: {Id}", "UTC");
                 return RedirectToAction("ArchivedStudents");
             }
 

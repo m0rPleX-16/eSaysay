@@ -114,6 +114,7 @@
                     <div class="text-center mt-3">
                         <span>Already have an account?</span> <a asp-page="./Login" class="text-decoration-none">Log in</a>
                     </div>
+                    <input type="hidden" id="userTimezone" name="userTimezone">
                 </form>
             </div>
         </div>
@@ -126,5 +127,8 @@
         function reloadCaptcha() {
             document.getElementById("captchaImage").src = "/Captcha/Generate?" + new Date().getTime();
         }
+    </script>
+    <script>
+        document.getElementById('userTimezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
     </script>
 }

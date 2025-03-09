@@ -18,7 +18,7 @@ namespace eSaysay.Models.Entities
         public string Event { get; set; }
 
         [Required]
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
 
         [Required]
         [MaxLength(45)]

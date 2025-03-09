@@ -204,6 +204,15 @@
             document.querySelector(".admin-dashboard-main").classList.toggle("shifted");
         });
     </script>
+    <script>
+        document.getElementById('userTimezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        fetch('/User/SetTimeZone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timeZone: document.getElementById('userTimezone').value })
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
