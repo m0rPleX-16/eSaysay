@@ -52,7 +52,6 @@
     background-color: #DFB757;
     color: #274052;
     font-weight: 600;
-    font-style: italic;
 }
 
     .btn-lessons-view-archive:hover {
@@ -115,6 +114,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #FAF3E2;
     }
 
     .btn-lessons-edit:hover {
@@ -134,6 +134,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #FAF3E2;
     }
 
     .btn-lessons-archive:hover {

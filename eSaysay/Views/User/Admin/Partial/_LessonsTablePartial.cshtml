@@ -38,48 +38,51 @@
                                 <h5 class="modal-title" id="editLessonModalLabel-@lesson.LessonID">Edit Lesson</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <form method="post" action="/Admin/EditLesson">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="LessonID" value="@lesson.LessonID" />
-                                    <div class="mb-3">
-                                        <label class="form-label">Title</label>
-                                        <input type="text" class="form-control" name="Title" value="@lesson.Title" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Language</label>
-                                        <select class="form-control" name="LanguageID" required>
-                                            @foreach (var language in ViewBag.Languages)
-                                            {
-                                                <option value="@language.LanguageID" selected="@(lesson.LanguageID == language.LanguageID ? "selected" : null)">
-                                                    @language.LanguageName
-                                                </option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Lesson Type</label>
-                                        <select class="form-control" name="LessonType" required>
-                                            <option value="Video" selected="@(lesson.LessonType == "Video")">Video</option>
-                                            <option value="Text" selected="@(lesson.LessonType == "Text")">Text</option>
-                                            <option value="Quiz" selected="@(lesson.LessonType == "Quiz")">Quiz</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Difficulty Level</label>
-                                        <select class="form-control" name="DifficultyLevel" required>
-                                            <option value="Beginner" selected="@(lesson.DifficultyLevel == "Beginner")">Beginner</option>
-                                            <option value="Intermediate" selected="@(lesson.DifficultyLevel == "Intermediate")">Intermediate</option>
-                                            <option value="Advanced" selected="@(lesson.DifficultyLevel == "Advanced")">Advanced</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Description</label>
-                                        <textarea class="form-control" name="Description">@lesson.Description</textarea>
-                                    </div>
+                            <form method="post" action="/Admin/EditLesson">
+                                <div class="modal-body">
+                                
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="LessonID" value="@lesson.LessonID" />
+                                        <div class="mb-3">
+                                            <label class="form-label">Title</label>
+                                            <input type="text" class="form-control" name="Title" value="@lesson.Title" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Language</label>
+                                            <select class="form-control" name="LanguageID" required>
+                                                @foreach (var language in ViewBag.Languages)
+                                                {
+                                                    <option value="@language.LanguageID" selected="@(lesson.LanguageID == language.LanguageID ? "selected" : null)">
+                                                        @language.LanguageName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Lesson Type</label>
+                                            <select class="form-control" name="LessonType" required>
+                                                <option value="Video" selected="@(lesson.LessonType == "Video")">Video</option>
+                                                <option value="Text" selected="@(lesson.LessonType == "Text")">Text</option>
+                                                <option value="Quiz" selected="@(lesson.LessonType == "Quiz")">Quiz</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Difficulty Level</label>
+                                            <select class="form-control" name="DifficultyLevel" required>
+                                                <option value="Beginner" selected="@(lesson.DifficultyLevel == "Beginner")">Beginner</option>
+                                                <option value="Intermediate" selected="@(lesson.DifficultyLevel == "Intermediate")">Intermediate</option>
+                                                <option value="Advanced" selected="@(lesson.DifficultyLevel == "Advanced")">Advanced</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" name="Description">@lesson.Description</textarea>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Save changes</button>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

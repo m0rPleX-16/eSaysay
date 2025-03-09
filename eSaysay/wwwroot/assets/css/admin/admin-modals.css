@@ -1,0 +1,53 @@
+﻿
+.edit-students-modal, .edit-students-modal .modal-title {
+    color: #274052;
+}
+
+
+.modal-header {
+    border-bottom: 1px dotted #274052;
+    background-color: #F4EADD;
+}
+    .modal-header .btn-close{
+        font-size: 0.8rem;
+    }
+
+        .modal-header .btn-close:hover {
+            background-color: #F3CF79;
+            border-radius: 26px;
+        }
+
+.modal-body {
+    background-color: #FEF6ED;
+}
+    .modal-body input, .modal-body .form-control {
+        background-color: #FFFAF3;
+        border: 1px solid #B5C4CE ;
+    }
+.modal-footer {
+    border-top: 1px dotted #274052;
+    background-color: #F4EADD;
+}
+    .modal-footer .btn-primary {
+        background-color: #3D76A2;
+        border: none;
+    }
+        .modal-footer .btn-primary:hover{
+            background-color: #629CC7;
+        }
+    .modal-footer .btn-secondary {
+        background-color: #808080;
+        border: none;
+    }
+
+        .modal-footer .btn-secondary:hover {
+            background-color: #B6B6B6;
+        }
+
+    .modal-footer .btn-danger {
+        background-color: #DF5757;
+        border: none;
+    }
+        .modal-footer .btn-danger:hover {
+            background-color: #E58080;
+        }

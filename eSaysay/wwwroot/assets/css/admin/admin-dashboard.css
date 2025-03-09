@@ -49,6 +49,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     margin-top: 1rem;
+    padding-bottom: 20px;
     background-color: #FEF6ED;
     color: #274052;
 }
@@ -56,11 +57,18 @@
 .admin-dashboard-stats-box {
     flex: 1;
     min-width: 180px;
-    background-color: transparent;
-    border: 1px solid #274052;
+    background-color: #FFFAF3;
+    border: 2px dotted #274052;
     border-radius: 5px;
     padding: 1.8rem;
     text-align: center;
+}
+.span-index-box {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
 }
 
     .admin-dashboard-stats-box h3 {
@@ -74,11 +82,34 @@
         text-align: left;
     }
 
+.admin-dashboard-stats-box-2 {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    width: 100%;
+    text-align: center;
+}
+
+.index-progress-graph-span {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.admin-dashboard-stats-box-2 canvas {
+    flex-grow: 1;
+}
+
 .admin-dashboard-stats-box-2 h3 {
     color: #274052;
     font-size: 1.8rem;
 }
-
+.chart-container {
+    flex-grow: 1;
+}
 /* Responsive Design */
 @media (max-width: 992px) {
     .admin-dashboard-sidebar {

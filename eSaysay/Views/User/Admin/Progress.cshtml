@@ -5,45 +5,45 @@
 <main class="admin-progress">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="admin-progress-header">
-        <h2> User Progress </h2>
+    <div class="admin-progress-topbar">
+        <h2>User's <span class="progress-span-dashboard">progress</span></h2>
     </div>
 
     <div class="progress-content">
         <!-- Summary Statistics -->
         <section class="progress-summary d-flex justify-content-between">
             <div class="progress-box">
-                <h3>@Model.TotalUsers</h3>
+                <h3 class="span-progress-box">@Model.TotalUsers</h3>
                 <span>Total Users</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.TotalLessons</h3>
+                <h3 class="span-progress-box">@Model.TotalLessons</h3>
                 <span>Total Lessons</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.CompletedLessons</h3>
+                <h3 class="span-progress-box">@Model.CompletedLessons</h3>
                 <span>Completed Lessons</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.InProgressLessons</h3>
+                <h3 class="span-progress-box">@Model.InProgressLessons</h3>
                 <span>In Progress</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.NotStartedLessons</h3>
+                <h3 class="span-progress-box">@Model.NotStartedLessons</h3>
                 <span>Not Started</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.TotalPendingLessons</h3>
+                <h3 class="span-progress-box">@Model.TotalPendingLessons</h3>
                 <span>Pending Lessons</span>
             </div>
             <div class="progress-box">
-                <h3>@Model.AverageScore.ToString("0.00")%</h3>
+                <h3 class="span-progress-box">@Model.AverageScore.ToString("0.00")%</h3>
                 <span>Average Score</span>
             </div>
         </section>
 
         <!-- User Progress Table -->
-        <section class="progress-table mt-4">
+        <section class="progress-table mt-1">
             @if (Model.ProgressData != null && Model.ProgressData.Any())
             {
                 <table class="table table-striped">
@@ -79,9 +79,14 @@
         </section>
 
         <!-- Progress Chart -->
-        <section class="progress-graphs mt-5">
-            <h3>User Progress Overview</h3>
-            <canvas id="progressChart"></canvas>
+        <section class="progress-graphs">
+            <div class="user-progress-overview">
+                <span class="progress-graph-span">User progress overview</span>
+              
+                    <canvas id="progressChart"></canvas>
+               
+            </div>
+   
         </section>
     </div>
 </main>
@@ -106,8 +111,8 @@
                 datasets: [{
                     label: 'Average Scores',
                     data: progressScores,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(223, 183, 87, 0.5)',
+                    borderColor: 'rgba(223, 183, 87, 1)',
                     borderWidth: 1
                 }]
             },
@@ -116,6 +121,17 @@
                 scales: {
                     y: {
                         beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                family: 'Poppins', // Change to your preferred font
+                                size: 12,        // Font size
+                                color: '#274052' // Font color
+                            }
+                        }
                     }
                 }
             }
