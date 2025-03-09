@@ -94,32 +94,38 @@
     height: 42px;
     width: 42px;
     font-weight: 700;
+    color: #FFFAF3;
     margin-right: 10px;
 }
 
-    .btn-archive-exercises-restore:hover {
+    .btn-archive-exercises-restore:hover, .btn-archive-exercises-restore span:hover {
         background-color: #FFE4A3;
+        color: #FFFAF3;
     }
 
     .btn-archive-exercises-restore span {
         display: flex;
         align-content: center;
         justify-content: center;
+        color: #FFFAF3;
     }
 
 .btn-archive-exercises-delete {
     background-color: #DF5757;
     height: 42px;
     width: 42px;
+    color: #FFFAF3;
     font-weight: 700;
 }
 
-    .btn-archive-exercises-delete:hover {
+    .btn-archive-exercises-delete:hover, .btn-archive-exercises-delete span:hover {
         background-color: #FFA3A3;
+        color: #FFFAF3;
     }
 
     .btn-archive-exercises-delete span {
         display: flex;
         align-content: center;
         justify-content: center;
+        color: #FFFAF3;
     }

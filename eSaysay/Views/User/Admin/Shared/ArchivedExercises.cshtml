@@ -25,12 +25,12 @@
             <table class="table table-exercises-archive-content">
                 <thead>
                     <tr>
-                        <th>Exercise Type</th>
-                        <th>Content</th>
-                        <th>Lesson</th>
-                        <th>Difficulty</th>
-                        <th>Date Created</th>
-                        <th>Actions</th>
+                        <th class="col-2">Exercise Type</th>
+                        <th class="col-2">Content</th>
+                        <th class="col-2">Lesson</th>
+                        <th class="col-1">Difficulty</th>
+                        <th class="col-1">Date Created</th>
+                        <th class="col-1">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="exercisesArchiveTableBody">
@@ -49,16 +49,18 @@
                                     <form class="restore-form d-inline" data-id="@exercise.ExerciseID">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <span class="material-symbols-rounded">restore</span>
+                                        <button type="submit" class="btn btn-archive-exercises-restore">
+                                            <span class="material-symbols-rounded">
+                                                settings_backup_restore
+                                            </span>
                                         </button>
                                     </form>
                                     <!-- Delete Button -->
                                     <form class="delete-form d-inline" data-id="@exercise.ExerciseID">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <span class="material-symbols-rounded">delete_forever</span>
+                                        <button type="submit" class="btn btn-archive-exercises-delete">
+                                            <span class="material-symbols-rounded">delete</span>
                                         </button>
                                     </form>
                                 </td>
