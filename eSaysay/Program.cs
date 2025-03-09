@@ -60,6 +60,7 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
+app.UseExceptionHandler("/Error/500");  
 
 app.Use(async (context, next) =>
 {
