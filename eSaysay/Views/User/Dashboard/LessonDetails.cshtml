@@ -8,26 +8,34 @@
     <h2 class="lesson-title">@lesson.Title</h2>
     <p class="lesson-description">@lesson.Description</p>
 
-    @{
-        var nonArchivedExercises = Model.Where(e => !e.IsArchived).ToList();
-    }
-
-    @if (nonArchivedExercises.Count == 0)
+    @if (Model == null || !Model.Any())
     {
         <p class="text-muted">No exercises available for this lesson.</p>
     }
     else
     {
+        <!-- Dropdown for filtering -->
+        <div class="filter-container">
+            <label for="exerciseFilter">Filter by Status:</label>
+            <select id="exerciseFilter" class="form-control" onchange="filterExercises()">
+                <option value="all">All</option>
+                <option value="not-started">Not Started</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+
         <div class="carousel-wrapper">
             <button class="carousel-control prev" onclick="moveSlide(-1)">&#10094;</button>
             <div class="carousel">
                 <div class="exercise-list">
-                    @foreach (var exercise in nonArchivedExercises)
+                    @foreach (var exercise in Model)
                     {
                         var isCompleted = ViewBag.CompletedExercises != null && ViewBag.CompletedExercises.Contains(exercise.ExerciseID);
                         var isStarted = ViewBag.StartedExercises != null && ViewBag.StartedExercises.Contains(exercise.ExerciseID);
+                        var statusClass = isCompleted ? "completed-exercise" : isStarted ? "started-exercise" : "not-started-exercise";
 
-                        <div class="exercise-card @(isCompleted ? "completed-exercise" : isStarted ? "started-exercise" : "")">
+                        <div class="exercise-card @statusClass" data-status="@statusClass">
                             @if (isCompleted)
                             {
                                 <div class="badge badge-success">Completed</div>
@@ -56,11 +64,15 @@
 <style>
     .completed-exercise {
         opacity: 0.5;
-        pointer-events: none; /* Prevent clicking */
+        pointer-events: none;
     }
 
     .started-exercise {
         border: 2px solid orange;
+    }
+
+    .not-started-exercise {
+        border: 2px solid blue;
     }
 
     .badge {
@@ -82,13 +94,18 @@
 </style>
 
 <script>
-    let currentIndex = 0;
-    function moveSlide(step) {
-        const slides = document.querySelectorAll('.exercise-card');
-        const totalSlides = slides.length;
-        const container = document.querySelector('.carousel');
-        const cardWidth = slides[0].offsetWidth + 30;
-        currentIndex = (currentIndex + step + totalSlides) % totalSlides;
-        container.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+    function filterExercises() {
+        var filter = document.getElementById("exerciseFilter").value;
+        var exercises = document.querySelectorAll(".exercise-card");
+
+        exercises.forEach(function (exercise) {
+            var status = exercise.getAttribute("data-status");
+
+            if (filter === "all" || status.includes(filter)) {
+                exercise.style.display = "block";
+            } else {
+                exercise.style.display = "none";
+            }
+        });
     }
 </script>
