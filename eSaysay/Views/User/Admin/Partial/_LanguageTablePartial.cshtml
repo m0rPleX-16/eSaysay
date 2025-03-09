@@ -5,8 +5,8 @@
     <table class="table table-languages-content">
         <thead>
             <tr>
-                <th class="col-10">Language Name</th>
-                <th class="col-2">Actions</th>
+                <th class="col-9">Language Name</th>
+                <th class="col-1">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -39,17 +39,22 @@
                         <h5 class="modal-title" id="editLanguageModalLabel-@language.LanguageID">Edit Language</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <form method="post" action="/Admin/EditLanguage">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="LanguageID" value="@language.LanguageID">
-                            <div class="mb-3">
-                                <label for="languageName-@language.LanguageID" class="form-label">Language Name</label>
-                                <input type="text" class="form-control" id="languageName-@language.LanguageID" name="LanguageName" value="@language.LanguageName" required>
-                            </div>
+                    <form method="post" action="/Admin/EditLanguage">
+                        <div class="modal-body">
+                        
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="LanguageID" value="@language.LanguageID">
+                                <div class="mb-3">
+                                    <label for="languageName-@language.LanguageID" class="form-label">Language Name</label>
+                                    <input type="text" class="form-control" id="languageName-@language.LanguageID" name="LanguageName" value="@language.LanguageName" required>
+                                </div>
+                                
+                        
+                        </div>
+                        <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Save changes</button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@
     background-color: #3D76A2;
     font-weight: 500;
     color: #FFF;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius:26px;
 }
 
@@ -36,7 +36,7 @@
     background-color: #808080;
     font-weight: 500;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius: 26px;
 }
     .btn-auth-app-reset:hover {
@@ -48,7 +48,7 @@
     background-color: #808080;
     font-weight: 500;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius: 26px;
     width: 120px;
 }
@@ -61,7 +61,7 @@
     background-color: #DF5757;
     font-weight: 500;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius: 26px;
     width: 120px;
 }

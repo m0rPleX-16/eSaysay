@@ -48,7 +48,6 @@
     background-color: #DFB757;
     color: #274052;
     font-weight: 600;
-    font-style: italic;
 }
 
     .btn-languages-view-archive:hover {
@@ -124,6 +123,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #FAF3E2;
     }
 
     .btn-language-edit:hover {
@@ -138,11 +138,12 @@
     height: 42px;
     width: 40px;
 }
-.btn-language-archive span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .btn-language-archive span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FAF3E2;
+    }
 
     .btn-language-archive:hover {
         background-color: #DEDEDE;

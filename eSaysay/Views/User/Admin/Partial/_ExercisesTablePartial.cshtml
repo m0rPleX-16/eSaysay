@@ -50,54 +50,60 @@
                                     <h5 class="modal-title">Edit Exercise</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <form method="post" action="/Admin/EditExercise">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                        <div class="mb-3">
-                                            <label class="form-label">Content</label>
-                                            <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Exercise Type</label>
-                                            <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
-                                                <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
-                                                <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
-                                                <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Correct Answer</label>
-                                            <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
-                                        </div>
-                                        <div class="mb-3" id="answerChoicesSection">
-                                            <label class="form-label">Answer Choices</label>
-                                            <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Hint</label>
-                                            <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Difficulty Level</label>
-                                            <select class="form-control" name="DifficultyLevel" required>
-                                                <option value="Easy" selected="@(exercise.DifficultyLevel == "Easy")">Easy</option>
-                                                <option value="Medium" selected="@(exercise.DifficultyLevel == "Medium")">Medium</option>
-                                                <option value="Hard" selected="@(exercise.DifficultyLevel == "Hard")">Hard</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Lesson</label>
-                                            <select class="form-control" name="LessonID" required>
-                                                @foreach (var lesson in ViewBag.Lessons)
-                                                {
-                                                    <option value="@lesson.LessonID" selected="@(lesson.LessonID == exercise.LessonID)">@lesson.Title</option>
-                                                }
-                                            </select>
-                                        </div>
+                                <form method="post" action="/Admin/EditExercise">
+                                    <div class="modal-body">
+                                    
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                                            <div class="mb-3">
+                                                <label class="form-label">Content</label>
+                                                <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Exercise Type</label>
+                                                <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
+                                                    <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
+                                                    <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
+                                                    <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Correct Answer</label>
+                                                <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
+                                            </div>
+                                            <div class="mb-3" id="answerChoicesSection">
+                                                <label class="form-label">Answer Choices</label>
+                                                <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Hint</label>
+                                                <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Difficulty Level</label>
+                                                <select class="form-control" name="DifficultyLevel" required>
+                                                    <option value="Easy" selected="@(exercise.DifficultyLevel == "Easy")">Easy</option>
+                                                    <option value="Medium" selected="@(exercise.DifficultyLevel == "Medium")">Medium</option>
+                                                    <option value="Hard" selected="@(exercise.DifficultyLevel == "Hard")">Hard</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Lesson</label>
+                                                <select class="form-control" name="LessonID" required>
+                                                    @foreach (var lesson in ViewBag.Lessons)
+                                                    {
+                                                        <option value="@lesson.LessonID" selected="@(lesson.LessonID == exercise.LessonID)">@lesson.Title</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            @* <button type="submit" class="btn btn-primary">Save changes</button> *@
+                                    
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Save changes</button>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

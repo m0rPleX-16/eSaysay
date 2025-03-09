@@ -6,40 +6,46 @@
 <main class="admin-analytics">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="admin-analytics-header">
-        <h2> Analytics </h2>
+   <div class="admin-analytics-topbar">
+        <h2>The <span class="analytics-span-dashboard">analytics</span></h2>
     </div>
 
     <div class="analytics-content">
         <!-- KPI Section -->
         <section class="analytics-stats">
             <div class="analytics-box">
-                <h3>@Model.TotalUsers</h3>
-                <span>Total Users</span>
+                <h3 class ="span-analytics-box">@Model.TotalUsers</h3>
+                <span >Total Users</span>
             </div>
             <div class="analytics-box">
-                <h3>@(Model.AvgScore.HasValue ? Model.AvgScore.Value.ToString("0.00") + "%" : "0.00%")</h3>
+                <h3 class="span-analytics-box">@(Model.AvgScore.HasValue ? Model.AvgScore.Value.ToString("0.00") + "%" : "0.00%")</h3>
                 <span>Average Score</span>
             </div>
             <div class="analytics-box">
-                <h3>@(Model.TotalTimeSpent.HasValue ? Model.TotalTimeSpent.Value + " mins" : "0 mins")</h3>
+                <h3 class="span-analytics-box">@(Model.TotalTimeSpent.HasValue ? Model.TotalTimeSpent.Value + " mins" : "0 mins")</h3>
                 <span>Total Time Spent</span>
             </div>
             <div class="analytics-box">
-                <h3>@(Model.TotalLessonsCompleted > 0 ? Model.TotalLessonsCompleted.ToString() : "0")</h3>
+                <h3 class="span-analytics-box">@(Model.TotalLessonsCompleted > 0 ? Model.TotalLessonsCompleted.ToString() : "0")</h3>
                 <span>Lessons Completed</span>
             </div>
         </section>
 
         <!-- Graph Section -->
         <section class="analytics-graphs mt-5">
-            <h3>User Performance Overview</h3>
-            <canvas id="userAnalyticsChart"></canvas>
+            <span class="analytics-graph-span">User performance overview</span>
+            <div class="canvas-analytics mt-4">
+
+                <canvas id="userAnalyticsChart"></canvas>
+            </div>
         </section>
 
         <section class="analytics-graphs mt-5">
-            <h3>Lessons Completed Over Time</h3>
-            <canvas id="lessonsCompletedChart"></canvas>
+            <span class="analytics-graph-span">Lessons completed over time</span>
+            <div class="canvas-analytics mt-4">
+                <canvas id="lessonsCompletedChart"></canvas>
+            </div>
+            
         </section>
     </div>
 </main>
@@ -66,14 +72,14 @@
                 datasets: [{
                     label: 'Average Scores',
                     data: analyticsScores,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(43, 115, 167, 0.2)',
+                    borderColor: 'rgba(43, 115, 167, 1)',
                     borderWidth: 2
                 }, {
                     label: 'Time Spent (mins)',
                     data: analyticsTimeSpent,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(54, 124, 30, 0.2)',
+                    borderColor: 'rgba(54, 124, 30, 1)',
                     borderWidth: 2
                 }]
             },
@@ -82,6 +88,17 @@
                 scales: {
                     y: {
                         beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                family: 'Poppins', // Change to your preferred font
+                                size: 12,        // Font size
+                                color: '#274052' // Font color
+                            }
+                        }
                     }
                 }
             }
@@ -95,8 +112,8 @@
                 datasets: [{
                     label: 'Lessons Completed',
                     data: lessonsCompleted,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(43, 167, 117, 0.2)',
+                    borderColor: 'rgba(43, 167, 117, 1)',
                     borderWidth: 2
                 }]
             },
@@ -105,6 +122,17 @@
                 scales: {
                     y: {
                         beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                family: 'Poppins', // Change to your preferred font
+                                size: 12,        // Font size
+                                color: '#274052' // Font color
+                            }
+                        }
                     }
                 }
             }

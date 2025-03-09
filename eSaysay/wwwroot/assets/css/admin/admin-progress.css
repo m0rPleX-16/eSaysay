@@ -3,15 +3,94 @@
     margin-left: 200px;
 }
 
-.admin-progress-header { /* header top area*/
+.admin-progress-topbar { /* header top area*/
     background: #FEF6ED;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
 }
 
+    .admin-progress-topbar h2 {
+        color: #274052;
+    }
+.progress-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+
 .progress-content {
-    margin: 16px;
+    padding-right: 80px;
+    padding-left: 80px;
+    color: #274052;
+}
+.progress-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 20px;
+    background-color: #FEF6ED;
+    color: #274052;
+    justify-content: flex-start; 
+}
+
+.progress-box {
+    flex: 1 1 calc(25% - 1rem);
+    min-width: 180px;
+    background-color: #FFFAF3;
+    border: 2px dotted #274052;
+    border-radius: 5px;
+    padding: 1.8rem;
+    text-align: center;
+    color: #274052;
+    max-width: 300px;
+}
+
+.span-progress-box {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.progress-box span {
+    display: flex;
+    align-items: start;
+}
+.progress-graph-span {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2rem;
+    color: #274052;
+}
+#progressChart{
+    margin-top:20px;
+}
+.progress-table{
+    background: none;
+}
+
+    .progress-table .table tbody tr td{
+        background-color: #FFFAF3;
+    }
+
+
+    .progress-table .table tbody tr:nth-child(odd) {
+        background-color: red;
+    }
+
+.progress-graphs {
+    background-color: #FFFAF3;
+    border: 2px dotted #274052;
+    border-radius: 5px;
+    padding: 1.8rem;
+    text-align: center;
 }

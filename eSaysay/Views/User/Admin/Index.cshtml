@@ -19,36 +19,25 @@
             <!-- Stats Boxes -->
             <section class="admin-dashboard-stats-boxes">
                 <div class="admin-dashboard-stats-box">
-                    <h3>@Model.TotalUsers</h3>
+                    <h3 class="span-index-box">@Model.TotalUsers</h3>
                     <span>Total Users</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>@Model.AverageScore%</h3>
+                    <h3 class="span-index-box">@Model.AverageScore%</h3>
                     <span>Avg. Score</span>
                 </div>
                 <div class="admin-dashboard-stats-box">
-                    <h3>@Model.CompletedLessons / @Model.TotalLessons</h3>
+                    <h3 class="span-index-box">@Model.CompletedLessons / @Model.TotalLessons</h3>
                     <span>Completed vs. Total Lessons</span>
                 </div>
             </section>
 
-            <div class="admin-dashboard-stats-boxes mt-1">
-                <div class="admin-dashboard-stats-box admin-dashboard-stats-box-2">
-                    <h3>Time Consumed</h3>
-                    <span>Overall usage stats</span>
-                </div>
-                <div class="admin-dashboard-stats-box admin-dashboard-stats-box-2">
-                    <h3>Finished Lessons</h3>
-                    <span>Frequency of lesson completions</span>
-                </div>
-                <div class="admin-dashboard-stats-box admin-dashboard-stats-box-2">
-                    <h3>Export to PDF</h3>
-                    <span>Download progress reports</span
-                </div>
-            </div>
             <div class="admin-dashboard-stats-box admin-dashboard-stats-box-2">
-                <h3>Progress Overview</h3>
-                <canvas id="progressChart"></canvas>
+                <h3 class="index-progress-graph-span">Progress Overview</h3>
+                <div class="chart-container">
+                    <!-- Add padding-top here -->
+                    <canvas id="progressChart"></canvas>
+                </div>
             </div>
          @*    <section class="admin-dashboard-graph mt-5">
                 <h3>Progress Overview</h3>
@@ -60,7 +49,32 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('progressChart').getContext('2d');
+    // Get the canvas element
+    var canvas = document.getElementById('progressChart');
+    var ctx = canvas.getContext('2d');
+
+    // Set the canvas's width and height attributes to match its displayed size
+    function resizeCanvas() {
+        var container = canvas.parentElement;
+        var computedStyle = getComputedStyle(container);
+
+        // Calculate the width and height of the container
+        var width = parseFloat(computedStyle.width);
+        var height = parseFloat(computedStyle.height);
+
+        // Set the canvas's internal resolution to match its displayed size
+        canvas.width = width;
+        canvas.height = height;
+    }
+
+    // Resize the canvas initially and whenever the window is resized
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(); // Initial resize
+
+        var resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(canvas.parentElement);
+
+    // Initialize the chart
     var progressChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -68,18 +82,70 @@
             datasets: [{
                 label: 'Average Scores',
                 data: [@Model.AverageScore],
-                backgroundColor: ['#36A2EB'],
+                backgroundColor: 'rgba(223, 183, 87, 0.5)',
+                borderColor: 'rgba(223, 183, 87, 1)',
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false, // Ensure the chart does not maintain aspect ratio
             scales: {
+                x: {
+                    ticks: {
+                        color: '#274052', // Color of the label
+                        font: {
+                            size: 12, // Adjust font size of the label
+                        },
+                        padding: 1 // Add padding to the label
+                    },
+                    grid: {
+                        display: false // Hide the grid lines for the x-axis
+                    }
+                },
                 y: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    ticks: {
+                        color: '#274052', // Color of the y-axis labels
+                        font: {
+                            size: 12 // Adjust font size of the y-axis labels
+                        }
+                    },
+                    grid: {
+                        color: '#E0E0E0' // Color of the grid lines
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true 
+                },
+                tooltip: {
+                    enabled: true
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                family: 'Poppins', // Change to your preferred font
+                                size: 12,        // Font size
+                                color: '#274052' // Font color
+                            }
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10 // Add padding to the chart
                 }
             }
-        }
+            }
+
+        
     });
 </script>
