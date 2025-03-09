@@ -174,29 +174,29 @@ namespace eSaysay.Controllers
                     return BadRequest(new { message = "Invalid ExerciseID." });
                 }
 
-                // Check if an existing response exists for this user and exercise
+                // ✅ Find existing response (latest attempt)
                 var existingResponse = await _context.UserResponse
+                    .OrderByDescending(r => r.AttemptDate) // Get the latest response
                     .FirstOrDefaultAsync(r => r.UserID == userResponse.UserID && r.ExerciseID == userResponse.ExerciseID);
 
                 if (existingResponse != null)
                 {
-                    // Update the existing response with the new attempt's data
+                    // ✅ Update the existing response
                     existingResponse.IsCorrect = userResponse.IsCorrect;
                     existingResponse.AttemptDate = DateTime.UtcNow;
                     _context.UserResponse.Update(existingResponse);
                 }
                 else
                 {
-                    // Add a new response if no existing response is found
+                    // ✅ Insert new response
                     userResponse.AttemptDate = DateTime.UtcNow;
                     _context.UserResponse.Add(userResponse);
                 }
 
                 await _context.SaveChangesAsync();
 
-                // Update user progress and analytics
+                // ✅ Update user progress, analytics, and adaptive learning
                 await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
-                await UpdateLanguageExperience(userResponse.UserID);
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
                 await UpdateAdaptiveLearning(userResponse.UserID, exercise.LessonID);
 
@@ -209,7 +209,6 @@ namespace eSaysay.Controllers
                 return StatusCode(500, new { message = "An error occurred while saving your response." });
             }
         }
-
         // Profile
         public async Task<IActionResult> ProfileAsync()
         {
@@ -280,26 +279,6 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Logs.cshtml", logs);
         }
 
-        // Update Profile
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile(ApplicationUser updatedUser)
-        {
-            try
-            {
-                // Update user logic here...
-
-                await _logService.LogEvent("User updated profile");
-
-                return RedirectToAction("Profile");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error updating profile: {ex.Message}");
-                return StatusCode(500, "An error occurred while updating your profile.");
-            }
-        }
-
         // Helper Methods
         private async Task<DashboardViewModel> GetDashboardViewModel(string userId)
         {
@@ -315,23 +294,8 @@ namespace eSaysay.Controllers
                 .Include(up => up.Lesson)
                 .Where(up => up.UserID == userId)
                 .ToListAsync() ?? new List<UserProgress>();
-
-            // Fetch all analytics records for the user
-            var analyticsRecords = await _context.Analytics
-                .Where(a => a.UserID == userId)
-                .ToListAsync();
-
-            // Compute the total lessons completed
-            var totalLessonsCompleted = analyticsRecords.Count;
-
-            // Compute the overall average score (rounded to two decimals)
-            var overallAverageScore = analyticsRecords.Any()
-                ? Math.Round(analyticsRecords.Average(a => a.AverageScore), 2)
-                : 0;
-
-            // Compute the total time spent
-            var totalTimeSpent = analyticsRecords.Sum(a => a.TimeSpent);
-
+            var analytics = await _context.Analytics
+                .FirstOrDefaultAsync(a => a.UserID == userId);
             var adaptiveLearning = await _context.AdaptiveLearning
                 .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
 
@@ -348,16 +312,9 @@ namespace eSaysay.Controllers
                 Lessons = allLessons,
                 Notifications = notifications,
                 UserProgress = userProgress,
+                Analytics = analytics,  
                 AdaptiveLearning = adaptiveLearning,
-                UserExperienceLevel = userExperienceLevel,
-
-                // Assign aggregated analytics data
-                Analytics = new Analytics
-                {
-                    AverageScore = overallAverageScore,
-                    TimeSpent = totalTimeSpent,
-                    LessonCompleted = totalLessonsCompleted
-                }
+                UserExperienceLevel = userExperienceLevel
             };
         }
 
@@ -378,7 +335,7 @@ namespace eSaysay.Controllers
                 AdaptiveLearning = adaptiveLearning
             };
         }
-    
+
         private async Task UpdateUserProgress(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {
             if (!await UserExists(userId)) return;
@@ -489,19 +446,6 @@ namespace eSaysay.Controllers
             await _context.SaveChangesAsync();
             _logger.LogInformation($"[SendNotification] Notification saved to database for user {userId}.");
         }
-
-
-        [HttpGet]
-        public async Task<IActionResult> TestNotification()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return BadRequest("User not found.");
-
-            await SendNotification(user.Id, "Test notification: You have unlocked Intermediate lessons!");
-
-            return Ok("Notification sent. Check the database.");
-        }
-
 
         private async Task UpdateAnalytics(string userId, int lessonId, bool isCorrect, int TimeSpent)
         {

@@ -42,7 +42,14 @@ namespace eSaysay.Controllers
         {
             var totalUsers = await _context.Users.CountAsync();
             var totalLessons = await _context.Lessons.CountAsync();
-            var completedLessons = await _context.UserProgress.CountAsync(up => up.CompletionStatus == "Completed");
+
+            // ✅ Count only distinct lessons that have been completed
+            var completedLessons = await _context.UserProgress
+                .Where(up => up.CompletionStatus == "Completed")
+                .Select(up => up.LessonID)
+                .Distinct()
+                .CountAsync();
+
             var avgScore = await _context.Analytics.AverageAsync(a => (double?)a.AverageScore) ?? 0;
             var totalTimeSpent = await _context.Analytics.SumAsync(a => a.TimeSpent);
 
