@@ -81,7 +81,9 @@ body {
     display: flex;
     gap: 20px;
     transition: transform 0.4s ease;
-    padding: 10px 50px; 
+    padding: 10px 0;
+    padding: 20px 30px 20px 30px;
+    width: 100%;
 }
 
 .lesson-card {
