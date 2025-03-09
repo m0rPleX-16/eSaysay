@@ -70,3 +70,70 @@
         background-color: #E58080;
         color: #fff;
     }
+
+/* ----------------- LOGIN TWO FACTOR AUTH ------------------------*/
+
+.login-with-2fa {
+    background-color: #FEF6ED;
+    padding: 40px 240px 40px 240px;
+}
+.container-with-2fa {
+    background-color: #FFFAF3;
+    padding:40px;
+    border: 2px dotted #274052;
+    border-radius: 36px;
+}
+.login-2fa-topbar {
+    padding: 1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
+}
+
+    .login-2fa-topbar h2 {
+        color: #274052;
+    }
+
+.login-2fa-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.login-2fa-content {
+    padding: 40px;
+
+}
+
+.btn-login-with-2fa {
+    background-color: #3D76A2;
+    color: #fff;
+    font-size:1.1rem;
+    margin-bottom: 20px;
+}
+
+    .btn-login-with-2fa:hover {
+        background-color: #629CC7;
+    }
+
+#recovery-code-login {
+    font-style: italic;
+    color: #8F7B72;
+    font-weight:600;
+}
+    #recovery-code-login:hover {
+        color: #DFB757;
+    }
+
+    @media (max-width: 768px) {
+        .login-with-2fa {
+        padding: 20px;
+    }
+    .container-with-2fa{
+        padding: 5px;
+    }
+}
