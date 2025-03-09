@@ -31,5 +31,7 @@ namespace eSaysay.Models.Entities
 
         [Required]
         public DateTime LastAccessedDate { get; set; } = DateTime.UtcNow; // Last accessed timestamp
+
+        public List<int> ExerciseOrder { get; set; } = new List<int>();
     }
 }

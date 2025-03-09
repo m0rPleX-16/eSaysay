@@ -102,11 +102,8 @@ namespace eSaysay.Controllers
                 .Where(e => e.LessonID == id && !e.IsArchived)
                 .ToListAsync();
 
-            var startedExercises = await _context.UserResponse
-                .Where(ur => ur.UserID == user.Id && exercises.Select(e => e.ExerciseID).Contains(ur.ExerciseID))
-                .Select(ur => ur.ExerciseID)
-                .Distinct()
-                .ToListAsync();
+            var userProgress = await _context.UserProgress
+                .FirstOrDefaultAsync(up => up.UserID == user.Id && up.LessonID == id);
 
             var completedExercises = await _context.UserResponse
                 .Where(ur => ur.UserID == user.Id && ur.IsCorrect)
@@ -114,11 +111,35 @@ namespace eSaysay.Controllers
                 .Distinct()
                 .ToListAsync();
 
+            var startedExercises = await _context.UserResponse
+                .Where(ur => ur.UserID == user.Id && exercises.Select(e => e.ExerciseID).Contains(ur.ExerciseID))
+                .Select(ur => ur.ExerciseID)
+                .Distinct()
+                .ToListAsync();
+
+            // Categorizing exercises
+            var notStartedExercises = exercises
+                .Where(e => !startedExercises.Contains(e.ExerciseID))
+                .OrderBy(x => Guid.NewGuid()) // Shuffle Not Started exercises
+                .ToList();
+
+            var inProgressExercises = exercises
+                .Where(e => startedExercises.Contains(e.ExerciseID) && !completedExercises.Contains(e.ExerciseID))
+                .OrderBy(x => Guid.NewGuid()) // Shuffle In Progress exercises
+                .ToList();
+
+            var completedExercisesList = exercises
+                .Where(e => completedExercises.Contains(e.ExerciseID))
+                .ToList(); // Keep Completed exercises in their original order
+
+            // Merging them into a single ordered list
+            var orderedExercises = notStartedExercises.Concat(inProgressExercises).Concat(completedExercisesList).ToList();
+
             ViewBag.Lesson = lesson;
             ViewBag.StartedExercises = startedExercises;
             ViewBag.CompletedExercises = completedExercises;
 
-            return View("~/Views/User/Dashboard/LessonDetails.cshtml", exercises);
+            return View("~/Views/User/Dashboard/LessonDetails.cshtml", orderedExercises);
         }
 
         // Save User Response
