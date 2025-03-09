@@ -149,6 +149,11 @@
         font-weight: 500;
     }
 
+.list-ans.selected {
+    background-color: #DFB757;
+    font-weight: 500;
+}
+
 .list-hr {
     border: 3px solid #C0ACA4;
     border-radius: 16px;

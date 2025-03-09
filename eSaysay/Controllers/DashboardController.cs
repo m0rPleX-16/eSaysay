@@ -90,21 +90,34 @@ namespace eSaysay.Controllers
             return RedirectToAction("Index");
         }
 
-        // Lesson Details
-        public IActionResult LessonDetails(int id)
+        public async Task<IActionResult> LessonDetails(int id)
         {
-            var lesson = _context.Lessons.FirstOrDefault(l => l.LessonID == id);
-            if (lesson == null)
-            {
-                return NotFound();
-            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
 
-            var exercises = _context.InteractiveExercises
-                .Where(e => e.LessonID == id)
-                .OrderBy(x => Guid.NewGuid()) // Shuffle the exercises for variety
-                .ToList();
+            var lesson = await _context.Lessons.FirstOrDefaultAsync(l => l.LessonID == id);
+            if (lesson == null) return NotFound();
+
+            var exercises = await _context.InteractiveExercises
+                .Where(e => e.LessonID == id && !e.IsArchived)
+                .ToListAsync();
+
+            var startedExercises = await _context.UserResponse
+                .Where(ur => ur.UserID == user.Id && exercises.Select(e => e.ExerciseID).Contains(ur.ExerciseID))
+                .Select(ur => ur.ExerciseID)
+                .Distinct()
+                .ToListAsync();
+
+            var completedExercises = await _context.UserResponse
+                .Where(ur => ur.UserID == user.Id && ur.IsCorrect)
+                .Select(ur => ur.ExerciseID)
+                .Distinct()
+                .ToListAsync();
 
             ViewBag.Lesson = lesson;
+            ViewBag.StartedExercises = startedExercises;
+            ViewBag.CompletedExercises = completedExercises;
+
             return View("~/Views/User/Dashboard/LessonDetails.cshtml", exercises);
         }
 
@@ -125,26 +138,29 @@ namespace eSaysay.Controllers
                 return BadRequest(new { message = "Invalid TimeSpent value." });
             }
 
-            // Ensure the user exists before proceeding
             if (!await UserExists(userResponse.UserID))
             {
-                _logger.LogWarning($"UserID {userResponse.UserID} does not exist in AspNetUsers.");
+                _logger.LogWarning($"UserID {userResponse.UserID} does not exist.");
                 return BadRequest(new { message = "Invalid UserID." });
             }
 
-            _logger.LogInformation($"UserID: {userResponse.UserID}");
-            _logger.LogInformation($"ExerciseID: {userResponse.ExerciseID}");
-            _logger.LogInformation($"TimeSpent: {TimeSpent}");
-
             try
             {
-                var exercise = await _context.InteractiveExercises
-                    .FirstOrDefaultAsync(e => e.ExerciseID == userResponse.ExerciseID);
-
+                var exercise = await _context.InteractiveExercises.FindAsync(userResponse.ExerciseID);
                 if (exercise == null)
                 {
                     _logger.LogWarning($"Exercise with ID {userResponse.ExerciseID} not found.");
                     return BadRequest(new { message = "Invalid ExerciseID." });
+                }
+
+                // Check if user has already completed this exercise
+                var existingResponse = await _context.UserResponse
+                    .FirstOrDefaultAsync(r => r.UserID == userResponse.UserID && r.ExerciseID == userResponse.ExerciseID);
+
+                if (existingResponse != null)
+                {
+                    _logger.LogInformation($"User {userResponse.UserID} already completed exercise {userResponse.ExerciseID}. Skipping analytics update.");
+                    return Json(new { success = true, message = "Exercise already completed. No further updates." });
                 }
 
                 userResponse.AttemptDate = DateTime.UtcNow;
@@ -156,13 +172,8 @@ namespace eSaysay.Controllers
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
                 await UpdateAdaptiveLearning(userResponse.UserID, exercise.LessonID);
 
-                _logger.LogInformation("Response saved successfully.");
+                _logger.LogInformation($"Response saved for User {userResponse.UserID}, Exercise {userResponse.ExerciseID}.");
                 return Json(new { success = true, message = "Response saved successfully." });
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError($"Database error while saving response: {ex.Message}");
-                return StatusCode(500, new { message = "A database error occurred while saving your response." });
             }
             catch (Exception ex)
             {

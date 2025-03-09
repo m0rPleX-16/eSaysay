@@ -92,16 +92,20 @@
         const isCorrectInput = document.getElementById("is-correct");
         const clickedButton = event.target;
 
-        document.querySelectorAll('#answer-grid button').forEach(button => button.classList.remove('selected'));
+        // Remove the 'selected' class from all buttons
+        document.querySelectorAll('#answer-grid button').forEach(button => {
+            button.classList.remove('selected');
+        });
 
-        if (clickedButton.classList.contains("selected")) {
-            clickedButton.classList.remove("selected");
-            userAnswerInput.value = "";
-            isCorrectInput.value = "false";
-        } else {
+        // Toggle the 'selected' class on the clicked button
+        if (!clickedButton.classList.contains("selected")) {
             clickedButton.classList.add("selected");
             userAnswerInput.value = answer;
             isCorrectInput.value = (answer.toLowerCase() === "@Model.CorrectAnswer".toLowerCase());
+        } else {
+            clickedButton.classList.remove("selected");
+            userAnswerInput.value = "";
+            isCorrectInput.value = "false";
         }
     }
 

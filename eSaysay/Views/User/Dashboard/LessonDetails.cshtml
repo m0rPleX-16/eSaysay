@@ -24,10 +24,24 @@
                 <div class="exercise-list">
                     @foreach (var exercise in nonArchivedExercises)
                     {
-                        <div class="exercise-card">
+                        var isCompleted = ViewBag.CompletedExercises != null && ViewBag.CompletedExercises.Contains(exercise.ExerciseID);
+                        var isStarted = ViewBag.StartedExercises != null && ViewBag.StartedExercises.Contains(exercise.ExerciseID);
+
+                        <div class="exercise-card @(isCompleted ? "completed-exercise" : isStarted ? "started-exercise" : "")">
+                            @if (isCompleted)
+                            {
+                                <div class="badge badge-success">Completed</div>
+                            }
+                            else if (isStarted)
+                            {
+                                <div class="badge badge-warning">In Progress</div>
+                            }
+
                             <h3 class="exercise-type">@exercise.ExerciseType</h3>
                             <p class="exercise-content">@exercise.Content</p>
-                            <a asp-controller="Dashboard" asp-action="StartExercise" asp-route-exerciseId="@exercise.ExerciseID" class="btn btn-start">Start Exercise</a>
+                            <a asp-controller="Dashboard" asp-action="StartExercise" asp-route-exerciseId="@exercise.ExerciseID" class="btn btn-start">
+                                @(isCompleted ? "Review Exercise" : "Start Exercise")
+                            </a>
                         </div>
                     }
                 </div>
@@ -39,13 +53,41 @@
     <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">Back to Lessons</a>
 </div>
 
+<style>
+    .completed-exercise {
+        opacity: 0.5;
+        pointer-events: none; /* Prevent clicking */
+    }
+
+    .started-exercise {
+        border: 2px solid orange;
+    }
+
+    .badge {
+        padding: 5px;
+        color: white;
+        font-size: 12px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .badge-success {
+        background-color: green;
+    }
+
+    .badge-warning {
+        background-color: orange;
+    }
+</style>
+
 <script>
     let currentIndex = 0;
     function moveSlide(step) {
         const slides = document.querySelectorAll('.exercise-card');
         const totalSlides = slides.length;
         const container = document.querySelector('.carousel');
-        const cardWidth = slides[0].offsetWidth + 30; // Includes margin
+        const cardWidth = slides[0].offsetWidth + 30;
         currentIndex = (currentIndex + step + totalSlides) % totalSlides;
         container.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
     }
