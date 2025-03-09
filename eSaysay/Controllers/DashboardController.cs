@@ -315,8 +315,23 @@ namespace eSaysay.Controllers
                 .Include(up => up.Lesson)
                 .Where(up => up.UserID == userId)
                 .ToListAsync() ?? new List<UserProgress>();
-            var analytics = await _context.Analytics
-                .FirstOrDefaultAsync(a => a.UserID == userId);
+
+            // Fetch all analytics records for the user
+            var analyticsRecords = await _context.Analytics
+                .Where(a => a.UserID == userId)
+                .ToListAsync();
+
+            // Compute the total lessons completed
+            var totalLessonsCompleted = analyticsRecords.Count;
+
+            // Compute the overall average score (rounded to two decimals)
+            var overallAverageScore = analyticsRecords.Any()
+                ? Math.Round(analyticsRecords.Average(a => a.AverageScore), 2)
+                : 0;
+
+            // Compute the total time spent
+            var totalTimeSpent = analyticsRecords.Sum(a => a.TimeSpent);
+
             var adaptiveLearning = await _context.AdaptiveLearning
                 .FirstOrDefaultAsync(al => al.UserID == userId) ?? new AdaptiveLearning();
 
@@ -333,9 +348,16 @@ namespace eSaysay.Controllers
                 Lessons = allLessons,
                 Notifications = notifications,
                 UserProgress = userProgress,
-                Analytics = analytics,
                 AdaptiveLearning = adaptiveLearning,
-                UserExperienceLevel = userExperienceLevel 
+                UserExperienceLevel = userExperienceLevel,
+
+                // Assign aggregated analytics data
+                Analytics = new Analytics
+                {
+                    AverageScore = overallAverageScore,
+                    TimeSpent = totalTimeSpent,
+                    LessonCompleted = totalLessonsCompleted
+                }
             };
         }
 
