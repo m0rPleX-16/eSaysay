@@ -148,7 +148,7 @@ body {
 
 @media (max-width: 768px) {
     .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
         padding-top: 96px; 
     }
 
@@ -163,8 +163,8 @@ body {
     .sidebar.collapsed ~ .footer {
         margin-left: 0;
     }
-
     .lesson-cards {
-        padding: 10px 50px;
+        padding: 10px 0px 20px 5px;
     }
+
 }

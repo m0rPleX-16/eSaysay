@@ -28,14 +28,17 @@
 
 
 <!-- Success Modal -->
-<div id="successModal" class="modal comp-success-modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>🎉 Success!</h2>
-        <p>Your response has been saved successfully.</p>
-        <button id="goToDashboard" class="btn btn-success-comp">Go to Dashboard</button>
-    </div>
+<div class="success-container">
+        <div id="successModal" class="modal comp-success-modal">
+            <div class="modal-content">
+                <span class="close" style="display: none;">&times;</span>
+                <h2>Success!</h2>
+                <p>Your response has been saved successfully.</p>
+                <button id="goToLessonDetails" class="btn btn-success-comp">Go to Dashboard</button>
+            </div>
+        </div>
 </div>
+
 
 <!-- Form for submitting the answer -->
 <form id="answer-form">
@@ -150,7 +153,7 @@
     // Modal Functions
     const successModal = document.getElementById("successModal");
     const closeModal = document.getElementsByClassName("close")[0];
-    const goToDashboard = document.getElementById("goToDashboard");
+    const goToLessonDetails = document.getElementById("goToLessonDetails");
 
     function showSuccessModal() {
         successModal.style.display = "block";
@@ -167,9 +170,11 @@
         }
     };
 
-    goToDashboard.onclick = function () {
-        window.location.href = "/Dashboard/Index";
+    document.getElementById("goToLessonDetails").onclick = function () {
+        const lessonId = "@Model.LessonID";
+        window.location.href = `/Dashboard/LessonDetails/${lessonId}`;
     };
+
 
     document.addEventListener("DOMContentLoaded", function () {
         let allottedTime = 10; // Change this to the actual allotted time in seconds
