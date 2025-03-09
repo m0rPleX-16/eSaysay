@@ -743,7 +743,7 @@ namespace eSaysay.Controllers
         {
             var archivedLessonsQuery = _context.Lessons
                 .Include(l => l.Language)
-                .Where(l => l.IsArchived) // Only fetch archived lessons
+                .Where(l => l.IsArchived)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchQuery))
