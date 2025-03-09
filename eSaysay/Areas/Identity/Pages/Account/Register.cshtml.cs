@@ -100,7 +100,7 @@ using System.Text.Json;
                 public string MiddleName { get; set; }
 
                 [Required]
-                [Range(1, 120, ErrorMessage = "Age must be between 1 and 120.")]
+                [Range(1, 80, ErrorMessage = "Age must be between 1 and 80.")]
                 public int Age { get; set; }
 
                 [Required]
