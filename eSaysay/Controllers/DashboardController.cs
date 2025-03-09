@@ -174,20 +174,27 @@ namespace eSaysay.Controllers
                     return BadRequest(new { message = "Invalid ExerciseID." });
                 }
 
-                // Check if user has already completed this exercise
+                // Check if an existing response exists for this user and exercise
                 var existingResponse = await _context.UserResponse
                     .FirstOrDefaultAsync(r => r.UserID == userResponse.UserID && r.ExerciseID == userResponse.ExerciseID);
 
                 if (existingResponse != null)
                 {
-                    _logger.LogInformation($"User {userResponse.UserID} already completed exercise {userResponse.ExerciseID}. Skipping analytics update.");
-                    return Json(new { success = true, message = "Exercise already completed. No further updates." });
+                    // Update the existing response with the new attempt's data
+                    existingResponse.IsCorrect = userResponse.IsCorrect;
+                    existingResponse.AttemptDate = DateTime.UtcNow;
+                    _context.UserResponse.Update(existingResponse);
+                }
+                else
+                {
+                    // Add a new response if no existing response is found
+                    userResponse.AttemptDate = DateTime.UtcNow;
+                    _context.UserResponse.Add(userResponse);
                 }
 
-                userResponse.AttemptDate = DateTime.UtcNow;
-                _context.UserResponse.Add(userResponse);
                 await _context.SaveChangesAsync();
 
+                // Update user progress and analytics
                 await UpdateUserProgress(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);
                 await UpdateLanguageExperience(userResponse.UserID);
                 await UpdateAnalytics(userResponse.UserID, exercise.LessonID, userResponse.IsCorrect, TimeSpent);

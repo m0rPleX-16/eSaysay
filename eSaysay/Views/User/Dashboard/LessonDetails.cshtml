@@ -94,14 +94,18 @@
 </style>
 
 <script>
-    function filterExercises() {
+        function filterExercises() {
         var filter = document.getElementById("exerciseFilter").value;
         var exercises = document.querySelectorAll(".exercise-card");
 
         exercises.forEach(function (exercise) {
-            var status = exercise.getAttribute("data-status");
+            var status = exercise.classList.contains("completed-exercise")
+                ? "completed"
+                : exercise.classList.contains("started-exercise")
+                ? "in-progress"
+                : "not-started";
 
-            if (filter === "all" || status.includes(filter)) {
+            if (filter === "all" || status === filter) {
                 exercise.style.display = "block";
             } else {
                 exercise.style.display = "none";
