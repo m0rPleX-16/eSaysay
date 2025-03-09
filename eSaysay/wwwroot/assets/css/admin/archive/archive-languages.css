@@ -101,14 +101,16 @@
     margin-right: 10px;
 }
 
-    .btn-archive-languages-restore:hover {
+    .btn-archive-languages-restore:hover, .btn-archive-languages-restore span:hover {
         background-color: #FFE4A3;
+        color: #FFFAF3;
     }
 
     .btn-archive-languages-restore span {
         display: flex;
         align-content: center;
         justify-content: center;
+        color: #FFFAF3;
     }
 
 .btn-archive-languages-delete {
@@ -118,14 +120,16 @@
     font-weight: 700;
 }
 
-    .btn-archive-languages-delete:hover {
+    .btn-archive-languages-delete:hover, .btn-archive-languages-delete span:hover {
         background-color: #FFA3A3;
+        color: #FFFAF3;
     }
 
     .btn-archive-languages-delete span {
         display: flex;
         align-content: center;
         justify-content: center;
+        color: #FFFAF3;
     }
 
 

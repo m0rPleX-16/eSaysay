@@ -95,15 +95,16 @@
     font-weight: 700;
     margin-right: 10px;
 }
-
-    .btn-archive-students-restore:hover {
+    .btn-archive-students-restore:hover, .btn-archive-students-restore span:hover {
         background-color: #FFE4A3;
+        color: #FFFAF3;
     }
 
     .btn-archive-students-restore span {
         display: flex;
         align-content: center;
         justify-content: center;
+        color: #FFFAF3;
     }
 
 .btn-archive-students-delete {
@@ -113,12 +114,14 @@
     font-weight: 700;
 }
 
-.btn-archive-students-delete:hover {
-    background-color: #FFA3A3;
-}
+    .btn-archive-students-delete:hover, .btn-archive-students-delete span:hover {
+        background-color: #FFA3A3;
+        color: #FFFAF3;
+    }
 
-.btn-archive-students-delete span {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-}
+    .btn-archive-students-delete span {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        color: #FFFAF3;
+    }

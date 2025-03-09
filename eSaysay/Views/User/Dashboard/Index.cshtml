@@ -19,7 +19,7 @@
             </div>
 
             <div class="notifications-container">
-                <h4 class="notifications-title">🔔 Notifications</h4>
+                <h4 class="notifications-title">Notifications</h4>
                 @if (Model.Notifications != null && Model.Notifications.Count > 0)
                 {
                     <ul class="notifications-list">
@@ -33,9 +33,9 @@
                         }
                     </ul>
                 }
-                else
+                else 
                 {
-                    <p class="text-muted">No new notifications.</p>
+                    <p class="text-muted none-notif">No new notifications.</p>
                 }
             </div>
         </div>
