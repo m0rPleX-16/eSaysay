@@ -52,13 +52,15 @@
 </div>
 
 <!-- Success Modal -->
+<div class="success-container">
 <div id="successModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+            <span class="close" style="display: none;">&times;</span>
         <h2>🎉 Success!</h2>
         <p>Your response has been saved successfully.</p>
-        <button id="goToDashboard" class="btn btn-primary">Go to Dashboard</button>
+            <button id="goToLessonDetails" class="btn btn-primary">Go to Dashboard</button>
     </div>
+</div>
 </div>
 
 
@@ -130,7 +132,7 @@
     // Success Modal Functions
     const successModal = document.getElementById("successModal");
     const closeModal = document.querySelector(".close");
-    const goToDashboard = document.getElementById("goToDashboard");
+    const goToLessonDetails = document.getElementById("goToLessonDetails");
 
     function showSuccessModal() {
         successModal.style.display = "block";
@@ -145,8 +147,10 @@
         if (event.target === successModal) hideSuccessModal();
     };
 
-    goToDashboard.onclick = function () {
-        window.location.href = "/Dashboard/Index";
+
+    document.getElementById("goToLessonDetails").onclick = function () {
+        const lessonId = "@Model.LessonID";
+        window.location.href = `/Dashboard/LessonDetails/${lessonId}`;
     };
 
     function skip() {

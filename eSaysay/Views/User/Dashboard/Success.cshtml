@@ -2,26 +2,20 @@
     ViewData["Title"] = "Success";
 }
 
-<div style="text-align: center; margin-top: 50px;">
-    <h2>🎉 Success!</h2>
-    <p>Your response has been saved successfully.</p>
 
-    <div style="margin-top: 20px;">
-        <a asp-controller="Dashboard" asp-action="Index" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+    <div class="success-message">
+        <h2>🎉 Success!</h2>
+        <p>Your response has been saved successfully.</p>
+    </div>
+    <div class="success-actions">
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">
             Go to Dashboard
         </a>
     </div>
-</div>
+
 
 <style>
-    .success-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        text-align: center;
-    }
+  
 
     .success-message {
         margin-bottom: 2rem;
