@@ -59,6 +59,7 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.UseExceptionHandler("/Error/500");  
 
