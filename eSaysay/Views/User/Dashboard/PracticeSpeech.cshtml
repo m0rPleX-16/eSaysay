@@ -7,30 +7,40 @@
     @await Html.PartialAsync("_Sidebar")
 
     <main class="main-content user-dashboard">
+
         @await Html.PartialAsync("_NavbarAuthenticated")
 
-        <div class="container mt-4">
-            <h2 class="text-center">Practice Your Speech</h2>
+        <div class="practice-container mt-4">
 
-            <div class="card p-3 shadow">
-                <p><strong>Instruction:</strong> Click the microphone and read the given text aloud.</p>
+            <div class="speech-prac-topbar mt-3">
+                <h2>  Practice <span class="speech-span-dashboard">your speech</span></h2>
+            </div>
+
+            <div class="card speech-card">
+
+                <p class="inst-speech"><strong>Instruction:</strong> Click the microphone and read the given text aloud.</p>
                 <h4 id="practice-text" class="text-primary"></h4>
 
-                <div class="text-center mt-3">
-                    <button id="start-recording" class="btn btn-success">🎤 Start Recording</button>
-                    <button id="stop-recording" class="btn btn-danger" disabled>🛑 Stop Recording</button>
+                <div class="text-center mt-3 mb-2">
+                    <button id="start-recording" class="btn btn-start-record">Start Recording</button>
+                    <button id="stop-recording" class="btn btn-end-record" disabled>Stop Recording</button>
                     <p id="recording-status" class="text-danger mt-2" style="display:none;">🎙️ Recording <span id="timer">0</span>s...</p>
                 </div>
-
-                <audio id="audio-playback" controls class="mt-3" style="display:none;"></audio>
-
-                <button id="submit-speech" class="btn btn-primary mt-3" disabled>✅ Submit for Assessment</button>
+                <div class="speech-playback d-flex justify-content-center">
+                    <audio id="audio-playback" controls class="mt-3" style="display:none;"></audio>
+                   
+                </div>
+                <div class="submit-speech-content mt-2 d-flex justify-content-center">
+                     <button id="submit-speech" class="btn mt-3" disabled>Submit for Assessment</button>
+                </div>
+           
+          
 
                 <div id="assessment-result" class="mt-4"></div>
             </div>
 
             <!-- Past Recordings -->
-            <div class="card p-3 shadow mt-4">
+            <div class="card  speech-card mt-3">
                 <h4>Past Recordings</h4>
                 <ul id="past-recordings" class="list-group">
                     <li class="list-group-item text-muted">Loading recordings...</li>
@@ -51,9 +61,16 @@
         const practiceTexts = [
             "Hello, welcome to eSaysay! Practice speaking clearly and confidently.",
             "The quick brown fox jumps over the lazy dog.",
-            "Artificial intelligence is transforming language learning."
+            "Artificial intelligence is transforming language learning.",
+            "I must learn to be content with being happier than I deserve.",
+            "Live, laugh, love.",
+            "You didn't go through all that for nothing.",
+            "Let me live, love, and say it well in good sentences.",
+            "Expectations is the root of all heartache."
         ];
-        document.getElementById("practice-text").textContent = practiceTexts[Math.floor(Math.random() * practiceTexts.length)];
+        document.getElementById("practice-text").textContent = `"${practiceTexts[Math.floor(Math.random() * practiceTexts.length)]}"`;
+
+
 
         async function loadPastRecordings() {
             let response = await fetch("/api/speechassessment/past-recordings");

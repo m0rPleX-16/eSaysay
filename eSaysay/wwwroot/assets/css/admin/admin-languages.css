@@ -1,9 +1,14 @@
 ﻿
 .admin-languages {
-    margin-left: 200px;
-    width: calc(100% - 200px);
     min-height: 92vh;
+
 }
+
+.admin-languages-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+}
+
 
 .admin-languages-topbar { /* header top area*/
     background: #FEF6ED;
@@ -73,6 +78,7 @@
 .table-languages {
     margin: 16px;
     padding: 0 100px 0 100px;
+    overflow: auto;
 }
 
 .table-languages-content {
@@ -80,7 +86,6 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
 }
 
 
@@ -180,3 +185,36 @@
             background-color: #E0D3C5; 
             color: #274052;
         }
+
+
+@media (max-width: 768px) {
+
+    .admin-languages-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .language-searchbar {
+        padding: 10px;
+    }
+
+    .btn-languages-view-archive {
+        width: 120px;
+        height: 90px;
+    }
+    .btn-language-add{
+        width: 170px;
+    }
+
+    .table-languages {
+        margin: 16px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .admin-languages-content {
+        margin-left: 0;
+    }
+}

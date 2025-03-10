@@ -1,8 +1,8 @@
 ﻿
-.admin-exercise {
+.admin-exercises-content {
     margin-left: 200px;
+    transition: margin-left 0.3s ease;
 }
-
 .admin-exercises-topbar { /* header top area*/
     background: #FEF6ED;
     padding: 1rem 1rem;
@@ -74,6 +74,7 @@
 .table-exercises {
     margin: 16px;
     padding: 0 100px 0 100px;
+    overflow: auto;
 }
 
 .table-exercises-content {
@@ -81,7 +82,6 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
 }
 
     .table-exercises-content thead tr:first-child th:first-child {
@@ -182,3 +182,35 @@
             background-color: #E0D3C5;
             color: #274052;
         }
+
+@media (max-width: 768px) {
+
+    .admin-exercises-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .exercises-searchbar {
+        padding: 10px;
+    }
+
+    .btn-exercises-view-archive {
+        width: 120px;
+        height: 90px;
+    }
+    .exercises-main-btn{
+
+    }
+
+    .table-exercises {
+        margin: 16px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .admin-exercises-content {
+        margin-left: 0;
+    }
+}

@@ -6,47 +6,50 @@
 <main class="admin-analytics">
     @await Html.PartialAsync("_AdminSidebar")
 
-   <div class="admin-analytics-topbar">
-        <h2>The <span class="analytics-span-dashboard">analytics</span></h2>
-    </div>
+    <div class="admin-analytics-content">
 
-    <div class="analytics-content">
-        <!-- KPI Section -->
-        <section class="analytics-stats">
-            <div class="analytics-box">
-                <h3 class ="span-analytics-box">@Model.TotalUsers</h3>
-                <span >Total Users</span>
-            </div>
-            <div class="analytics-box">
-                <h3 class="span-analytics-box">@(Model.AvgScore.HasValue ? Model.AvgScore.Value.ToString("0.00") + "%" : "0.00%")</h3>
-                <span>Average Score</span>
-            </div>
-            <div class="analytics-box">
-                <h3 class="span-analytics-box">@(Model.TotalTimeSpent.HasValue ? Model.TotalTimeSpent.Value + " mins" : "0 mins")</h3>
-                <span>Total Time Spent</span>
-            </div>
-            <div class="analytics-box">
-                <h3 class="span-analytics-box">@(Model.TotalLessonsCompleted > 0 ? Model.TotalLessonsCompleted.ToString() : "0")</h3>
-                <span>Lessons Completed</span>
-            </div>
-        </section>
+        <div class="admin-analytics-topbar">
+            <h2>The <span class="analytics-span-dashboard">analytics</span></h2>
+        </div>
 
-        <!-- Graph Section -->
-        <section class="analytics-graphs mt-5">
-            <span class="analytics-graph-span">User performance overview</span>
-            <div class="canvas-analytics mt-4">
+        <div class="analytics-content">
+            <!-- KPI Section -->
+            <section class="analytics-stats">
+                <div class="analytics-box">
+                    <h3 class="span-analytics-box">@Model.TotalUsers</h3>
+                    <span>Total Users</span>
+                </div>
+                <div class="analytics-box">
+                    <h3 class="span-analytics-box">@(Model.AvgScore.HasValue ? Model.AvgScore.Value.ToString("0.00") + "%" : "0.00%")</h3>
+                    <span>Average Score</span>
+                </div>
+                <div class="analytics-box">
+                    <h3 class="span-analytics-box">@(Model.TotalTimeSpent.HasValue ? Model.TotalTimeSpent.Value + " mins" : "0 mins")</h3>
+                    <span>Total Time Spent</span>
+                </div>
+                <div class="analytics-box">
+                    <h3 class="span-analytics-box">@(Model.TotalLessonsCompleted > 0 ? Model.TotalLessonsCompleted.ToString() : "0")</h3>
+                    <span>Lessons Completed</span>
+                </div>
+            </section>
 
-                <canvas id="userAnalyticsChart"></canvas>
-            </div>
-        </section>
+            <!-- Graph Section -->
+            <section class="analytics-graphs mt-5">
+                <span class="analytics-graph-span">User performance overview</span>
+                <div class="canvas-analytics mt-4">
 
-        <section class="analytics-graphs mt-5">
-            <span class="analytics-graph-span">Lessons completed over time</span>
-            <div class="canvas-analytics mt-4">
-                <canvas id="lessonsCompletedChart"></canvas>
-            </div>
-            
-        </section>
+                    <canvas id="userAnalyticsChart"></canvas>
+                </div>
+            </section>
+
+            <section class="analytics-graphs mt-5">
+                <span class="analytics-graph-span">Lessons completed over time</span>
+                <div class="canvas-analytics mt-4">
+                    <canvas id="lessonsCompletedChart"></canvas>
+                </div>
+
+            </section>
+        </div>
     </div>
 </main>
 

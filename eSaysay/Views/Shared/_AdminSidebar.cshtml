@@ -1,7 +1,11 @@
 ﻿<!-- Sidebar -->
 <aside class="admin-dashboard-sidebar" id="adminSidebar">
     <header class="admin-sidebar-header">
+        
         <img src="/assets/img/eSaysay-logo.png" alt="eSaysay Logo">
+        <button id="adminSidebarToggle" class="admin-sidebar-toggle-btn">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
     </header>
     <nav class="admin-sidebar-nav">
         <ul class="admin-dashboard-nav-list">
@@ -74,3 +78,16 @@
     </nav>
    
 </aside>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('adminSidebar');
+    const sidebarToggle = document.getElementById('adminSidebarToggle');
+
+    sidebarToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('closed');
+    });
+});
+
+
+</script>

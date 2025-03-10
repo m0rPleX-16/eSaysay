@@ -8,7 +8,7 @@
     transform: translate(-50%, -50%);
     width: 80%;
     max-width: 400px;
-    max-height: 400px;
+    max-height: 250px;
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -31,16 +31,13 @@
 }
 
 
-    .success-container .btn-success-comp {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-    }
 
-        .success-container .btn-success-comp:hover {
-            background-color: #45a049;
-        }
+.btn-return-exercise {
+    font-weight: 500;
+    background-color: #DFB757;
+    color: #5D4940;
+}
+    .btn-return-exercise:hover {
+        background-color: #FFE4A3;
+        color: #5D4940;
+    }

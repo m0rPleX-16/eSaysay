@@ -1,0 +1,81 @@
+﻿.practice-container {
+    color: #274052;
+}
+
+.speech-prac-topbar { /* header top area*/
+    background: #FEF6ED;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #274052;
+}
+
+    .speech-prac-topbar h2 {
+        color: #274052;
+    }
+
+    .speech-span-dashboard {
+        font-family: 'Arapey', serif;
+        font-weight: 700;
+        font-style: italic;
+        font-size: 2.4rem;
+        color: #274052;
+    }
+
+.speech-card {
+    padding: 50px;
+    background-color: #FFFAF3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    border: none;
+}
+
+.inst-speech {
+    color: #274052;
+    opacity:80%;
+}
+
+#practice-text {
+    color: #274052 !important; /* Example color - adjust as needed */
+    font-weight: 600;
+    font-size: 2rem;
+}
+
+.btn-start-record {
+    background-color: #D5AB46;
+    color: #274052;
+    font-weight: 500;
+}
+
+    .btn-start-record:hover {
+        background-color: #FFE4A3;
+    }
+
+.btn-end-record {
+    background-color: #DF5757;
+    color: #274052;
+    font-weight: 500;
+}
+
+    .btn-end-record:hover {
+        background-color: #E58080;
+        
+    }
+
+#audio-playback::-webkit-media-controls-panel {
+    background-color: #F9E7BD; /* Changes control bar background (for Chrome, Edge, etc.) */
+    color: #ffffff; /* Changes text/icons color */
+}
+
+#submit-speech {
+    width: 300px;
+    background-color: #367C1E;
+    color: #fff;
+    border-radius: 26px;
+}
+    #submit-speech:hover {
+        background-color: #5A9A3D;
+    }
+
+

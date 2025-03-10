@@ -15,9 +15,6 @@
                     <li class="nav-item user-role">
                         <p class="user-role nav-auth-role">@(User.IsInRole("Student") ? "Student" : "Admin")</p>
                     </li>
-                    <li class="nav-item user-profile">
-                        <img src="~/assets/img/default-profile.png" alt="Profile Picture" class="profile-picture rounded-circle nav-auth-pfp" />
-                    </li>
                   
                     <li class="nav-item">
                         <a class="nav-link nav-auth-username" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@User.Identity?.Name</a>

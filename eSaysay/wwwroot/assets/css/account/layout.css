@@ -70,7 +70,19 @@
     padding-left: 40px;
 }
 
-@media (max-width: 768px) {
+.btn-register-confirm-acc {
+    background-color: #DFB757;
+    color: #274052;
+    font-weight: 500;
+    margin-top:10px;
+}
+
+    .btn-register-confirm-acc:hover {
+        background-color: #F3CF79;
+        color: #274052;
+    }
+
+    @media (max-width: 768px) {
         .all-manage {
             margin-left: 0;
         }

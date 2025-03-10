@@ -49,11 +49,19 @@ body {
         background-color: #45a049;
     }
 
+
 .notifications-container .none-notif {
     color: #274052;
     font-weight: 600;
     font-style: italic;
     opacity: 60%;
+    
+}
+.welcome-mssg h2{
+    color: #274052;
+}
+.notifications-title{
+    color: #274052;
 }
 /*-----------LESSONS--------------*/
 .lesson-section {
@@ -62,7 +70,7 @@ body {
     background: none;
     padding: 0;
     border: none;
-    border-radius: 16px;
+    border-radius: 56px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -74,14 +82,19 @@ body {
     align-items: center;
     overflow: hidden;
     padding: 10px;
-    border-radius: 16px;
+    border-radius: 56px;
 }
 
 .lessons-title {
     width: 100%; 
     text-align: left; 
     margin-bottom: 10px; 
+    color: #274052;
 }
+
+    .lessons-title .lesson-title {
+        color: #274052;
+    }
 
 .lesson-cards {
     display: flex;
@@ -94,14 +107,25 @@ body {
 .lesson-card {
     flex: 0 0 250px;
     padding: 35px;
+    color: #274052;
     background: #FEF6ED;
-    border-radius: 8px;
+    border: 0.5px solid #ECE4DA;
+    border-radius: 16px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: auto;
 }
+
+    .lesson-card h3 {
+        color: #274052;
+    }
+
+    .lesson-card p {
+        color: #274052;
+        opacity:80%;
+    }
 
 .btn-start-lessons {
     background-color: #DFB757;
@@ -116,6 +140,11 @@ body {
     .btn-start-lessons:hover {
         background-color: #FFDE8D;
         color: #274052;
+    }
+
+    .btn-start-lessons:disabled {
+        background-color: #DFB757;
+        opacity:40%;
     }
 .carousel-control {
     background: none;

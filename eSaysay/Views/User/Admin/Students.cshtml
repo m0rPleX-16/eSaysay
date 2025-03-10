@@ -9,68 +9,70 @@
     @await Html.PartialAsync("_AdminSidebar")
 
     
+    <div class="admin-students-content">
 
-    <div class="admin-students-topbar">
-        <h2>Registered <span class="students-span-dashboard">students</span></h2>
-    </div>
+        <div class="admin-students-topbar">
+            <h2>Registered <span class="students-span-dashboard">students</span></h2>
+        </div>
 
-    <!-- Search Bar -->
-    <div class="students-searchbar">
-        <input type="text" id="studentSearchInput" class="form-control students-search-form" placeholder="Search by email, name, gender...">
-    </div>
-    <div class="students-view-archive">
-        <a href="@Url.Action("ArchivedStudents", "Admin")" class="btn btn-students-view-archive">
-            <i class="fa fa-archive" aria-hidden="true"></i> View Archived Students
-        </a>
-    </div>
-   
+        <!-- Search Bar -->
+        <div class="students-searchbar">
+            <input type="text" maxlength="254" id="studentSearchInput" class="form-control students-search-form" placeholder="Search by email, name, gender...">
+        </div>
+        <div class="students-view-archive">
+            <a href="@Url.Action("ArchivedStudents", "Admin")" class="btn btn-students-view-archive">
+                <i class="fa fa-archive" aria-hidden="true"></i> View Archived Students
+            </a>
+        </div>
 
-    <!-- Students Table Container (AJAX Loaded) -->
-    <div id="studentsTableContainer">
-        @await Html.PartialAsync("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", Model)
-        
-    </div>
 
-    <div class="students-e">
-        @section Scripts {
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
-                $(document).ready(function () {
-                    function loadStudents(page = 1) {
-                        const searchQuery = $('#studentSearchInput').val();
-                        $.ajax({
-                            url: '/Admin/FilterStudents',
-                            type: 'GET',
-                            data: { search: searchQuery, page: page },
-                            success: function (response) {
-                                console.log("AJAX Response:", response); // ✅ Debugging Response
+        <!-- Students Table Container (AJAX Loaded) -->
+        <div id="studentsTableContainer">
+            @await Html.PartialAsync("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", Model)
 
-                                $('#studentsTableContainer').html(response);
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error fetching filtered students:', error);
-                            }
+        </div>
+
+        <div class="students-e">
+            @section Scripts {
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        function loadStudents(page = 1) {
+                            const searchQuery = $('#studentSearchInput').val();
+                            $.ajax({
+                                url: '/Admin/FilterStudents',
+                                type: 'GET',
+                                data: { search: searchQuery, page: page },
+                                success: function (response) {
+                                    console.log("AJAX Response:", response); // ✅ Debugging Response
+
+                                    $('#studentsTableContainer').html(response);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error fetching filtered students:', error);
+                                }
+                            });
+                        }
+
+                        // Search students with debounce
+                        let timeoutId;
+                        $('#studentSearchInput').on('input', function () {
+                            clearTimeout(timeoutId);
+                            timeoutId = setTimeout(() => {
+                                loadStudents();
+                            }, 300);
                         });
-                    }
 
-                    // Search students with debounce
-                    let timeoutId;
-                    $('#studentSearchInput').on('input', function () {
-                        clearTimeout(timeoutId);
-                        timeoutId = setTimeout(() => {
-                            loadStudents();
-                        }, 300);
+                        // Handle pagination clicks dynamically
+                        $(document).on('click', '.pagination-link', function (e) {
+                            e.preventDefault();
+                            const page = $(this).data('page');
+                            loadStudents(page);
+                        });
                     });
-
-                    // Handle pagination clicks dynamically
-                    $(document).on('click', '.pagination-link', function (e) {
-                        e.preventDefault();
-                        const page = $(this).data('page');
-                        loadStudents(page);
-                    });
-                });
-            </script>
-        }
+                </script>
+            }
+        </div>
     </div>
     
 </main>

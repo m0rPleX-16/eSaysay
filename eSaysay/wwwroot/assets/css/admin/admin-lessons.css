@@ -1,8 +1,11 @@
 ﻿
 .admin-lessons {
-    margin-left: 200px;
-    width: calc(100% - 200px);
     min-height: 92vh;
+}
+
+.admin-lessons-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
 }
 
 .admin-lessons-topbar { /* header top area*/
@@ -172,3 +175,36 @@
             background-color: #E0D3C5;
             color: #274052;
         }
+
+@media (max-width: 768px) {
+
+    .admin-lessons-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .lessons-searchbar {
+        padding: 10px !important;
+    }
+
+    .btn-lessons-view-archive {
+        width: 120px;
+        height: 90px;
+    }
+
+    .btn-lessons-add {
+        width: 170px;
+    }
+
+    .table-lessons {
+        margin: 16px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .admin-lessons-content {
+        margin-left: 0;
+    }
+}
