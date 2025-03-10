@@ -8,6 +8,8 @@
         public double AverageScore { get; set; }
         public int TotalTimeSpent { get; set; }
         public List<RecentActivityModel> RecentActivity { get; set; }
+
+        public string FormattedAverageScore => AverageScore.ToString("0.00");
     }
 
     public class RecentActivityModel

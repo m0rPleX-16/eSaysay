@@ -30,5 +30,9 @@ namespace eSaysay.Models.Entities
         [Required]
         [Range(0, 1440)]
         public int TimeSpent { get; set; }
+
+        // ✅ New computed property for formatting AverageScore
+        [NotMapped] // Ensures this is not part of the database
+        public string FormattedAverageScore => AverageScore.ToString("0.00") + "%";
     }
 }

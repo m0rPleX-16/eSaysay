@@ -10,7 +10,7 @@
     <h2 class="lesson-title">@lesson.Title</h2>
     <p class="lesson-description">@lesson.Description</p>
 
-    @if (Model == null || !Model.Any())
+    @if (Model == null || !Model.Any(e => !e.IsArchived))
     {
         <p class="text-muted">No exercises available for this lesson.</p>
     }
@@ -31,7 +31,7 @@
             <button class="carousel-control prev" onclick="moveSlide(-1)">&#10094;</button>
             <div class="carousel">
                 <div class="exercise-list">
-                    @foreach (var exercise in Model)
+                    @foreach (var exercise in Model.Where(e => !e.IsArchived)) // ✅ Exclude archived exercises
                     {
                         var isCompleted = ViewBag.CompletedExercises != null && ViewBag.CompletedExercises.Contains(exercise.ExerciseID);
                         var isStarted = ViewBag.StartedExercises != null && ViewBag.StartedExercises.Contains(exercise.ExerciseID);
@@ -98,7 +98,7 @@
 </style>
 
 <script>
-
+  
         function filterExercises() {
             var filter = document.getElementById("exerciseFilter").value;
             var exercises = document.querySelectorAll(".exercise-card");
@@ -110,11 +110,7 @@
                     ? "in-progress"
                     : "not-started";
 
-                if (filter === "all" || status === filter) {
-                    exercise.style.display = "block";
-                } else {
-                    exercise.style.display = "none";
-                }
+                exercise.style.display = (filter === "all" || status === filter) ? "block" : "none";
             });
         }
     
@@ -152,6 +148,9 @@ function moveSlide(direction) {
                 currentIndex = 0;
             }, 50);
         }, 500);
+
+  
+
     }
 }
 

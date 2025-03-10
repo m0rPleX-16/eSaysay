@@ -20,7 +20,7 @@
            
                 <div class="analytics-summary">
                     <div class="metric">
-                        <h3>@(Model.Analytics?.AverageScore != null ? $"{Model.Analytics.AverageScore}%" : "N/A")</h3>
+                        <h3>@(Model.Analytics?.FormattedAverageScore ?? "N/A")</h3>
                         <p>Average Score</p>
                     </div>
                     <div class="metric">

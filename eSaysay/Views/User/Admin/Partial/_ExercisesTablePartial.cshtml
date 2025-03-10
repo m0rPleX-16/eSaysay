@@ -1,213 +1,200 @@
-﻿@using eSaysay.Models.Entities
+﻿@using eSaysay.Models.Entities;
 @model List<InteractiveExercise>
 
-<div class="table-exercises">
+<div class="table-exercises" id="exercises-content">
     <table class="table table-exercises-content">
         <thead>
             <tr>
-                <th>Content (English)</th>
-                <th>Content (Korean)</th>
-                <th>Lesson</th>
-                <th>Type</th>
-                <th>Correct Answer</th>
-                <th>Answer Choices</th>
-                <th>Hint</th>
-                <th>Difficulty</th>
-                <th>Actions</th>
+                <th class="col-2">Content</th>
+                <th class="col-2">Translated Content</th>
+                <th class="col-1">Lesson</th>
+                <th class="col-1">Type</th>
+                <th class="col-1">Correct Answer</th>
+                <th class="col-1">Answer Choices</th>
+                <th class="col-1">Hint</th>
+                <th class="col-1">Difficulty</th>
+                <th class="col-1">Actions</th>
             </tr>
         </thead>
         <tbody>
-            @if (Model != null && Model.Any())
+            @foreach (var exercise in Model)
             {
-                @foreach (var exercise in Model.Where(e => !e.IsArchived))
-                {
-                    <tr>
-                        <td>@exercise.Content</td>
-                        <td>@exercise.ContentTranslate</td>
-                        <td>@exercise.Lesson.Title</td>
-                        <td>@exercise.ExerciseType</td>
-                        <td>@exercise.CorrectAnswer</td>
-                        <td>@exercise.AnswerChoices</td>
-                        <td>@exercise.Hint</td>
-                        <td>@exercise.DifficultyLevel</td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                <button class="btn btn-exercises-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
-                                    <span class="material-symbols-rounded">edit</span>
-                                </button>
-                                <button class="btn btn-exercises-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveExerciseModal-@exercise.ExerciseID">
-                                    <span class="material-symbols-rounded">archive</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>@exercise.Content</td>
+                    <td>@exercise.ContentTranslate</td>
+                    <td>@exercise.Lesson.Title</td>
+                    <td>@exercise.ExerciseType</td>
+                    <td>@exercise.CorrectAnswer</td>
+                    <td>@exercise.AnswerChoices</td>
+                    <td>@exercise.Hint</td>
+                    <td>@exercise.DifficultyLevel</td>
+                    <td class="d-flex justify-content-between">
+                        <button class="btn btn-exercise-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
+                            <span class="material-symbols-rounded">edit</span>
+                        </button>
+                        <button class="btn btn-exercise-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveExerciseModal-@exercise.ExerciseID">
+                            <span class="material-symbols-rounded">archive</span>
+                        </button>
+                    </td>
+                </tr>
 
-                    <!-- Edit Exercise Modal -->
-                    <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Edit Exercise</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- Edit Exercise Modal -->
+                <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-labelledby="editExerciseModalLabel-@exercise.ExerciseID" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editExerciseModalLabel-@exercise.ExerciseID">Edit Exercise</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="post" action="/Admin/EditExercise">
+                                <div class="modal-body">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                                    <div class="mb-3">
+                                        <label class="form-label">Content</label>
+                                        <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Exercise Type</label>
+                                        <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
+                                            <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
+                                            <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
+                                            <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Correct Answer</label>
+                                        <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
+                                    </div>
+                                    <div class="mb-3" id="answerChoicesSection">
+                                        <label class="form-label">Answer Choices</label>
+                                        <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Hint</label>
+                                        <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Difficulty Level</label>
+                                        <select class="form-control" name="DifficultyLevel" required>
+                                            <option value="Easy" selected="@(exercise.DifficultyLevel == "Easy")">Easy</option>
+                                            <option value="Medium" selected="@(exercise.DifficultyLevel == "Medium")">Medium</option>
+                                            <option value="Hard" selected="@(exercise.DifficultyLevel == "Hard")">Hard</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Lesson</label>
+                                        <select class="form-control" name="LessonID" required>
+                                            @foreach (var lesson in ViewBag.Lessons)
+                                            {
+                                                <option value="@lesson.LessonID" selected="@(lesson.LessonID == exercise.LessonID)">@lesson.Title</option>
+                                            }
+                                        </select>
+                                    </div>
                                 </div>
-                                <form method="post" action="/Admin/EditExercise">
-                                    <div class="modal-body">
-                                    
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                            <div class="mb-3">
-                                                <label class="form-label">Content</label>
-                                                <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Exercise Type</label>
-                                                <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
-                                                    <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
-                                                    <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
-                                                    <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Correct Answer</label>
-                                                <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
-                                            </div>
-                                            <div class="mb-3" id="answerChoicesSection">
-                                                <label class="form-label">Answer Choices</label>
-                                                <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Hint</label>
-                                                <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Difficulty Level</label>
-                                                <select class="form-control" name="DifficultyLevel" required>
-                                                    <option value="Easy" selected="@(exercise.DifficultyLevel == "Easy")">Easy</option>
-                                                    <option value="Medium" selected="@(exercise.DifficultyLevel == "Medium")">Medium</option>
-                                                    <option value="Hard" selected="@(exercise.DifficultyLevel == "Hard")">Hard</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Lesson</label>
-                                                <select class="form-control" name="LessonID" required>
-                                                    @foreach (var lesson in ViewBag.Lessons)
-                                                    {
-                                                        <option value="@lesson.LessonID" selected="@(lesson.LessonID == exercise.LessonID)">@lesson.Title</option>
-                                                    }
-                                                </select>
-                                            </div>
-                                            @* <button type="submit" class="btn btn-primary">Save changes</button> *@
-                                    
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
-                                    </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Exercise Modal -->
+                <div class="modal fade" id="archiveExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-labelledby="archiveExerciseModalLabel-@exercise.ExerciseID" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Archive Exercise</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to archive the exercise <strong>@exercise.Content</strong>?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <form method="post" action="/Admin/ArchiveExercise">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Archive</button>
                                 </form>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Archive Exercises Modal -->
-                    <div class="modal fade" id="archiveExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-labelledby="archiveExerciseModalLabel-@exercise.ExerciseID" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Archive Exercise</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to archive the exercise <strong>@exercise.Content</strong>?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <form method="post" action="/Admin/ArchiveExercise">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger">Archive</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="9" class="text-center">No exercises found.</td>
-                </tr>
+                </div>
             }
         </tbody>
     </table>
+
+    <!-- Pagination Controls -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="exercises-pagination">
+            <ul class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+
+                @{
+                    int totalPages = ViewBag.TotalPages;
+                    int currentPage = ViewBag.CurrentPage;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, currentPage + 2);
+
+                    // Ensure there are always exactly 5 links displayed
+                    if (endPage - startPage + 1 < 5)
+                    {
+                        if (startPage == 1)
+                        {
+                            endPage = Math.Min(5, totalPages);
+                        }
+                        else if (endPage == totalPages)
+                        {
+                            startPage = Math.Max(1, totalPages - 4);
+                        }
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="1">1</a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+
+                @if (endPage < totalPages)
+                {
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
 </div>
-
-@if (ViewBag.TotalPages > 1)
-{
-    <nav class="exercises-pagination">
-        <ul class="pagination">
-            @if (ViewBag.CurrentPage > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
-                </li>
-            }
-
-            @{
-                int totalPages = ViewBag.TotalPages;
-                int currentPage = ViewBag.CurrentPage;
-                int startPage = Math.Max(1, currentPage - 2);
-                int endPage = Math.Min(totalPages, currentPage + 2);
-
-                // Ensure exactly 5 links are shown
-                if (endPage - startPage + 1 < 5)
-                {
-                    if (startPage == 1)
-                    {
-                        endPage = Math.Min(5, totalPages);
-                    }
-                    else if (endPage == totalPages)
-                    {
-                        startPage = Math.Max(1, totalPages - 4);
-                    }
-                }
-            }
-
-            @if (startPage > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link pagination-link" href="#" data-page="1">1</a>
-                </li>
-                @if (startPage > 2)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
-            }
-
-            @for (int i = startPage; i <= endPage; i++)
-            {
-                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                    <a class="page-link pagination-link" href="#" data-page="@i">@i</a>
-                </li>
-            }
-
-            @if (endPage < totalPages)
-            {
-                @if (endPage < totalPages - 1)
-                {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                }
-                <li class="page-item">
-                    <a class="page-link pagination-link" href="#" data-page="@totalPages">@totalPages</a>
-                </li>
-            }
-
-            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-            {
-                <li class="page-item">
-                    <a class="page-link pagination-link" href="#" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
-                </li>
-            }
-        </ul>
-    </nav>
-}

@@ -25,8 +25,10 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
         }
 
         [BindProperty]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
+        [BindProperty]
+        public bool ArchiveInsteadOfDelete { get; set; }
         public bool RequirePassword { get; set; }
 
         public async Task<IActionResult> OnGet()
@@ -52,26 +54,47 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
             RequirePassword = await _userManager.HasPasswordAsync(user);
             if (RequirePassword)
             {
-                if (string.IsNullOrEmpty(Password)
-                    || !await _userManager.CheckPasswordAsync(user, Password))
+                if (string.IsNullOrEmpty(Password) || !await _userManager.CheckPasswordAsync(user, Password))
                 {
                     ModelState.AddModelError(string.Empty, "Incorrect password.");
                     return Page();
                 }
             }
 
-            var result = await _userManager.DeleteAsync(user);
-            var userId = await _userManager.GetUserIdAsync(user);
-            if (!result.Succeeded)
+            if (ArchiveInsteadOfDelete)
             {
-                throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
+                // Archive the user instead of deleting
+                user.IsArchived = true;
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    _logger.LogError("Error archiving user with ID '{UserId}'.", user.Id);
+                    ModelState.AddModelError(string.Empty, "Failed to archive the account.");
+                    return Page();
+                }
+
+                _logger.LogInformation("User with ID '{UserId}' archived their account.", user.Id);
+            }
+            else
+            {
+                var userId = await _userManager.GetUserIdAsync(user);
+                var result = await _userManager.DeleteAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    _logger.LogError("Error deleting user with ID '{UserId}'.", userId);
+                    ModelState.AddModelError(string.Empty, "Failed to delete the account.");
+                    return Page();
+                }
+
+                _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
             }
 
+            // **Ensure the user is logged out before redirecting**
             await _signInManager.SignOutAsync();
 
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
-
-            return Redirect("~/");
+            // **Redirect to the Home Index**
+            return RedirectToAction("Index", "Home");
         }
     }
 }

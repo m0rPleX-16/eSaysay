@@ -11,6 +11,9 @@
     <p>
         <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
     </p>
+    <p>
+        Alternatively, you can choose to archive your account. An archived account can be reactivated by an administrator.
+    </p>
 </div>
 
 <div>
@@ -24,7 +27,15 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
         }
-        <button class="btn btn-danger" type="submit">Delete data and close my account</button>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="ArchiveInsteadOfDelete" class="form-check-input" />
+                <label asp-for="ArchiveInsteadOfDelete" class="form-check-label">
+                    Archive my account instead of deleting it
+                </label>
+            </div>
+        </div>
+        <button class="btn btn-danger" type="submit">Confirm</button>
     </form>
 </div>
 

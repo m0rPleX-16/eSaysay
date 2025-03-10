@@ -4,19 +4,24 @@ using eSaysay.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// SMTP Email Sender
 var smtpSettings = builder.Configuration.GetSection("SmtpSettings");
 builder.Services.AddSingleton<IEmailSender>(new SmtpEmailSender(
     smtpSettings["Server"],
@@ -27,9 +32,6 @@ builder.Services.AddSingleton<IEmailSender>(new SmtpEmailSender(
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
-
-builder.Services.AddScoped<SecurityLogService>();
-builder.Services.AddScoped<NotificationService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
@@ -37,6 +39,16 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+// Data Protection
+builder.Services.AddDataProtection();
+
+// Register EncryptionService with Configuration
+builder.Services.AddScoped<EncryptionService>();
+
+// Other Services
+builder.Services.AddScoped<SecurityLogService>();
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 
@@ -48,7 +60,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -59,9 +70,8 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
-app.UseExceptionHandler("/Error/500");  
+app.UseExceptionHandler("/Error/500");
 
 app.Use(async (context, next) =>
 {
@@ -74,13 +84,13 @@ app.Use(async (context, next) =>
 
 app.MapControllerRoute(
     name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-    app.MapRazorPages();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
+// Create Roles
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
     var roles = new[] { "Admin", "Student" };
 
     foreach (var role in roles)
@@ -90,10 +100,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Create Admin User
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
     string email = "admin@admin.com";
     string password = "eSaysay_123";
 
@@ -103,11 +113,10 @@ using (var scope = app.Services.CreateScope())
         {
             UserName = email,
             Email = email,
-            EmailConfirmed = true 
+            EmailConfirmed = true
         };
 
         var result = await userManager.CreateAsync(user, password);
-
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(user, "Admin");

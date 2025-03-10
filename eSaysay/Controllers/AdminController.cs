@@ -23,12 +23,14 @@ namespace eSaysay.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SecurityLogService _logService;
         private readonly HttpClient _httpClient;
+        private readonly EncryptionService _encryptionService;
         public AdminController(ILogger<AdminController> logger,
                                UserManager<ApplicationUser> userManager,
                                RoleManager<IdentityRole> roleManager,
                                ApplicationDbContext context,
                                SecurityLogService logService,
-                               HttpClient httpClient)
+                               HttpClient httpClient,
+                               EncryptionService encryptionService)
         {
             _logger = logger;
             _userManager = userManager;
@@ -36,13 +38,21 @@ namespace eSaysay.Controllers
             _context = context;
             _logService = logService;
             _httpClient = httpClient;
+            _encryptionService = encryptionService;
         }
 
         public async Task<IActionResult> Index()
         {
             var totalUsers = await _context.Users.CountAsync();
             var totalLessons = await _context.Lessons.CountAsync();
-            var completedLessons = await _context.UserProgress.CountAsync(up => up.CompletionStatus == "Completed");
+
+            // ✅ Count only distinct lessons that have been completed
+            var completedLessons = await _context.UserProgress
+                .Where(up => up.CompletionStatus == "Completed")
+                .Select(up => up.LessonID)
+                .Distinct()
+                .CountAsync();
+
             var avgScore = await _context.Analytics.AverageAsync(a => (double?)a.AverageScore) ?? 0;
             var totalTimeSpent = await _context.Analytics.SumAsync(a => a.TimeSpent);
 
@@ -132,7 +142,7 @@ namespace eSaysay.Controllers
             {
                 _context.Language.Add(language);
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Added new language: {language.LanguageName}");
+                await _logService.LogEvent($"Added new language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -146,7 +156,7 @@ namespace eSaysay.Controllers
             {
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Updated language: {language.LanguageName}");
+                await _logService.LogEvent($"Updated language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -188,11 +198,11 @@ namespace eSaysay.Controllers
             var language = await _context.Language.FindAsync(LanguageID);
             if (language != null)
             {
-                language.IsArchived = true; // Soft delete
+                language.IsArchived = true;
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived language: {language.LanguageName}");
+                await _logService.LogEvent($"Archived language: {language.LanguageName}", "UTC");
             }
             return RedirectToAction("Language");
         }
@@ -204,11 +214,11 @@ namespace eSaysay.Controllers
             var language = await _context.Language.FindAsync(LanguageID);
             if (language != null)
             {
-                language.IsArchived = false; // Restore
+                language.IsArchived = false;
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Restored language: {language.LanguageName}");
+                await _logService.LogEvent($"Restored language: {language.LanguageName}", "UTC");
             }
             return Ok();
         }
@@ -223,7 +233,7 @@ namespace eSaysay.Controllers
                 _context.Language.Remove(language);
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Permanently deleted language: {language.LanguageName}");
+                await _logService.LogEvent($"Permanently deleted language: {language.LanguageName}", "UTC");
             }
             return Ok();
         }
@@ -293,18 +303,16 @@ namespace eSaysay.Controllers
         // GET: Admin/Exercises
         public IActionResult Exercises(string searchTerm, int page = 1, int pageSize = 5)
         {
-            
-
             var query = _context.InteractiveExercises
                 .Include(e => e.Lesson)
                 .Where(e => !e.IsArchived);
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(e => 
-                e.Content.Contains(searchTerm) ||
-                e.ExerciseType.Contains(searchTerm) ||
-                e.DifficultyLevel.Contains(searchTerm));
+                query = query.Where(e =>
+                    e.Content.Contains(searchTerm) ||
+                    e.ExerciseType.Contains(searchTerm) ||
+                    e.DifficultyLevel.Contains(searchTerm));
             }
 
             var totalRecords = query.Count();
@@ -341,14 +349,13 @@ namespace eSaysay.Controllers
                 .Take(pageSize)
                 .ToList();
 
+            ViewBag.Lessons = _context.Lessons.ToList();
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewBag.CurrentPage = page;
             ViewBag.SearchTerm = searchTerm;
 
             return PartialView("~/Views/User/Admin/Partial/_ExercisesTablePartial.cshtml", exercises);
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -423,7 +430,7 @@ namespace eSaysay.Controllers
             // Save to database
             _context.InteractiveExercises.Add(exercise);
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}");
+            await _logService.LogEvent($"Created new exercise: {exercise.ExerciseType}", "UTC");
 
             return RedirectToAction("Exercises");
         }
@@ -465,7 +472,7 @@ namespace eSaysay.Controllers
             existingExercise.Hint = string.IsNullOrWhiteSpace(exercise.Hint) ? null : exercise.Hint;
 
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}");
+            await _logService.LogEvent($"Updated exercise: {exercise.ExerciseType}", "UTC");
             _logger.LogInformation($"Exercise updated: {exercise.ExerciseType}");
 
             return RedirectToAction("Exercises");
@@ -543,12 +550,11 @@ namespace eSaysay.Controllers
                 exercise.IsArchived = true;
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived exercise ID: {ExerciseID}");
+                await _logService.LogEvent($"Archived exercise ID: {ExerciseID}", "UTC");
             }
             return RedirectToAction("Exercises");
         }
 
-        // GET: Admin/ArchivedExercises with pagination and search
         public async Task<IActionResult> ArchivedExercises(string search, int page = 1, int pageSize = 5)
         {
             var archivedExercises = await _context.InteractiveExercises
@@ -573,20 +579,28 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Shared/ArchivedExercises.cshtml", archivedExercises);
         }
 
-        // POST: Admin/RestoreExercise
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreExercise(int ExerciseID)
         {
-            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
-            if (exercise != null)
+            try
             {
-                exercise.IsArchived = false;
-                _context.InteractiveExercises.Update(exercise);
-                await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Restored exercise: {exercise.Content}");
+                var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
+                if (exercise != null)
+                {
+                    exercise.IsArchived = false;
+                    _context.InteractiveExercises.Update(exercise);
+                    await _context.SaveChangesAsync();
+                    await _logService.LogEvent($"Restored exercise: {exercise.Content}", "");
+
+                    return Json(new { success = true, message = "Exercise restored successfully!" });
+                }
+                return Json(new { success = false, message = "Exercise not found." });
             }
-            return Json(new { redirect = Url.Action("ArchivedExercises") });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -600,17 +614,15 @@ namespace eSaysay.Controllers
                 {
                     _context.InteractiveExercises.Remove(exercise);
                     await _context.SaveChangesAsync();
+                    await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}", "UTC");
 
-                    await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}");
-                    return Ok(); 
+                    return Json(new { success = true, message = "Exercise permanently deleted!" });
                 }
-                return NotFound();
+                return Json(new { success = false, message = "Exercise not found." });
             }
             catch (Exception ex)
             {
-                // Log the exception
-                await _logService.LogEvent($"Error deleting exercise: {ex.Message}");
-                return StatusCode(500, "An error occurred while deleting the exercise."); 
+                return Json(new { success = false, message = ex.Message });
             }
         }
         public IActionResult Lessons(string searchQuery, int page = 1, int pageSize = 5)
@@ -692,7 +704,7 @@ namespace eSaysay.Controllers
 
             _context.Lessons.Add(lesson);
             await _context.SaveChangesAsync();
-            await _logService.LogEvent($"Created lesson: {lesson.Title}");
+            await _logService.LogEvent($"Created lesson: {lesson.Title}", "UTC");
             return RedirectToAction("Lessons");
         }
 
@@ -711,7 +723,7 @@ namespace eSaysay.Controllers
                 existingLesson.LanguageID = lesson.LanguageID;
 
                 await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Updated lesson: {lesson.Title}");
+                await _logService.LogEvent($"Updated lesson: {lesson.Title}", "UTC");
                 _logger.LogInformation($"Lesson updated: {lesson.Title}");
             }
             else
@@ -733,7 +745,7 @@ namespace eSaysay.Controllers
                 lesson.IsArchived = true; // Mark as archived instead of deleting
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Archived lesson: {lesson.Title}");
+                await _logService.LogEvent($"Archived lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("Lessons");
         }
@@ -777,7 +789,7 @@ namespace eSaysay.Controllers
                 lesson.IsArchived = false; // Unarchive the lesson
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Restored lesson: {lesson.Title}");
+                await _logService.LogEvent($"Restored lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("ArchivedLessons");
         }
@@ -793,7 +805,7 @@ namespace eSaysay.Controllers
                 _context.Lessons.Remove(lesson); 
                 await _context.SaveChangesAsync();
 
-                await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}");
+                await _logService.LogEvent($"Permanently deleted lesson: {lesson.Title}", "UTC");
             }
             return RedirectToAction("ArchivedLessons");
         }
@@ -916,65 +928,84 @@ namespace eSaysay.Controllers
         public async Task<IActionResult> Students(string search, int page = 1, int pageSize = 5)
         {
             var studentIds = (await _userManager.GetUsersInRoleAsync("Student")).Select(s => s.Id);
-
             var query = _userManager.Users
                 .Where(u => studentIds.Contains(u.Id) && !u.IsArchived)
                 .AsQueryable();
 
-            // Apply search filter (Email, First Name, Last Name)
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(u =>
-                    u.Email.Contains(search) ||
-                    u.FirstName.Contains(search) ||
-                    u.LastName.Contains(search) ||
-                    u.Gender.Contains(search));
-            }
-
-            int totalStudents = await query.CountAsync();
+            // Fetch students and decrypt necessary fields
             var students = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Decrypt sensitive fields before displaying
+            foreach (var student in students)
+            {
+                student.FirstName = _encryptionService.DecryptData(student.FirstName);
+                student.MiddleName = _encryptionService.DecryptData(student.MiddleName);
+                student.LastName = _encryptionService.DecryptData(student.LastName);
+                student.Gender = _encryptionService.DecryptData(student.Gender);
+            }
+
+            // Apply search filter AFTER decryption
+            if (!string.IsNullOrEmpty(search))
+            {
+                students = students.Where(u =>
+                    u.Email.Contains(search) ||
+                    u.FirstName.Contains(search) ||
+                    u.LastName.Contains(search) ||
+                    u.Gender.Contains(search)).ToList();
+            }
+
+            int totalStudents = students.Count;
             ViewBag.Search = search;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
 
             return View("~/Views/User/Admin/Students.cshtml", students);
         }
-
-        // to search students on searchbar
+        // To search students in search bar
         public async Task<IActionResult> FilterStudents(string search, int page = 1, int pageSize = 5)
         {
             var studentIds = (await _userManager.GetUsersInRoleAsync("Student")).Select(s => s.Id);
 
-            var query = _userManager.Users
+            var students = await _userManager.Users
                 .Where(u => studentIds.Contains(u.Id) && !u.IsArchived)
-                .AsQueryable();
+                .ToListAsync(); // Fetch all students first
 
-            // Apply search filter
-            if (!string.IsNullOrEmpty(search))
+            // Decrypt sensitive fields for filtering
+            foreach (var student in students)
             {
-                query = query.Where(u =>
-                    u.Email.Contains(search) ||
-                    u.FirstName.Contains(search) ||
-                    u.LastName.Contains(search) ||
-                u.Gender.Contains(search));
+                student.FirstName = _encryptionService.DecryptData(student.FirstName);
+                student.LastName = _encryptionService.DecryptData(student.LastName);
+                student.Gender = _encryptionService.DecryptData(student.Gender);
             }
 
-            int totalStudents = await query.CountAsync();
-            var students = await query
+            // Apply search filter in memory
+            if (!string.IsNullOrEmpty(search))
+            {
+                students = students.Where(u =>
+                    u.Email.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    u.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    u.LastName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    u.Gender.Contains(search, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
+            // Total count after filtering
+            int totalStudents = students.Count;
+
+            // Apply pagination
+            students = students
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
 
             return PartialView("~/Views/User/Admin/Partial/_StudentsTablePartial.cshtml", students);
         }
-
 
         // ✅ Fetch Archived Students
         public async Task<IActionResult> ArchivedStudents(string search, int page = 1, int pageSize = 5)
@@ -1016,7 +1047,7 @@ namespace eSaysay.Controllers
             int Age,
             DateTime Birthday)
         {
-            // Trim all string inputs to avoid whitespace issues
+            // Trim all string inputs
             Id = Id?.Trim();
             FirstName = FirstName?.Trim();
             MiddleName = MiddleName?.Trim();
@@ -1026,13 +1057,7 @@ namespace eSaysay.Controllers
             // Log received values for debugging
             _logger.LogInformation($"[EditStudent] Received - ID: {Id}, First Name: {FirstName}, Last Name: {LastName}, Gender: {Gender}, Age: {Age}, Birthday: {Birthday}");
 
-            // Validate required fields
             if (string.IsNullOrEmpty(Id)) return BadRequest("Invalid input: ID is required.");
-            if (string.IsNullOrEmpty(FirstName)) return BadRequest("Invalid input: First Name is required.");
-            if (string.IsNullOrEmpty(LastName)) return BadRequest("Invalid input: Last Name is required.");
-            if (string.IsNullOrEmpty(Gender)) return BadRequest("Invalid input: Gender is required.");
-            if (Age < 1 || Age > 150) return BadRequest("Invalid input: Age must be between 1 and 150.");
-            if (Birthday > DateTime.UtcNow) return BadRequest("Invalid input: Birthday cannot be in the future.");
 
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
@@ -1041,27 +1066,33 @@ namespace eSaysay.Controllers
                 return NotFound("Student not found.");
             }
 
-            // Update fields only if changes were made
+            // **Decrypt existing values**
+            string decryptedFirstName = _encryptionService.DecryptData(user.FirstName);
+            string decryptedMiddleName = _encryptionService.DecryptData(user.MiddleName);
+            string decryptedLastName = _encryptionService.DecryptData(user.LastName);
+            string decryptedGender = _encryptionService.DecryptData(user.Gender);
+
             bool isUpdated = false;
 
-            if (user.FirstName != FirstName)
+            // **Update only if changes exist**
+            if (decryptedFirstName != FirstName)
             {
-                user.FirstName = FirstName;
+                user.FirstName = _encryptionService.EncryptData(FirstName);
                 isUpdated = true;
             }
-            if (user.MiddleName != MiddleName)
+            if (decryptedMiddleName != MiddleName)
             {
-                user.MiddleName = MiddleName;
+                user.MiddleName = _encryptionService.EncryptData(MiddleName);
                 isUpdated = true;
             }
-            if (user.LastName != LastName)
+            if (decryptedLastName != LastName)
             {
-                user.LastName = LastName;
+                user.LastName = _encryptionService.EncryptData(LastName);
                 isUpdated = true;
             }
-            if (user.Gender != Gender)
+            if (decryptedGender != Gender)
             {
-                user.Gender = Gender;
+                user.Gender = _encryptionService.EncryptData(Gender);
                 isUpdated = true;
             }
             if (user.Age != Age)
@@ -1085,7 +1116,7 @@ namespace eSaysay.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation($"[EditStudent] Successfully updated student (ID: {Id}).");
-                await _logService.LogEvent($"Updated student details: {FirstName} {LastName}");
+                await _logService.LogEvent($"Updated student details: {FirstName} {LastName}", "UTC");
                 return RedirectToAction("Students");
             }
 
@@ -1115,7 +1146,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Archived student ID: {Id}");
+                await _logService.LogEvent($"Archived student ID: {Id}", "UTC");
                 return RedirectToAction("Students");
             }
 
@@ -1143,7 +1174,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Restored student ID: {Id}");
+                await _logService.LogEvent($"Restored student ID: {Id}", "UTC");
                 return RedirectToAction("ArchivedStudents");
             }
 
@@ -1170,7 +1201,7 @@ namespace eSaysay.Controllers
 
             if (result.Succeeded)
             {
-                await _logService.LogEvent($"Permanently deleted student ID: {Id}");
+                await _logService.LogEvent($"Permanently deleted student ID: {Id}", "UTC");
                 return RedirectToAction("ArchivedStudents");
             }
 

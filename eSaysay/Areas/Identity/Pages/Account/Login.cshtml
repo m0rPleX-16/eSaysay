@@ -52,6 +52,7 @@
                     <div class="text-center mt-2">
                         <span>New here?</span> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">Sign up</a>
                     </div>
+                    <input type="hidden" id="userTimezone" name="userTimezone">
                 </form>
                 
                 @if (Model.ExternalLogins?.Count > 0)
@@ -86,5 +87,8 @@
             this.querySelector('i').classList.toggle('bi-eye');
             this.querySelector('i').classList.toggle('bi-eye-slash');
         });
+    </script>
+    <script>
+        document.getElementById('userTimezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
     </script>
 }

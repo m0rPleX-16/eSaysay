@@ -18,10 +18,12 @@ namespace eSaysay.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task LogEvent(string eventType)
+        public async Task LogEvent(string eventType, string timeZone)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+            var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, userTimeZone);
 
             if (userId != null)
             {
@@ -29,7 +31,7 @@ namespace eSaysay.Services
                 {
                     UserID = userId,
                     Event = eventType,
-                    Timestamp = DateTime.UtcNow,
+                    Timestamp = localTime,
                     IPAddress = ipAddress
                 };
 
