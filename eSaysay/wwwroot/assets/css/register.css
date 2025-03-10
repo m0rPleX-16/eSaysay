@@ -25,6 +25,22 @@
     .register-style .text-center h1, .register-style .text-center .lead {
         color: white;
     }
+.register-style .text-center h1 {
+    font-family: Arapey, serif;
+    font-style: italic;
+    font-size: 3rem;
+}
+.register-style .text-center .lead {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 60%;
+}
+
+
+.register-inputs {
+    background-color: #FFFAF3;
+    border: 1px solid #E1CBB1;
+}
 
 
 .register-inputs .text-center h2 {

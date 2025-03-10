@@ -933,7 +933,7 @@ section,
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #E0D3C5;
+    color: #274052;
 }
 
     .hero img {
@@ -964,11 +964,11 @@ section,
         font-size: 48px;
         font-weight: 600;
         font-family: "Arapey", serif;
-        color: #E0D3C5;
+        color: #513F36;
     }
 
     .hero p {
-        color: #E0D3C5;
+        color: #513F36;
         margin: 10px 0 0 0;
         font-size: 18px;
     }
@@ -982,13 +982,13 @@ section,
         border-radius: 50px;
         transition: 0.4s;
         margin-top: 30px;
-        color: #274052;
-        background: #DFB757;
+        color: #513F36;
+        background: #FCF3E0;
     }
 
         .hero .btn-get-started:hover {
-            color: #1C3548;
-            background: #EDD9AA;
+            color: #274052;
+            background: #F8D580;
         }
 
 @media (max-width: 768px) {
