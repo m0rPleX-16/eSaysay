@@ -99,44 +99,13 @@ namespace eSaysay.Controllers
             var lesson = await _context.Lessons.FirstOrDefaultAsync(l => l.LessonID == id);
             if (lesson == null) return NotFound();
 
-            var userId = user.Id;
-
-            // Get all exercises in the lesson
             var exercises = await _context.InteractiveExercises
                 .Where(e => e.LessonID == id && !e.IsArchived)
-                .Select(e => new
-                {
-                    Exercise = e,
-                    LastAttempts = _context.UserResponse
-                        .Where(ur => ur.UserID == userId && ur.ExerciseID == e.ExerciseID)
-                        .OrderByDescending(ur => ur.AttemptDate)
-                        .ToList()
-                })
                 .ToListAsync();
-
-            // Get current time
-            var now = DateTime.UtcNow;
-
-            var exercisesToReview = exercises
-                .Select(x => new
-                {
-                    x.Exercise,
-                    CorrectAttempts = x.LastAttempts.Count(ur => ur.IsCorrect), // Count correct attempts
-                    LastAttemptDate = x.LastAttempts.FirstOrDefault()?.AttemptDate ?? now
-                })
-                .Select(x => new
-                {
-                    x.Exercise,
-                    NextReviewDate = x.CorrectAttempts == 0 ? now :
-                        x.LastAttemptDate.AddDays(Math.Pow(2, x.CorrectAttempts)) // Apply spaced repetition interval
-                })
-                .OrderBy(x => x.NextReviewDate) // Prioritize exercises due for review
-                .Select(x => x.Exercise)
-                .ToList();
 
             var userProgress = await _context.UserProgress
                 .FirstOrDefaultAsync(up => up.UserID == user.Id && up.LessonID == id);
-                
+
             var completedExercises = await _context.UserResponse
                 .Where(ur => ur.UserID == user.Id && ur.IsCorrect)
                 .Select(ur => ur.ExerciseID)
@@ -144,39 +113,39 @@ namespace eSaysay.Controllers
                 .ToListAsync();
 
             var startedExercises = await _context.UserResponse
-                .Where(ur => ur.UserID == user.Id && exercises.Select(e => e.Exercise.ExerciseID).Contains(ur.ExerciseID))
+                .Where(ur => ur.UserID == user.Id && exercises.Select(e => e.ExerciseID).Contains(ur.ExerciseID))
                 .Select(ur => ur.ExerciseID)
                 .Distinct()
                 .ToListAsync();
 
             // Categorizing exercises
             var notStartedExercises = exercises
-                .Where(e => !startedExercises.Contains(e.Exercise.ExerciseID))
+                .Where(e => !startedExercises.Contains(e.ExerciseID))
                 .OrderBy(x => Guid.NewGuid()) // Shuffle Not Started exercises
-                .Select(e => e.Exercise)
                 .ToList();
 
             var inProgressExercises = exercises
-                .Where(e => startedExercises.Contains(e.Exercise.ExerciseID) && !completedExercises.Contains(e.Exercise.ExerciseID))
+                .Where(e => startedExercises.Contains(e.ExerciseID) && !completedExercises.Contains(e.ExerciseID))
                 .OrderBy(x => Guid.NewGuid()) // Shuffle In Progress exercises
-                .Select(e => e.Exercise)
                 .ToList();
 
             var completedExercisesList = exercises
-                .Where(e => completedExercises.Contains(e.Exercise.ExerciseID))
-                .Select(e => e.Exercise)
+                .Where(e => completedExercises.Contains(e.ExerciseID))
                 .ToList(); // Keep Completed exercises in their original order
 
             // Merging them into a single ordered list
             var orderedExercises = notStartedExercises.Concat(inProgressExercises).Concat(completedExercisesList).ToList();
 
             ViewBag.Lesson = lesson;
-            ViewBag.StartedExercises = startedExercises ?? new List<int>();
+            ViewBag.StartedExercises = startedExercises;
             ViewBag.CompletedExercises = completedExercises;
 
             return View("~/Views/User/Dashboard/LessonDetails.cshtml", orderedExercises);
         }
 
+        // Save User Response
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveUserResponse([FromForm] UserResponse userResponse, [FromForm] int TimeSpent)
         {
             if (userResponse == null || string.IsNullOrEmpty(userResponse.UserID))
@@ -206,22 +175,21 @@ namespace eSaysay.Controllers
                     return BadRequest(new { message = "Invalid ExerciseID." });
                 }
 
-                var correctAttempts = await _context.UserResponse
-                    .Where(r => r.UserID == userResponse.UserID && r.ExerciseID == userResponse.ExerciseID && r.IsCorrect)
-                    .CountAsync();
-
+                // ✅ Find existing response (latest attempt)
                 var existingResponse = await _context.UserResponse
-                    .OrderByDescending(r => r.AttemptDate)
+                    .OrderByDescending(r => r.AttemptDate) // Get the latest response
                     .FirstOrDefaultAsync(r => r.UserID == userResponse.UserID && r.ExerciseID == userResponse.ExerciseID);
 
                 if (existingResponse != null)
                 {
+                    // ✅ Update the existing response
                     existingResponse.IsCorrect = userResponse.IsCorrect;
                     existingResponse.AttemptDate = DateTime.UtcNow;
                     _context.UserResponse.Update(existingResponse);
                 }
                 else
                 {
+                    // ✅ Insert new response
                     userResponse.AttemptDate = DateTime.UtcNow;
                     _context.UserResponse.Add(userResponse);
                 }
@@ -242,7 +210,6 @@ namespace eSaysay.Controllers
                 return StatusCode(500, new { message = "An error occurred while saving your response." });
             }
         }
-
         // Profile
         public async Task<IActionResult> ProfileAsync()
         {
@@ -346,7 +313,7 @@ namespace eSaysay.Controllers
                 Lessons = allLessons,
                 Notifications = notifications,
                 UserProgress = userProgress,
-                Analytics = analytics,  
+                Analytics = analytics,
                 AdaptiveLearning = adaptiveLearning,
                 UserExperienceLevel = userExperienceLevel
             };
@@ -375,7 +342,7 @@ namespace eSaysay.Controllers
             if (!await UserExists(userId)) return;
 
             var totalExercises = await _context.InteractiveExercises
-    .Where(e => e.LessonID == lessonId && !e.IsArchived) 
+    .Where(e => e.LessonID == lessonId && !e.IsArchived)
     .CountAsync();
 
             var completedExercises = await _context.UserResponse
@@ -450,13 +417,13 @@ namespace eSaysay.Controllers
             {
                 _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Beginner lessons. Unlocking Intermediate.");
                 user.LanguageExperience = "Intermediate";
-                await SendNotification(userId, "Congratulations! You have unlocked Intermediate lessons.", "Lesson Unlocked");
+                await SendNotification(userId, "Congratulations! You have unlocked Intermediate lessons.", "UTC");
             }
             else if (previousLevel == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
             {
                 _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Intermediate lessons. Unlocking Advanced.");
                 user.LanguageExperience = "Advanced";
-                await SendNotification(userId, "Great work! You have unlocked Advanced lessons.", "Lesson Unlocked");
+                await SendNotification(userId, "Great work! You have unlocked Advanced lessons.", "UTC");
             }
             else
             {
