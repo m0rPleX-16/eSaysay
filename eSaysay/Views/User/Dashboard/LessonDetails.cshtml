@@ -2,8 +2,6 @@
 @{
     var lesson = ViewBag.Lesson as eSaysay.Models.Entities.Lesson;
     ViewData["Title"] = $"{lesson.Title} - Exercises";
-
-
 }
 
 <div class="lesson-details-container">
@@ -29,7 +27,7 @@
 
         <div class="carousel-wrapper">
             <button class="carousel-control prev" onclick="moveSlide(-1)">&#10094;</button>
-            <div class="carousel">
+           
                 <div class="exercise-list">
                     @foreach (var exercise in Model.Where(e => !e.IsArchived)) // ✅ Exclude archived exercises
                     {
@@ -55,14 +53,13 @@
                         </div>
                     }
                 </div>
-            </div>
+     
             <button class="carousel-control next" onclick="moveSlide(1)">&#10095;</button>
         </div>
     }
     <div class="btn-area mb-3">
         <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">Back to Lessons</a>
     </div>
-    
 </div>
 
 <style>
@@ -95,79 +92,87 @@
     .badge-warning {
         background-color: orange;
     }
+
+    /* Ensure the exercise list is aligned to the left */
+    .exercise-list {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start; /* Align cards to the left */
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .exercise-card {
+        flex: 0 0 auto; /* Prevent cards from shrinking or growing */
+        margin-right: 16px; /* Add spacing between cards */
+    }
+
+    .carousel {
+        overflow: hidden; /* Hide overflow to create the carousel effect */
+    }
+
+    .carousel-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .carousel-control {
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 24px;
+    }
 </style>
 
 <script>
-  
-        function filterExercises() {
-            var filter = document.getElementById("exerciseFilter").value;
-            var exercises = document.querySelectorAll(".exercise-card");
+    function filterExercises() {
+        var filter = document.getElementById("exerciseFilter").value;
+        var exercises = document.querySelectorAll(".exercise-card");
 
-            exercises.forEach(function (exercise) {
-                var status = exercise.classList.contains("completed-exercise")
-                    ? "completed"
-                    : exercise.classList.contains("started-exercise")
-                    ? "in-progress"
-                    : "not-started";
+        exercises.forEach(function (exercise) {
+            var status = exercise.classList.contains("completed-exercise")
+                ? "completed"
+                : exercise.classList.contains("started-exercise")
+                ? "in-progress"
+                : "not-started";
 
-                exercise.style.display = (filter === "all" || status === filter) ? "block" : "none";
-            });
-        }
-    
+            exercise.style.display = (filter === "all" || status === filter) ? "block" : "none";
+        });
+    }
+
     let currentIndex = 0;
 
-function moveSlide(direction) {
-    const exerciseList = document.querySelector('.exercise-list');
-    const cards = document.querySelectorAll('.exercise-card');
-    const totalCards = cards.length;
+    function moveSlide(direction) {
+        const exerciseList = document.querySelector('.exercise-list');
+        const cards = document.querySelectorAll('.exercise-card');
+        const totalCards = cards.length;
+        const cardWidth = cards[0].offsetWidth + 16; // Including margin
 
-    // Calculate new index with wrap-around logic
-    currentIndex = (currentIndex + direction + totalCards) % totalCards;
+        // Move only if there are enough cards to slide
+        currentIndex += direction;
 
-    // Scroll the carousel smoothly
-    const cardWidth = cards[0].offsetWidth + 16; // Including margin
-    exerciseList.style.transition = 'transform 0.5s ease-in-out';
-    exerciseList.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        // Ensure the index stays within bounds
+        if (currentIndex < 0) {
+            currentIndex = 0;
+        } else if (currentIndex >= totalCards) {
+            currentIndex = totalCards - 1;
+        }
 
-    // Handle seamless looping
-    if (currentIndex === 0 && direction === -1) {
-        setTimeout(() => {
-            exerciseList.style.transition = 'none';
-            exerciseList.style.transform = `translateX(-${(totalCards - 1) * cardWidth}px)`;
-            setTimeout(() => {
-                exerciseList.style.transition = 'transform 0.5s ease-in-out';
-                currentIndex = totalCards - 1;
-            }, 50);
-        }, 500);
-    } else if (currentIndex === totalCards - 1 && direction === 1) {
-        setTimeout(() => {
-            exerciseList.style.transition = 'none';
-            exerciseList.style.transform = `translateX(0)`;
-            setTimeout(() => {
-                exerciseList.style.transition = 'transform 0.5s ease-in-out';
-                currentIndex = 0;
-            }, 50);
-        }, 500);
-
-  
-
+        exerciseList.style.transition = 'transform 0.5s ease-in-out';
+        exerciseList.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
     }
-}
 
-document.addEventListener("DOMContentLoaded", function () {
-    const exerciseList = document.querySelector('.exercise-list');
-    const cards = document.querySelectorAll('.exercise-card');
+    // Ensure the first card aligns properly after page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const exerciseList = document.querySelector('.exercise-list');
+        exerciseList.style.transform = 'translateX(0)';
+        currentIndex = 0;
+    });
 
-    // Duplicate the first and last cards for seamless looping
-    const cloneFirst = cards[0].cloneNode(true);
-    const cloneLast = cards[cards.length - 1].cloneNode(true);
 
-    exerciseList.appendChild(cloneFirst);
-    exerciseList.insertBefore(cloneLast, cards[0]);
-
-    // Adjust initial position to show the first card
-    const cardWidth = cards[0].offsetWidth + 16; // Including margin
-    exerciseList.style.transform = `translateX(-${cardWidth}px)`;
-    currentIndex = 1;
-});
+    // Ensure the first card aligns properly after page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const exerciseList = document.querySelector('.exercise-list');
+        exerciseList.style.transform = 'translateX(0)';
+        currentIndex = 0;
+    });
 </script>

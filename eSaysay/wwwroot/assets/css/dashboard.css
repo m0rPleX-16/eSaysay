@@ -147,14 +147,28 @@ body {
         opacity:40%;
     }
 .carousel-control {
-    background: none;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
-    font-size: 2rem;
+    font-size: 36px;
     cursor: pointer;
+    padding: 15px;
+    color: #274052;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, color 0.3s ease;
     position: absolute;
+    z-index: 10;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1;
+}
+.carousel-control:hover {
+    background: #DFB757;
+    color: #274052;
 }
 
 .carousel-control.prev {

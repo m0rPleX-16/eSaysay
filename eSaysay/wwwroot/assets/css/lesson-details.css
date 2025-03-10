@@ -1,6 +1,5 @@
-﻿
-.lesson-details-container {
-    max-width: 1200px; 
+﻿.lesson-details-container {
+    max-width: 1200px;
     margin: 50px auto;
     padding: 10px;
     background: #ffffff;
@@ -32,7 +31,6 @@
         color: #274052;
         margin-top: 40px;
         margin-bottom: 30px;
-
     }
 
 .filter-container {
@@ -45,246 +43,172 @@
     max-width: 300px;
     height: 100%; /* Ensures it takes full parent height */
 }
+
 .filter-label {
     margin: 0;
     color: #274052;
 }
+
 .filter-dropdown {
     padding-top: 4px;
     padding-bottom: 4px;
     color: #274052;
 }
 
-    .lesson-details-container .carousel-wrapper {
-        display: flex;
-        position: relative;
-        padding: 30px;
-    }
-
-    .lesson-details-container .carousel {
-        background: none;
-        width: 100%;
-        overflow: hidden;
-        position: relative;
-        padding-left: 120px; /* Adjust this value to match the desired spacing */
-        box-sizing: border-box;
-    }
-
-    .lesson-details-container .exercise-list {
-        display: flex;
-        transition: transform 0.5s ease-in-out;
-        width: max-content;
-    }
-
-    .lesson-details-container .exercise-card {
-
-        min-width: 350px;
-        padding: 30px;
-        margin: 0 8px;
-        background: #FFFAF3;
-        border-radius: 15px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        flex: 0 0 auto;
-        position: relative;
-    }
-
-        .lesson-details-container .exercise-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
-        }
-
-    .lesson-details-container .exercise-type {
-        font-size: 24px; /* Larger type */
-        font-weight: 600;
-        color: #274052;
-        margin-bottom: 20px;
-    }
-
-    .lesson-details-container .exercise-content {
-        font-size: 16px; /* Larger content */
-        color: #274052;
-        margin-bottom: 25px;
-    }
-
-    .lesson-details-container .btn-start {
-        background: #DFB757;
-        color: #274052;
-        padding: 12px 24px; /* Larger button */
-        border-radius: 26px; /* Rounded button */
-        text-decoration: none;
-        font-size: 16px; /* Larger font */
-        font-weight: 600;
-        transition: background 0.3s ease;
-    }
-
-        .lesson-details-container .btn-start:hover {
-            background: #FFE4A3;
-        }
-
-    .btn-area{
-        padding-top:0;
-    }
-
-    .lesson-details-container .btn-back {
-        background: #95a5a6;
-        color: #fff;
-        padding: 12px 14px; /* Larger button */
-        border-radius: 26px; /* Rounded button */
-        font-style: italic;
-        font-weight:500;
-        text-decoration: none;
-        font-size: 16px; /* Larger font */
-        margin-top: 30px;
-        transition: background 0.3s ease;
-    }
-
-        .lesson-details-container .btn-back:hover {
-            background: #7f8c8d;
-        }
-
-    .lesson-details-container .carousel-control {
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
-        font-size: 36px;
-        cursor: pointer;
-        padding: 15px;
-        color: #274052;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        transition: background 0.3s ease, color 0.3s ease;
-        position: absolute;
-        z-index: 10;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-        .lesson-details-container .carousel-control:hover {
-            background: #DFB757;
-            color: #274052;
-        }
-
-    .lesson-details-container .prev {
-        left: 10px; /* Adjusted position */
-    }
-
-    .lesson-details-container .next {
-        right: 10px; /* Adjusted position */
-    }
-
-@media (max-width: 768px) {
-
-    .lesson-details-container{
-        margin:60px;
-    }
-    .lesson-details-container .exercise-card {
-        min-width: 280px;
-        padding: 30px;
-    }
-
-    .lesson-details-container .carousel-control {
-        font-size: 24px;
-        padding: 10px;
-        width: 40px;
-        height: 40px;
-    }
-    .filter-dropdown p {
-        font-size: 12px;
-    }
-
+.lesson-details-container .carousel-wrapper {
+    display: flex;
+    position: relative;
+    padding: 30px;
+    overflow: hidden; /* Ensure the wrapper hides overflow */
+    position: relative;
+    padding: 30px 50px; /* Ensures controls don't overlap content */
 }
 
-/* Responsive adjustments for smaller screens */
-@media (max-width: 992px) {
-    .lesson-details-container {
-        margin: 30px 10px; /* Reduced margin for smaller viewports */
-        padding: 15px;
+.carousel-wrapper .carousel{
+    width: 100%;
+}
+
+.lesson-details-container .carousel {
+    background: none;
+    width: 100%;    
+    position: relative;
+    padding-left: 0; /* Remove padding to align cards to the left */
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.lesson-details-container .exercise-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px; /* Consistent spacing */
+    justify-content: flex-start; /* Align cards to the left */
+    width: max-content; /* Prevents gaps on smaller card counts */
+}
+
+.lesson-details-container .exercise-card {
+    min-width: 350px;
+    padding: 30px;
+    background: #FFFAF3;
+    border-radius: 15px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 0 0 auto;
+    position: relative;
+}
+
+    .lesson-details-container .exercise-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
     }
 
-        .lesson-details-container .lesson-title {
-            font-size: 2rem; /* Smaller title on smaller screens */
-        }
+.lesson-details-container .exercise-type {
+    font-size: 24px;
+    font-weight: 600;
+    color: #274052;
+    margin-bottom: 20px;
+}
 
-        .lesson-details-container .lesson-description {
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
+.lesson-details-container .exercise-content {
+    font-size: 16px;
+    color: #274052;
+    margin-bottom: 25px;
+}
+
+.lesson-details-container .btn-start {
+    background: #DFB757;
+    color: #274052;
+    padding: 12px 24px;
+    border-radius: 26px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+    .lesson-details-container .btn-start:hover {
+        background: #FFE4A3;
+    }
+
+.btn-area {
+    padding-top: 0;
+}
+
+.lesson-details-container .btn-back {
+    background: #95a5a6;
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 26px;
+    font-style: italic;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 16px;
+    margin-top: 30px;
+    transition: background 0.3s ease;
+}
+
+    .lesson-details-container .btn-back:hover {
+        background: #7f8c8d;
+    }
+
+.lesson-details-container .carousel-control {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    font-size: 36px;
+    cursor: pointer;
+    padding: 15px;
+    color: #274052;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, color 0.3s ease;
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+    .lesson-details-container .carousel-control:hover {
+        background: #DFB757;
+        color: #274052;
+    }
+
+.lesson-details-container .prev {
+    left: 10px;
+}
+
+.lesson-details-container .next {
+    right: 10px;
+}
+
+@media (max-width: 768px) {
+    .lesson-details-container {
+        margin: 10px;
+    }
 
         .lesson-details-container .exercise-card {
-            min-width: 100%; /* Full width for better stacking on smaller devices */
-            padding: 20px;
-            margin: 0 5px;
+            min-width: 280px;
+            padding: 30px;
         }
 
-        .lesson-details-container .exercise-type {
-            font-size: 20px;
-        }
-
-        .lesson-details-container .exercise-content {
-            font-size: 14px;
-        }
-
-        .lesson-details-container .btn-start,
-        .lesson-details-container .btn-back {
-            padding: 10px 20px;
-            font-size: 14px;
+        .lesson-details-container .carousel-wrapper{
+            padding:5px;
         }
 
         .lesson-details-container .carousel-control {
-            width: 35px;
-            height: 35px;
-            font-size: 20px;
-            padding: 8px;
+            font-size: 24px;
+            padding: 10px;
+            width: 40px;
+            height: 40px;
         }
 
-        .lesson-details-container .carousel {
-            padding-left: 80px; /* Reduced padding for carousel on smaller screens */
-        }
-}
-
-/* For very small screens like mobile phones */
-@media (max-width: 576px) {
-    .lesson-details-container {
-        margin: 20px 5px;
-        padding: 10px;
-    }
-
-        .lesson-details-container .lesson-title {
-            font-size: 1.8rem;
-        }
-
-        .lesson-details-container .lesson-description {
-            font-size: 14px;
-        }
-
-        .lesson-details-container .exercise-card {
-            min-width: 100%;
-            padding: 15px;
-        }
-
-    .filter-container {
-        flex-direction: column;
-        max-width: 150px;
-
-        gap: 5px; /* Reduced spacing */
-    }
-    .filter-dropdown{
+    .filter-dropdown p {
         font-size: 12px;
     }
-
-    .lesson-details-container .carousel {
-        padding-left: 50px;
-    }
-
-    .lesson-details-container .carousel-control {
-        width: 30px;
-        height: 30px;
-        font-size: 18px;
-    }
 }
+
+

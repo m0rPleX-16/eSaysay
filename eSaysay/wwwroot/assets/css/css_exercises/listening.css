@@ -47,19 +47,13 @@
 /* ------------------------------ header w PROGRESS BAR ------------------------------------ */
 
 .progress-bar {
-    flex-grow: 1;
-    height: 20px;
-    background-color: #A75F37;
-    border-radius: 36px;
-    margin: 0 10px;
+    background: none;
     overflow: hidden;
+ 
 }
 
 .progress-bar-inner {
-    height: 100%;
-    width: 40%;
-    background-color: #DFB757;
-    border-radius: 10px;
+    background: none;
 }
 
 /* ------------------------- question or title -------------------------- */

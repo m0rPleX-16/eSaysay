@@ -26,6 +26,21 @@
         color: white;
     }
 
+    .login-style .text-center h1{
+        font-family: Arapey, serif;
+        font-style: italic;
+        font-size: 3rem;
+    }
+    .login-style .text-center .lead{
+        font-size: 1rem;
+        font-weight: 500;
+        opacity:80%;
+    }
+
+.login-inputs {
+    background-color: #FFFAF3;
+    border: 1px solid #E1CBB1;
+}
 
 .login-inputs .text-center h2 {
     color: #5D4940;
