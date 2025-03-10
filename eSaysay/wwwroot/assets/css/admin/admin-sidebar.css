@@ -8,8 +8,30 @@
     background: #274052;
     border-right: 1px solid #dee2e6;
     transition: transform 0.3s ease;
+    z-index: 1000;
 }
-
+    .admin-dashboard-sidebar.closed {
+        transform: translateX(-100%);
+    }
+.admin-sidebar-toggle-btn {
+    position: absolute;
+    top: 10px;
+    right: -50px; /* Appears outside when sidebar is closed */
+    background-color: #274052;
+    border: none;
+    color: #FFFAF3;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.admin-dashboard-sidebar.closed .admin-sidebar-toggle-btn {
+    right: 10px; /* Fully outside when closed */
+}
+.admin-sidebar-toggle-btn:hover {
+    background-color: #DFB757;
+    color: #274052;
+}
 .admin-sidebar-header {
     position: relative;
     display: flex;
@@ -84,3 +106,48 @@
 .admin-sidebar-hr {
     color: #FEF6ED;
 }
+
+
+/* SIDEBSR TOGGLE*/
+
+/* Toggle Button Styling */
+.admin-sidebar-toggle-btn {
+    position: absolute;
+    top: 10px;
+    right: -40px; /* Ensures the toggle appears outside the sidebar when closed */
+    width: 35px;
+    height: 35px;
+    background-color: #DFB757;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.5s ease;
+}
+
+.admin-sidebar-toggle-btn .material-symbols-rounded {
+    color: #274052;
+    font-size: 24px;
+}
+
+/* Sidebar Closed State */
+.admin-dashboard-sidebar.closed {
+    transform: translateX(-100%);
+}
+
+    .admin-dashboard-sidebar.closed .admin-sidebar-toggle-btn {
+        right: -50px;
+        transform: translateY(160%);
+    }
+
+/* Sidebar Open State */
+.admin-dashboard-sidebar {
+    transform: translateX(0);
+}
+
+    .admin-dashboard-sidebar .admin-sidebar-toggle-btn {
+        right: 10px; /* Toggle stays inside when sidebar is open */
+    }

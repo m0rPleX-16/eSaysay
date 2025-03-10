@@ -5,85 +5,91 @@
 <main class="admin-progress">
     @await Html.PartialAsync("_AdminSidebar")
 
-    <div class="admin-progress-topbar">
-        <h2>User's <span class="progress-span-dashboard">progress</span></h2>
-    </div>
 
     <div class="progress-content">
+        <div class="admin-progress-topbar">
+            <h2>User's <span class="progress-span-dashboard">progress</span></h2>
+        </div>
         <!-- Summary Statistics -->
-        <section class="progress-summary d-flex justify-content-between">
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.TotalUsers</h3>
-                <span>Total Users</span>
-            </div>
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.TotalLessons</h3>
-                <span>Total Lessons</span>
-            </div>
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.CompletedLessons</h3>
-                <span>Completed Lessons</span>
-            </div>
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.InProgressLessons</h3>
-                <span>In Progress</span>
-            </div>
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.NotStartedLessons</h3>
-                <span>Not Started</span>
-            </div>
-            <div class="progress-box">
-                <h3 class="span-progress-box">@Model.AverageScore.ToString("0.00")%</h3>
-                <span>Average Score</span>
-            </div>
-        </section>
 
-        <!-- User Progress Table -->
-        <section class="progress-table mt-1">
-            @if (Model.ProgressData != null && Model.ProgressData.Any())
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Lesson</th>
-                            <th>Completion Status</th>
-                            <th>Score</th>
-                            <th>Time Spent (mins)</th>
-                            <th>Last Accessed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var progress in Model.ProgressData)
-                        {
+        <div class="progress-content-summary">
+
+            <section class="progress-summary d-flex justify-content-between">
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.TotalUsers</h3>
+                    <span>Total Users</span>
+                </div>
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.TotalLessons</h3>
+                    <span>Total Lessons</span>
+                </div>
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.CompletedLessons</h3>
+                    <span>Completed Lessons</span>
+                </div>
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.InProgressLessons</h3>
+                    <span>In Progress</span>
+                </div>
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.NotStartedLessons</h3>
+                    <span>Not Started</span>
+                </div>
+                <div class="progress-box">
+                    <h3 class="span-progress-box">@Model.AverageScore.ToString("0.00")%</h3>
+                    <span>Average Score</span>
+                </div>
+            </section>
+
+            <!-- User Progress Table -->
+            
+                @if (Model.ProgressData != null && Model.ProgressData.Any())
+                {
+                <div class="progress-table table-responsive mt-1">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>@progress.UserName</td>
-                                <td>@progress.LessonName</td>
-                                <td>@progress.CompletionStatus</td>
-                                <td>@(progress.Score > 0 ? progress.Score.ToString("0.00") : "N/A")</td>
-                                <td>@(progress.TimeSpent.HasValue ? (progress.TimeSpent.Value > 0 ? (progress.TimeSpent.Value / 60) : "0") : "N/A")</td>
-                                <td>@(progress.LastAccessedDate.HasValue ? progress.LastAccessedDate.Value.ToString("yyyy-MM-dd HH:mm") : "Never")</td>
+                                <th>User</th>
+                                <th>Lesson</th>
+                                <th>Completion Status</th>
+                                <th>Score</th>
+                                <th>Time Spent (mins)</th>
+                                <th>Last Accessed</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p class="text-muted">No progress data available.</p>
-            }
-        </section>
+                        </thead>
+                        <tbody>
+                            @foreach (var progress in Model.ProgressData)
+                            {
+                                <tr>
+                                    <td>@progress.UserName</td>
+                                    <td>@progress.LessonName</td>
+                                    <td>@progress.CompletionStatus</td>
+                                    <td>@(progress.Score > 0 ? progress.Score.ToString("0.00") : "N/A")</td>
+                                    <td>@(progress.TimeSpent.HasValue ? (progress.TimeSpent.Value > 0 ? (progress.TimeSpent.Value / 60) : "0") : "N/A")</td>
+                                    <td>@(progress.LastAccessedDate.HasValue ? progress.LastAccessedDate.Value.ToString("yyyy-MM-dd HH:mm") : "Never")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                     </div>
+                }
+                else
+                {
+                    <p class="text-muted">No progress data available.</p>
+                }
+           
 
-        <!-- Progress Chart -->
-        <section class="progress-graphs">
-            <div class="user-progress-overview">
-                <span class="progress-graph-span">User progress overview</span>
-              
+            <!-- Progress Chart -->
+            <section class="progress-graphs">
+                <div class="user-progress-overview">
+                    <span class="progress-graph-span">User progress overview</span>
+
                     <canvas id="progressChart"></canvas>
-               
-            </div>
-   
-        </section>
+
+                </div>
+
+            </section>
+        </div>
     </div>
 </main>
 

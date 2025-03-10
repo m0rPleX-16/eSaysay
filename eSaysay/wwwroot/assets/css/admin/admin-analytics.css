@@ -1,6 +1,7 @@
 ﻿
-.admin-analytics {
+.admin-analytics-content {
     margin-left: 200px;
+    transition: margin-left 0.3s ease;
 }
 
 .admin-analytics-topbar { /* header top area*/
@@ -82,4 +83,20 @@
 }
 .canvas-analytics{
     max-height:600px;
+}
+
+
+@media (max-width: 768px) {
+
+    .admin-analytics-content {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .admin-analytics-content {
+        margin-left: 0 !important;
+    }
 }

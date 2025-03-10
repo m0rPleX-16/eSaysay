@@ -1,6 +1,7 @@
 ﻿.archive-page-students-content {
     margin-left: 200px;
     min-height: 92vh;
+    transition: margin-left 0.3s ease;
 }
 
 .archive-students-topbar { /* header top area*/
@@ -60,7 +61,7 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
+    overflow: auto;
 }
 
     .table-students-archive-content thead tr:first-child th:first-child {
@@ -125,3 +126,32 @@
         justify-content: center;
         color: #FFFAF3;
     }
+
+
+@media (max-width: 768px) {
+
+    .archive-page-students-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .students-archive-search {
+        padding: 10px;
+    }
+
+
+    .table-students {
+        margin: 16px;
+        padding: 0;
+    }
+    #studentsArchiveTableContainer {
+        padding: 10px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .archive-page-students-content {
+        margin-left: 0;
+    }
+}

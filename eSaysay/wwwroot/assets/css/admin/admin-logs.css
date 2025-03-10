@@ -1,7 +1,11 @@
 ﻿
 .admin-logs {
-    margin-left: 200px;
     min-height: 92vh;
+}
+
+.logs-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
 }
 
 .admin-logs-topbar { /* header top area*/
@@ -22,11 +26,6 @@
     color: #274052;
 }
 
-
-.logs-content {
-    margin: 16px;
-    padding: 0 100px 0 100px;
-}
 
 /*SEARCH BAR*/
 
@@ -113,3 +112,19 @@
         color: #274052;
         background-color: #FFFCF7;
     }
+
+
+@media (max-width: 768px) {
+
+    .logs-content {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .logs-content {
+        margin-left: 0 !important;
+    }
+}

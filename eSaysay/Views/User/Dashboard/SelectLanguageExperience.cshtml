@@ -1,22 +1,47 @@
 ﻿@model string
 
-<h2>Select Your Language Experience Level</h2>
+<div class="selection-container d-flex justify-content-center">
 
-<form asp-action="SelectLanguageExperience" method="post">
-    <div>
-        <label>
-            <input type="radio" name="experience" value="Beginner" required /> Beginner - I am just starting to learn.
-        </label>
+    <div class="selection-content mt-5">
+
+        <div class="experience-topbar">
+            <h2>Your <span class="experience-span-dashboard">level of experience</span>...</h2>
+        </div>
+        <div class="experience-radio-content">
+
+            <form asp-action="SelectLanguageExperience" method="post">
+                <div>
+                    <label>
+                        <input type="radio" class="experience-radio" name="experience" value="Beginner" required />
+                        <span class="experience-text-content">
+                            <span class="experience-text-header">  Beginner </span>~ I am just starting to learn. </span>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" class="experience-radio" name="experience" value="Intermediate" required /> 
+                        <span class="experience-text-content">
+                        <span class="experience-text-header">  Intermediate </span>~ I can understand and form basic sentence. </span>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" class="experience-radio" name="experience" value="Fluent" required />
+                        <span class="experience-text-content">
+                            <span class="experience-text-header">  Fluent </span>~ I can speak and understand comfortably.
+                        </span>
+                    </label>
+                </div>
+                <div class="btn-exp-footer d-flex justify-content-end">
+                    <button type="submit" class="btn-experience-cont">
+                        <span class="material-symbols-rounded">
+                            chevron_right
+                        </span>
+                    </button>
+                </div>
+               
+            </form>
+        </div>
     </div>
-    <div>
-        <label>
-            <input type="radio" name="experience" value="Intermediate" required /> Intermediate - I can understand and form basic sentences.
-        </label>
-    </div>
-    <div>
-        <label>
-            <input type="radio" name="experience" value="Fluent" required /> Fluent - I can speak and understand comfortably.
-        </label>
-    </div>
-    <button type="submit">Continue</button>
-</form>
+
+</div>

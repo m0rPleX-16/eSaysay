@@ -1,8 +1,8 @@
 ﻿
 .lesson-details-container {
     max-width: 1200px; 
-    margin: 80px auto;
-    padding: 30px;
+    margin: 50px auto;
+    padding: 10px;
     background: #ffffff;
     border-radius: 15px;
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
@@ -32,42 +32,62 @@
         color: #274052;
         margin-top: 40px;
         margin-bottom: 30px;
+
     }
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    border-radius: 12px;
+    padding: 10px 15px;
+    max-width: 300px;
+    height: 100%; /* Ensures it takes full parent height */
+}
+.filter-label {
+    margin: 0;
+    color: #274052;
+}
+.filter-dropdown {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    color: #274052;
+}
 
     .lesson-details-container .carousel-wrapper {
         display: flex;
-        align-items: center;
-        justify-content: center;
         position: relative;
-        overflow: hidden;
-        max-width: 1000px; /* Wider carousel wrapper */
-        margin: auto;
+        padding: 30px;
     }
 
-.lesson-details-container .carousel {
-    background: none;
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    width: 100%;
-    max-width: 800px; /* Wider carousel */
-    overflow: hidden;
-    justify-content: flex-start;
-}
+    .lesson-details-container .carousel {
+        background: none;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        padding-left: 120px; /* Adjust this value to match the desired spacing */
+        box-sizing: border-box;
+    }
 
     .lesson-details-container .exercise-list {
         display: flex;
+        transition: transform 0.5s ease-in-out;
+        width: max-content;
     }
 
     .lesson-details-container .exercise-card {
-        min-width: 350px; /* Wider cards */
-        padding: 30px; /* More padding */
-        margin: 15px; /* More margin */
+
+        min-width: 350px;
+        padding: 30px;
+        margin: 0 8px;
         background: #FFFAF3;
-        border-radius: 15px; /* Rounded corners */
+        border-radius: 15px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        flex: 0 0 auto; /* Prevent flex shrinking */
+        flex: 0 0 auto;
+        position: relative;
     }
 
         .lesson-details-container .exercise-card:hover {
@@ -103,10 +123,14 @@
             background: #FFE4A3;
         }
 
+    .btn-area{
+        padding-top:0;
+    }
+
     .lesson-details-container .btn-back {
         background: #95a5a6;
         color: #fff;
-        padding: 12px 24px; /* Larger button */
+        padding: 12px 14px; /* Larger button */
         border-radius: 26px; /* Rounded button */
         font-style: italic;
         font-weight:500;
@@ -123,18 +147,22 @@
     .lesson-details-container .carousel-control {
         background: rgba(255, 255, 255, 0.8);
         border: none;
-        font-size: 36px; /* Larger arrows */
+        font-size: 36px;
         cursor: pointer;
-        padding: 15px; /* Larger padding */
+        padding: 15px;
         color: #274052;
         border-radius: 50%;
-        width: 50px; /* Larger buttons */
-        height: 50px; /* Larger buttons */
+        width: 50px;
+        height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
         transition: background 0.3s ease, color 0.3s ease;
+        position: absolute;
+        z-index: 10;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
         .lesson-details-container .carousel-control:hover {
@@ -149,3 +177,114 @@
     .lesson-details-container .next {
         right: 10px; /* Adjusted position */
     }
+
+@media (max-width: 768px) {
+
+    .lesson-details-container{
+        margin:60px;
+    }
+    .lesson-details-container .exercise-card {
+        min-width: 280px;
+        padding: 30px;
+    }
+
+    .lesson-details-container .carousel-control {
+        font-size: 24px;
+        padding: 10px;
+        width: 40px;
+        height: 40px;
+    }
+    .filter-dropdown p {
+        font-size: 12px;
+    }
+
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 992px) {
+    .lesson-details-container {
+        margin: 30px 10px; /* Reduced margin for smaller viewports */
+        padding: 15px;
+    }
+
+        .lesson-details-container .lesson-title {
+            font-size: 2rem; /* Smaller title on smaller screens */
+        }
+
+        .lesson-details-container .lesson-description {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-details-container .exercise-card {
+            min-width: 100%; /* Full width for better stacking on smaller devices */
+            padding: 20px;
+            margin: 0 5px;
+        }
+
+        .lesson-details-container .exercise-type {
+            font-size: 20px;
+        }
+
+        .lesson-details-container .exercise-content {
+            font-size: 14px;
+        }
+
+        .lesson-details-container .btn-start,
+        .lesson-details-container .btn-back {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .lesson-details-container .carousel-control {
+            width: 35px;
+            height: 35px;
+            font-size: 20px;
+            padding: 8px;
+        }
+
+        .lesson-details-container .carousel {
+            padding-left: 80px; /* Reduced padding for carousel on smaller screens */
+        }
+}
+
+/* For very small screens like mobile phones */
+@media (max-width: 576px) {
+    .lesson-details-container {
+        margin: 20px 5px;
+        padding: 10px;
+    }
+
+        .lesson-details-container .lesson-title {
+            font-size: 1.8rem;
+        }
+
+        .lesson-details-container .lesson-description {
+            font-size: 14px;
+        }
+
+        .lesson-details-container .exercise-card {
+            min-width: 100%;
+            padding: 15px;
+        }
+
+    .filter-container {
+        flex-direction: column;
+        max-width: 150px;
+
+        gap: 5px; /* Reduced spacing */
+    }
+    .filter-dropdown{
+        font-size: 12px;
+    }
+
+    .lesson-details-container .carousel {
+        padding-left: 50px;
+    }
+
+    .lesson-details-container .carousel-control {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+}

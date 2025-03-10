@@ -1,6 +1,7 @@
 ﻿.archive-page-lessons-content {
     margin-left: 200px;
     min-height: 92vh;
+    transition: margin-left 0.3s ease;
 }
 
 .archive-lessons-topbar { /* header top area*/
@@ -57,6 +58,7 @@
 
 #lessonsArchiveTableContainer {
     padding: 10px 115px 10px 115px;
+    overflow: auto;
 }
 
 
@@ -65,7 +67,6 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
 }
 
     .table-lessons-archive-content thead tr:first-child th:first-child {
@@ -160,3 +161,18 @@
             color: #274052;
         }
 
+@media (max-width:768px) {
+    .archive-page-lessons-content {
+        margin-left: 0px;
+    }
+    #lessonsArchiveTableContainer{
+        padding: 10px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .archive-page-lessons-content {
+        margin-left: 0;
+    }
+}

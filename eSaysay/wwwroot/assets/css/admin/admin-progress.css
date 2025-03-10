@@ -1,8 +1,9 @@
 ﻿
-.admin-progress {
-    margin-left: 200px;
-}
 
+.progress-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+}
 .admin-progress-topbar { /* header top area*/
     background: #FEF6ED;
     padding: 1rem 1rem;
@@ -25,7 +26,7 @@
 }
 
 
-.progress-content {
+.progress-content-summary {
     padding-right: 80px;
     padding-left: 80px;
     color: #274052;
@@ -33,7 +34,7 @@
 .progress-summary {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 16px;
     padding-bottom: 20px;
     background-color: #FEF6ED;
     color: #274052;
@@ -41,7 +42,7 @@
 }
 
 .progress-box {
-    flex: 1 1 calc(25% - 1rem);
+    flex: 0.1 1 calc(25% - 0.2rem);
     min-width: 180px;
     background-color: #FFFAF3;
     border: 2px dotted #274052;
@@ -74,18 +75,25 @@
 #progressChart{
     margin-top:20px;
 }
-.progress-table{
+.progress-table {
+    width: 100%;
     background: none;
+    overflow: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
+    .progress-table thead {
+        background-color: #FEF6ED; /* Visible header background */
+        position: sticky;
+        top: 0; /* Sticky header for better UX on scroll */
+        z-index: 2;
+    }
 
     .progress-table .table tbody tr td{
         background-color: #FFFAF3;
     }
 
 
-    .progress-table .table tbody tr:nth-child(odd) {
-        background-color: red;
-    }
 
 .progress-graphs {
     background-color: #FFFAF3;
@@ -93,4 +101,23 @@
     border-radius: 5px;
     padding: 1.8rem;
     text-align: center;
+}
+
+@media (max-width: 768px) {
+
+    .progress-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .progress-content-summary{
+        padding: 10px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .progress-content {
+        margin-left: 0 !important;
+    }
 }

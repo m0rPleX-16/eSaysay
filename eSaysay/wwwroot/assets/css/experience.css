@@ -1,0 +1,74 @@
+﻿
+.selection-content {
+    border: 2px dotted #274052;
+    background-color: #FFFCF7;
+    padding: 80px;
+    border-radius: 36px;
+}
+
+
+.experience-topbar { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dotted #274052;
+    color: #274052;
+}
+
+    .experience-topbar h2 {
+        color: #274052;
+    }
+
+.experience-span-dashboard {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.4rem;
+    color: #274052;
+}
+
+.experience-radio-content{
+    padding: 20px;
+}
+
+.experience-radio {
+    accent-color: #DFB757; /* Modern radio button color */
+    transform: scale(1.2);
+}
+.experience-label:hover {
+    background-color: #FFE4A3;
+}
+
+.experience-text-content {
+    font-size: 1.2rem;
+}
+
+.experience-text-header {
+    font-family: 'Arapey', serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    font-style: italic;
+}
+
+.btn-exp-footer{
+    padding-top: 30px;
+}
+
+.btn-experience-cont {
+    display: flex;
+    justify-content: center;
+    background-color: #DFB757;
+    color: #274052;
+    padding: 10px;
+    border-radius: 26px;
+    font-size: 1rem;
+    border: none;
+    font-weight: 600;
+}
+
+    .btn-experience-cont:hover {
+        background-color: #FFE4A3;
+    }
+.btn-experience-cont span {
+    font-size: 2rem;
+}

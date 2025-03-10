@@ -82,17 +82,17 @@
                     <h2>Adaptive Learning</h2>
                     <div class="adaptive-summary">
                         <div class="metric">
-                            <h3>Current Level</h3>
-                            <p>@(Model.AdaptiveLearning?.CurrentLevel != null ? Model.AdaptiveLearning.CurrentLevel.ToString() : "N/A")</p>
+                            <h3 class="adapt-learn">Current Level</h3>
+                            <p class="metric-content">@(Model.AdaptiveLearning?.CurrentLevel != null ? Model.AdaptiveLearning.CurrentLevel.ToString() : "N/A")</p>
                         </div>
                         <div class="metric">
-                            <h3>Recommended Lessons</h3>
+                            <h3 class="adapt-learn">Recommended Lessons</h3>
                             <ul>
                                 @if (Model.AdaptiveLearning?.RecommendedLessons != null && Model.AdaptiveLearning.RecommendedLessons.Any())
                                 {
                                     foreach (var lessonId in Model.AdaptiveLearning.RecommendedLessons)
                                     {
-                                        <li>Lesson @lessonId</li>
+                                        <li class="metric-content">Lesson @lessonId</li>
                                     }
                                 }
                                 else

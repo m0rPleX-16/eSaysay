@@ -1,6 +1,7 @@
 ﻿.archive-page-exercises-content {
     margin-left: 200px;
     min-height: 92vh;
+    transition: margin-left 0.3s ease;
 }
 
 .archive-exercises-topbar { /* header top area*/
@@ -61,7 +62,7 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
+    overflow: auto;
 }
 
     .table-exercises-archive-content thead tr:first-child th:first-child {
@@ -129,3 +130,16 @@
         justify-content: center;
         color: #FFFAF3;
     }
+
+@media (max-width:768px) {
+    .archive-page-exercises-content {
+        margin-left: 0px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .archive-page-exercises-content {
+        margin-left: 0;
+    }
+}

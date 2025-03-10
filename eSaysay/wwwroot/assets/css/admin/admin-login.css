@@ -1,0 +1,27 @@
+﻿.admin-login-container{
+    padding: 60px;
+}
+
+.admin-login-content {
+    padding: 40px;
+    background-color: #FFFAF3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 36px;
+}
+
+.btn-admin-login {
+    background-color: #DFB757;
+    color: #274052;
+    width: 100%;
+    font-weight:  600;
+}
+
+    .btn-admin-login:hover {
+        background-color: #FFE4A3;
+    }
+
+@media (max-width: 768px){
+    .admin-login-container {
+        padding: 10px;
+    }
+}

@@ -2,6 +2,8 @@
 @{
     var lesson = ViewBag.Lesson as eSaysay.Models.Entities.Lesson;
     ViewData["Title"] = $"{lesson.Title} - Exercises";
+
+
 }
 
 <div class="lesson-details-container">
@@ -15,13 +17,13 @@
     else
     {
         <!-- Dropdown for filtering -->
-        <div class="filter-container">
-            <label for="exerciseFilter">Filter by Status:</label>
-            <select id="exerciseFilter" class="form-control" onchange="filterExercises()">
-                <option value="all">All</option>
-                <option value="not-started">Not Started</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
+        <div class="filter-container ">
+            <label for="exerciseFilter" class="filter-label">Filter:</label>
+            <select id="exerciseFilter" class="filter-dropdown form-control" onchange="filterExercises()">
+                <option value="all"><p>All</p></option>
+                <option value="not-started"><p>Not Started</p></option>
+                <option value="in-progress"><p>In Progress</p></option>
+                <option value="completed"><p>Completed</p></option>
             </select>
         </div>
 
@@ -57,8 +59,10 @@
             <button class="carousel-control next" onclick="moveSlide(1)">&#10095;</button>
         </div>
     }
-
-    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">Back to Lessons</a>
+    <div class="btn-area mb-3">
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">Back to Lessons</a>
+    </div>
+    
 </div>
 
 <style>
@@ -72,7 +76,7 @@
     }
 
     .not-started-exercise {
-        border: 2px solid blue;
+        border: 2px solid #DFB757;
     }
 
     .badge {
@@ -94,18 +98,76 @@
 </style>
 
 <script>
-    function filterExercises() {
-        var filter = document.getElementById("exerciseFilter").value;
-        var exercises = document.querySelectorAll(".exercise-card");
+  
+        function filterExercises() {
+            var filter = document.getElementById("exerciseFilter").value;
+            var exercises = document.querySelectorAll(".exercise-card");
 
-        exercises.forEach(function (exercise) {
-            var status = exercise.classList.contains("completed-exercise")
-                ? "completed"
-                : exercise.classList.contains("started-exercise")
-                ? "in-progress"
-                : "not-started";
+            exercises.forEach(function (exercise) {
+                var status = exercise.classList.contains("completed-exercise")
+                    ? "completed"
+                    : exercise.classList.contains("started-exercise")
+                    ? "in-progress"
+                    : "not-started";
 
-            exercise.style.display = (filter === "all" || status === filter) ? "block" : "none";
-        });
+                exercise.style.display = (filter === "all" || status === filter) ? "block" : "none";
+            });
+        }
+    
+    let currentIndex = 0;
+
+function moveSlide(direction) {
+    const exerciseList = document.querySelector('.exercise-list');
+    const cards = document.querySelectorAll('.exercise-card');
+    const totalCards = cards.length;
+
+    // Calculate new index with wrap-around logic
+    currentIndex = (currentIndex + direction + totalCards) % totalCards;
+
+    // Scroll the carousel smoothly
+    const cardWidth = cards[0].offsetWidth + 16; // Including margin
+    exerciseList.style.transition = 'transform 0.5s ease-in-out';
+    exerciseList.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+
+    // Handle seamless looping
+    if (currentIndex === 0 && direction === -1) {
+        setTimeout(() => {
+            exerciseList.style.transition = 'none';
+            exerciseList.style.transform = `translateX(-${(totalCards - 1) * cardWidth}px)`;
+            setTimeout(() => {
+                exerciseList.style.transition = 'transform 0.5s ease-in-out';
+                currentIndex = totalCards - 1;
+            }, 50);
+        }, 500);
+    } else if (currentIndex === totalCards - 1 && direction === 1) {
+        setTimeout(() => {
+            exerciseList.style.transition = 'none';
+            exerciseList.style.transform = `translateX(0)`;
+            setTimeout(() => {
+                exerciseList.style.transition = 'transform 0.5s ease-in-out';
+                currentIndex = 0;
+            }, 50);
+        }, 500);
+
+  
+
     }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const exerciseList = document.querySelector('.exercise-list');
+    const cards = document.querySelectorAll('.exercise-card');
+
+    // Duplicate the first and last cards for seamless looping
+    const cloneFirst = cards[0].cloneNode(true);
+    const cloneLast = cards[cards.length - 1].cloneNode(true);
+
+    exerciseList.appendChild(cloneFirst);
+    exerciseList.insertBefore(cloneLast, cards[0]);
+
+    // Adjust initial position to show the first card
+    const cardWidth = cards[0].offsetWidth + 16; // Including margin
+    exerciseList.style.transform = `translateX(-${cardWidth}px)`;
+    currentIndex = 1;
+});
 </script>

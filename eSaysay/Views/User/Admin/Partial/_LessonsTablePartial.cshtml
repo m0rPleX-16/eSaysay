@@ -36,7 +36,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="editLessonModalLabel-@lesson.LessonID">Edit Lesson</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form method="post" action="/Admin/EditLesson">
                                 <div class="modal-body">
@@ -45,7 +45,7 @@
                                         <input type="hidden" name="LessonID" value="@lesson.LessonID" />
                                         <div class="mb-3">
                                             <label class="form-label">Title</label>
-                                            <input type="text" class="form-control" name="Title" value="@lesson.Title" required>
+                                        <input type="text" maxlength="150" class="form-control" name="Title" value="@lesson.Title" required>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Language</label>
@@ -76,7 +76,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Description</label>
-                                            <textarea class="form-control" name="Description">@lesson.Description</textarea>
+                                        <textarea class="form-control" maxlength="200" name="Description">@lesson.Description</textarea>
                                         </div>
                                 </div>
                                 <div class="modal-footer">

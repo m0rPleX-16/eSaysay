@@ -40,8 +40,11 @@
 
 
 .nav-item .nav-auth-username {
+    display: flex;
+    text-align: center;
     color: #F4E4D0;
     font-size: 0.9rem;
+    margin-bottom: 2px;
 }
 
     .nav-item .nav-auth-username:hover {

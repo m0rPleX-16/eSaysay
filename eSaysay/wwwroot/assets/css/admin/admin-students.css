@@ -1,10 +1,12 @@
 ﻿
 .admin-students {
-    margin-left: 200px;
     color: #274052;
     min-height: 92vh;
 }
-
+.admin-students-content {
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+}
 .admin-students-topbar { /* header top area*/
     background: #FEF6ED;
     padding: 1rem 1rem;
@@ -59,6 +61,7 @@
 .table-students {
     margin: 16px;
     padding: 0 100px 0 100px;
+    overflow-x: auto;
 }
 
 .table-students-content {
@@ -66,7 +69,6 @@
     border-spacing: 0;
     background-color: #FEF6ED;
     color: #274052;
-    overflow: hidden;
 }
     .table-students-content thead tr:first-child th:first-child {
         border-top-left-radius: 10px;
@@ -170,4 +172,30 @@
     font-style: italic;
     font-weight:600;
     opacity:60%;
+}
+
+@media (max-width: 768px) {
+
+    .admin-students-content {
+        margin: 0;
+        padding: 0;
+    }
+    .students-searchbar {
+        padding: 10px;
+    }
+    .students-view-archive {
+        padding: 10px;
+    }
+    .table-students {
+        margin: 16px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .admin-dashboard-sidebar.closed ~ .admin-students-content{
+        margin-left: 0;
+    }
+
 }
