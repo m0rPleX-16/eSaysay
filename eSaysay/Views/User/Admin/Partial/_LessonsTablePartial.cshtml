@@ -6,7 +6,7 @@
         <thead>
             <tr>
                 <th class="col-4">Title</th>
-                <th class ="col-2">Lesson Type</th>
+                <th class="col-2">Lesson Type</th>
                 <th class="col-2">Difficulty</th>
                 <th class="col-2">Language</th>
                 <th class="col-1">Actions</th>
@@ -21,97 +21,106 @@
                     <td>@lesson.DifficultyLevel</td>
                     <td>@lesson.Language.LanguageName</td>
                     <td class="d-flex justify-content-between">
-                        <button class="btn btn-lessons-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editLessonModal-@lesson.LessonID" >
+                        <button class="btn btn-lesson-edit"
+                                data-id="@lesson.LessonID"
+                                data-title="@lesson.Title"
+                                data-type="@lesson.LessonType"
+                                data-difficulty="@lesson.DifficultyLevel"
+                                data-language="@lesson.LanguageID"
+                                data-description="@lesson.Description"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editLessonModal">
                             <span class="material-symbols-rounded">edit</span>
                         </button>
-                        <button class="btn btn-lessons-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveLessonModal-@lesson.LessonID">
+                        <button class="btn btn-lesson-archive"
+                                data-id="@lesson.LessonID"
+                                data-title="@lesson.Title"
+                                data-bs-toggle="modal"
+                                data-bs-target="#archiveLessonModal">
                             <span class="material-symbols-rounded">archive</span>
                         </button>
                     </td>
                 </tr>
-
-                <!-- Edit Lesson Modal -->
-                <div class="modal fade" id="editLessonModal-@lesson.LessonID" tabindex="-1" aria-labelledby="editLessonModalLabel-@lesson.LessonID" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editLessonModalLabel-@lesson.LessonID">Edit Lesson</h5>
-                                <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form method="post" action="/Admin/EditLesson">
-                                <div class="modal-body">
-                                
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="LessonID" value="@lesson.LessonID" />
-                                        <div class="mb-3">
-                                            <label class="form-label">Title</label>
-                                        <input type="text" maxlength="150" class="form-control" name="Title" value="@lesson.Title" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Language</label>
-                                            <select class="form-control" name="LanguageID" required>
-                                                @foreach (var language in ViewBag.Languages)
-                                                {
-                                                    <option value="@language.LanguageID" selected="@(lesson.LanguageID == language.LanguageID ? "selected" : null)">
-                                                        @language.LanguageName
-                                                    </option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Lesson Type</label>
-                                            <select class="form-control" name="LessonType" required>
-                                                <option value="Video" selected="@(lesson.LessonType == "Video")">Video</option>
-                                                <option value="Text" selected="@(lesson.LessonType == "Text")">Text</option>
-                                                <option value="Quiz" selected="@(lesson.LessonType == "Quiz")">Quiz</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Difficulty Level</label>
-                                            <select class="form-control" name="DifficultyLevel" required>
-                                                <option value="Beginner" selected="@(lesson.DifficultyLevel == "Beginner")">Beginner</option>
-                                                <option value="Intermediate" selected="@(lesson.DifficultyLevel == "Intermediate")">Intermediate</option>
-                                                <option value="Advanced" selected="@(lesson.DifficultyLevel == "Advanced")">Advanced</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Description</label>
-                                        <textarea class="form-control" maxlength="200" name="Description">@lesson.Description</textarea>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Archive Lesson Modal -->
-                <div class="modal fade" id="archiveLessonModal-@lesson.LessonID" tabindex="-1" aria-labelledby="archiveLessonModalLabel-@lesson.LessonID" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Archive Lesson</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to archive the lesson <strong>@lesson.Title</strong>?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <form method="post" action="/Admin/ArchiveLesson">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="LessonID" value="@lesson.LessonID" />
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-danger">Archive</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             }
         </tbody>
     </table>
+
+<!-- Edit Lesson Modal (Moved outside the loop for efficiency) -->
+<div class="modal fade" id="editLessonModal" tabindex="-1" aria-labelledby="editLessonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLessonModalLabel">Edit Lesson</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="/Admin/EditLesson">
+                <div class="modal-body">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editLessonID" name="LessonID">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" maxlength="150" class="form-control" id="editLessonTitle" name="Title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Language</label>
+                        <select class="form-control" id="editLessonLanguage" name="LanguageID" required>
+                            @foreach (var language in ViewBag.Languages)
+                            {
+                                <option value="@language.LanguageID">@language.LanguageName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lesson Type</label>
+                        <select class="form-control" id="editLessonType" name="LessonType" required>
+                            <option value="Video">Video</option>
+                            <option value="Text">Text</option>
+                            <option value="Quiz">Quiz</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Difficulty Level</label>
+                        <select class="form-control" id="editLessonDifficulty" name="DifficultyLevel" required>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" maxlength="200" id="editLessonDescription" name="Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Archive Lesson Modal -->
+<div class="modal fade" id="archiveLessonModal" tabindex="-1" aria-labelledby="archiveLessonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Archive Lesson</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to archive this lesson?</p>
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="/Admin/ArchiveLesson">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="archiveLessonID" name="LessonID">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Pagination Controls -->
     @if (ViewBag.TotalPages > 1)

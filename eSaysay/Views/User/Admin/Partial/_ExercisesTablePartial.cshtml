@@ -29,103 +29,116 @@
                     <td>@exercise.Hint</td>
                     <td>@exercise.DifficultyLevel</td>
                     <td>
-                        <button class="btn btn-exercise-edit " data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
+                        <button class="btn btn-exercise-edit"
+                                data-id="@exercise.ExerciseID"
+                                data-content="@exercise.Content"
+                                data-type="@exercise.ExerciseType"
+                                data-answer="@exercise.CorrectAnswer"
+                                data-choices="@exercise.AnswerChoices"
+                                data-hint="@exercise.Hint"
+                                data-difficulty="@exercise.DifficultyLevel"
+                                data-lesson="@exercise.LessonID"
+                                data-bs-toggle="modal" data-bs-target="#editExerciseModal">
                             <span class="material-symbols-rounded">edit</span>
                         </button>
-                        <button class="btn btn-exercise-archive " data-bs-toggle="modal" data-bs-target="#archiveExerciseModal-@exercise.ExerciseID">
+                        <button class="btn btn-exercise-archive"
+                                data-id="@exercise.ExerciseID"
+                                data-content="@exercise.Content"
+                                data-bs-toggle="modal"
+                                data-bs-target="#archiveExerciseModal">
                             <span class="material-symbols-rounded">archive</span>
                         </button>
                     </td>
                 </tr>
-
-                <!-- Edit Exercise Modal -->
-                <div class="modal fade" id="editExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-labelledby="editExerciseModalLabel-@exercise.ExerciseID" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editExerciseModalLabel-@exercise.ExerciseID">Edit Exercise</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form method="post" action="/Admin/EditExercise">
-                                <div class="modal-body">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                    <div class="mb-3">
-                                        <label class="form-label">Content</label>
-                                        <input type="text" class="form-control" name="Content" value="@exercise.Content" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Exercise Type</label>
-                                        <select class="form-control" name="ExerciseType" required onchange="handleExerciseTypeChange(this)">
-                                            <option value="Listening Exercise" selected="@(exercise.ExerciseType == "Listening Exercise")">Listening Exercise</option>
-                                            <option value="Correct Translation" selected="@(exercise.ExerciseType == "Correct Translation")">Correct Translation</option>
-                                            <option value="Complete Translation" selected="@(exercise.ExerciseType == "Complete Translation")">Complete Translation</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Correct Answer</label>
-                                        <input type="text" class="form-control" name="CorrectAnswer" value="@exercise.CorrectAnswer" required>
-                                    </div>
-                                    <div class="mb-3" id="answerChoicesSection">
-                                        <label class="form-label">Answer Choices</label>
-                                        <input type="text" class="form-control" name="AnswerChoices" value="@exercise.AnswerChoices">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Hint</label>
-                                        <input type="text" class="form-control" name="Hint" value="@exercise.Hint">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Difficulty Level</label>
-                                        <select class="form-control" name="DifficultyLevel" required>
-                                            <option value="Easy" selected="@(exercise.DifficultyLevel == "Easy")">Easy</option>
-                                            <option value="Medium" selected="@(exercise.DifficultyLevel == "Medium")">Medium</option>
-                                            <option value="Hard" selected="@(exercise.DifficultyLevel == "Hard")">Hard</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Lesson</label>
-                                        <select class="form-control" name="LessonID" required>
-                                            @foreach (var lesson in ViewBag.Lessons)
-                                            {
-                                                <option value="@lesson.LessonID" selected="@(lesson.LessonID == exercise.LessonID)">@lesson.Title</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Archive Exercise Modal -->
-                <div class="modal fade" id="archiveExerciseModal-@exercise.ExerciseID" tabindex="-1" aria-labelledby="archiveExerciseModalLabel-@exercise.ExerciseID" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Archive Exercise</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to archive the exercise <strong>@exercise.Content</strong>?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <form method="post" action="/Admin/ArchiveExercise">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="ExerciseID" value="@exercise.ExerciseID" />
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-danger">Archive</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             }
         </tbody>
     </table>
+
+    <!-- Edit Exercise Modal -->
+    <div class="modal fade" id="editExerciseModal" tabindex="-1" aria-labelledby="editExerciseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editExerciseModalLabel">Edit Exercise</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="/Admin/EditExercise" id="editExerciseForm">
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ExerciseID" id="editExerciseID" />
+                        <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <input type="text" class="form-control" name="Content" id="editExerciseContent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Exercise Type</label>
+                            <select class="form-control" name="ExerciseType" id="editExerciseType" required>
+                                <option value="Listening Exercise">Listening Exercise</option>
+                                <option value="Correct Translation">Correct Translation</option>
+                                <option value="Complete Translation">Complete Translation</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correct Answer</label>
+                            <input type="text" class="form-control" name="CorrectAnswer" id="editCorrectAnswer" required>
+                        </div>
+                        <div class="mb-3" id="answerChoicesSection">
+                            <label class="form-label">Answer Choices</label>
+                            <input type="text" class="form-control" name="AnswerChoices" id="editAnswerChoices">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hint</label>
+                            <input type="text" class="form-control" name="Hint" id="editHint">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Difficulty Level</label>
+                            <select class="form-control" name="DifficultyLevel" id="editDifficultyLevel" required>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Lesson</label>
+                            <select class="form-control" name="LessonID" id="editLessonID" required>
+                                @foreach (var lesson in ViewBag.Lessons)
+                                {
+                                    <option value="@lesson.LessonID">@lesson.Title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Archive Modal -->
+    <div class="modal fade" id="archiveExerciseModal" tabindex="-1" aria-labelledby="archiveExerciseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Archive Exercise</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to archive the exercise <strong id="archiveExerciseContent"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" action="/Admin/ArchiveExercise" id="archiveExerciseForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ExerciseID" id="archiveExerciseID" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Archive</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Pagination Controls -->
     @if (ViewBag.TotalPages > 1)

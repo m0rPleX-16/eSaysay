@@ -108,7 +108,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            function loadLanguages(page = 1) {
+            // Function to load exercises via AJAX
+            function loadExercises(page = 1) {
                 const searchTerm = $('#exerciseSearchInput').val();
                 $.ajax({
                     url: '/Admin/FilterExercises',
@@ -117,6 +118,7 @@
                     success: function (response) {
                         $('#exercisesContainer').html(response);
                         $('.exercises-pagination').html($(response).find('.exercises-pagination').html());
+                        attachEventHandlers(); // Re-attach event handlers after AJAX call
                     },
                     error: function (xhr, status, error) {
                         console.error('Error fetching filtered data:', error);
@@ -130,7 +132,7 @@
             $('#exerciseSearchInput').on('input', function () {
                 clearTimeout(timeoutId);
                 timeoutId = setTimeout(() => {
-                    loadLanguages();
+                    loadExercises();
                 }, 300);
             });
 
@@ -138,8 +140,44 @@
             $(document).on('click', '.pagination-link', function (e) {
                 e.preventDefault();
                 const page = $(this).data('page');
-                loadLanguages(page);
+                loadExercises(page);
             });
+
+            // Function to attach event handlers
+            function attachEventHandlers() {
+                // Attach event handlers for edit buttons
+                $('.btn-exercise-edit').on('click', function () {
+                    const exerciseID = $(this).data('id');
+                    const content = $(this).data('content');
+                    const type = $(this).data('type');
+                    const answer = $(this).data('answer');
+                    const choices = $(this).data('choices');
+                    const hint = $(this).data('hint');
+                    const difficulty = $(this).data('difficulty');
+                    const lesson = $(this).data('lesson');
+
+                    $('#editExerciseID').val(exerciseID);
+                    $('#editExerciseContent').val(content);
+                    $('#editExerciseType').val(type);
+                    $('#editCorrectAnswer').val(answer);
+                    $('#editAnswerChoices').val(choices);
+                    $('#editHint').val(hint);
+                    $('#editDifficultyLevel').val(difficulty);
+                    $('#editLessonID').val(lesson);
+                });
+
+                // Attach event handlers for archive buttons
+                $('.btn-exercise-archive').on('click', function () {
+                    const exerciseID = $(this).data('id');
+                    const content = $(this).data('content');
+
+                    $('#archiveExerciseID').val(exerciseID);
+                    $('#archiveExerciseContent').text(content);
+                });
+            }
+
+            // Initial attachment of event handlers
+            attachEventHandlers();
         });
     </script>
 }

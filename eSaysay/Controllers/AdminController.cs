@@ -897,7 +897,7 @@ namespace eSaysay.Controllers
                     AverageScore = progressData.Any(p => p.Score.HasValue) ? progressData.Average(p => p.Score ?? 0) : 0,
                     ProgressData = progressData.Select(p => new ProgressDetailViewModel
                     {
-                        UserName = p.User?.FirstName ?? "Student",
+                        UserName = p.User != null ? _encryptionService.DecryptData(p.User.FirstName) : "Student",
                         LessonName = p.Lesson?.Title ?? "Unknown Lesson",
                         CompletionStatus = p.CompletionStatus ?? "Not Started",
                         Score = p.Score ?? 0, 

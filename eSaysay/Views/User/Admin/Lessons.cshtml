@@ -100,31 +100,32 @@
         </div>
 
     </div>
-   
+
     @section Scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function () {
                 function loadLessons(page = 1) {
-                    const searchQuery = $('#searchInput').val();
+                    const searchQuery = $('#lessonSearchInput').val();
                     $.ajax({
                         url: '/Admin/FilterLessons',
                         type: 'GET',
                         data: { searchQuery: searchQuery, page: page },
-                                    success: function (response) {
+                        success: function (response) {
                             $('#lessonTableContainer').html(response);
                             $('.lessons-pagination').html($(response).find('.lessons-pagination').html());
+                            attachLessonEventHandlers(); // Re-attach events after reloading table
                         },
                         error: function (xhr, status, error) {
-                            console.error('Error fetching filtered data:', error);
-                            console.error('Response Text:', xhr.responseText);
+                            console.error('Error fetching lessons:', error);
+                            console.error('Response:', xhr.responseText);
                         }
                     });
                 }
 
                 // Debounce function to prevent excessive AJAX calls
                 let timeoutId;
-                $('#searchInput').on('input', function () {
+                $('#lessonSearchInput').on('input', function () {
                     clearTimeout(timeoutId);
                     timeoutId = setTimeout(() => {
                         loadLessons();
@@ -135,12 +136,37 @@
                 $(document).on('click', '.pagination-link', function (e) {
                     e.preventDefault();
                     const page = $(this).data('page');
-                    const searchQuery = $('#searchInput').val();
-                    loadLessons(page, searchQuery);
+                    loadLessons(page);
                 });
+
+                // Function to attach event handlers for edit and archive
+                function attachLessonEventHandlers() {
+                    $('.btn-lesson-edit').on('click', function () {
+                        const lessonID = $(this).data('id');
+                        const title = $(this).data('title');
+                        const type = $(this).data('type');
+                        const difficulty = $(this).data('difficulty');
+                        const language = $(this).data('language');
+                        const description = $(this).data('description');
+
+                        $('#editLessonID').val(lessonID);
+                        $('#editLessonTitle').val(title);
+                        $('#editLessonType').val(type);
+                        $('#editLessonDifficulty').val(difficulty);
+                        $('#editLessonLanguage').val(language);
+                        $('#editLessonDescription').val(description);
+                    });
+
+                    $('.btn-lesson-archive').on('click', function () {
+                        const lessonID = $(this).data('id');
+                        $('#archiveLessonID').val(lessonID);
+                    });
+                }
+
+                // Initial attachment of event handlers
+                attachLessonEventHandlers();
             });
         </script>
     }
-
 </main>
 
