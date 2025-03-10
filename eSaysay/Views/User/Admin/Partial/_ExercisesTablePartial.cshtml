@@ -211,3 +211,29 @@
         </ul>
     </nav>
 }
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+          $(document).ready(function () {
+            function loadExercises(page, searchTerm = '') {
+                $.get('/Admin/FilterExercises', { page: page, searchTerm: searchTerm }, function (data) {
+                    $('.table-exercises').html(data); // Update table and pagination
+                });
+            }
+
+            // Handle search
+            $('#searchExercises').on('input', function () {
+                let searchTerm = $(this).val();
+                loadExercises(1, searchTerm); // Reset to page 1 when searching
+            });
+
+            // Handle pagination
+            $(document).on('click', '.pagination-link', function (e) {
+                e.preventDefault();
+                let page = $(this).data('page');
+                let searchTerm = $('#searchExercises').val();
+                loadExercises(page, searchTerm);
+            });
+        });
+</script>
+}

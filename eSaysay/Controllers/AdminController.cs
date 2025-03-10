@@ -198,7 +198,7 @@ namespace eSaysay.Controllers
             var language = await _context.Language.FindAsync(LanguageID);
             if (language != null)
             {
-                language.IsArchived = true; // Soft delete
+                language.IsArchived = true;
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
@@ -214,7 +214,7 @@ namespace eSaysay.Controllers
             var language = await _context.Language.FindAsync(LanguageID);
             if (language != null)
             {
-                language.IsArchived = false; // Restore
+                language.IsArchived = false;
                 _context.Language.Update(language);
                 await _context.SaveChangesAsync();
 
@@ -303,18 +303,16 @@ namespace eSaysay.Controllers
         // GET: Admin/Exercises
         public IActionResult Exercises(string searchTerm, int page = 1, int pageSize = 5)
         {
-            
-
             var query = _context.InteractiveExercises
                 .Include(e => e.Lesson)
                 .Where(e => !e.IsArchived);
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(e => 
-                e.Content.Contains(searchTerm) ||
-                e.ExerciseType.Contains(searchTerm) ||
-                e.DifficultyLevel.Contains(searchTerm));
+                query = query.Where(e =>
+                    e.Content.Contains(searchTerm) ||
+                    e.ExerciseType.Contains(searchTerm) ||
+                    e.DifficultyLevel.Contains(searchTerm));
             }
 
             var totalRecords = query.Count();
@@ -357,8 +355,6 @@ namespace eSaysay.Controllers
 
             return PartialView("~/Views/User/Admin/Partial/_ExercisesTablePartial.cshtml", exercises);
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -558,7 +554,6 @@ namespace eSaysay.Controllers
             return RedirectToAction("Exercises");
         }
 
-        // GET: Admin/ArchivedExercises with pagination and search
         public async Task<IActionResult> ArchivedExercises(string search, int page = 1, int pageSize = 5)
         {
             var archivedExercises = await _context.InteractiveExercises
@@ -583,20 +578,28 @@ namespace eSaysay.Controllers
             return View("~/Views/User/Admin/Shared/ArchivedExercises.cshtml", archivedExercises);
         }
 
-        // POST: Admin/RestoreExercise
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreExercise(int ExerciseID)
         {
-            var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
-            if (exercise != null)
+            try
             {
-                exercise.IsArchived = false;
-                _context.InteractiveExercises.Update(exercise);
-                await _context.SaveChangesAsync();
-                await _logService.LogEvent($"Restored exercise: {exercise.Content}", "UTC");
+                var exercise = await _context.InteractiveExercises.FindAsync(ExerciseID);
+                if (exercise != null)
+                {
+                    exercise.IsArchived = false;
+                    _context.InteractiveExercises.Update(exercise);
+                    await _context.SaveChangesAsync();
+                    await _logService.LogEvent($"Restored exercise: {exercise.Content}", "");
+
+                    return Json(new { success = true, message = "Exercise restored successfully!" });
+                }
+                return Json(new { success = false, message = "Exercise not found." });
             }
-            return Json(new { redirect = Url.Action("ArchivedExercises") });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -610,17 +613,15 @@ namespace eSaysay.Controllers
                 {
                     _context.InteractiveExercises.Remove(exercise);
                     await _context.SaveChangesAsync();
-
                     await _logService.LogEvent($"Permanently deleted exercise: {exercise.Content}", "UTC");
-                    return Ok(); 
+
+                    return Json(new { success = true, message = "Exercise permanently deleted!" });
                 }
-                return NotFound();
+                return Json(new { success = false, message = "Exercise not found." });
             }
             catch (Exception ex)
             {
-                // Log the exception
-                await _logService.LogEvent($"Error deleting exercise: {ex.Message}", "UTC");
-                return StatusCode(500, "An error occurred while deleting the exercise."); 
+                return Json(new { success = false, message = ex.Message });
             }
         }
         public IActionResult Lessons(string searchQuery, int page = 1, int pageSize = 5)
