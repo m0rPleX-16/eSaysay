@@ -1,8 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -13,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using eSaysay.Models;
+using eSaysay.Services; // Import the EncryptionService
 
 namespace eSaysay.Areas.Identity.Pages.Account.Manage
 {
@@ -21,19 +18,23 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly EncryptionService _encryptionService; // Inject Encryption Service
 
         public UserProfileModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            EncryptionService encryptionService) // Injected EncryptionService
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _encryptionService = encryptionService;
         }
 
         public string Email { get; set; }
         public bool IsEmailConfirmed { get; set; }
+
         [TempData]
         public string StatusMessage { get; set; }
 
@@ -78,13 +79,14 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
 
+            // **🔹 Decrypt sensitive user details before displaying**
             Input = new InputModel
             {
                 NewEmail = email,
-                FirstName = user.FirstName,
-                MiddleName = user.MiddleName,
-                LastName = user.LastName,
-                Gender = user.Gender,
+                FirstName = _encryptionService.DecryptData(user.FirstName),
+                MiddleName = _encryptionService.DecryptData(user.MiddleName),
+                LastName = _encryptionService.DecryptData(user.LastName),
+                Gender = _encryptionService.DecryptData(user.Gender),
                 Age = user.Age,
                 Birthday = user.Birthday
             };
@@ -104,76 +106,6 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostChangeEmailAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var email = await _userManager.GetEmailAsync(user);
-            if (Input.NewEmail != email)
-            {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmailChange",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
-                    protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(
-                    Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
-                return RedirectToPage();
-            }
-
-            StatusMessage = "Your email is unchanged.";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var userId = await _userManager.GetUserIdAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { area = "Identity", userId = userId, code = code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            StatusMessage = "Verification email sent. Please check your email.";
-            return RedirectToPage();
-        }
-
         public async Task<IActionResult> OnPostUpdateProfileAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -188,11 +120,11 @@ namespace eSaysay.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            // Update user profile details
-            user.FirstName = Input.FirstName;
-            user.MiddleName = Input.MiddleName;
-            user.LastName = Input.LastName;
-            user.Gender = Input.Gender;
+            // **🔹 Encrypt sensitive user details before storing**
+            user.FirstName = _encryptionService.EncryptData(Input.FirstName);
+            user.MiddleName = _encryptionService.EncryptData(Input.MiddleName);
+            user.LastName = _encryptionService.EncryptData(Input.LastName);
+            user.Gender = _encryptionService.EncryptData(Input.Gender);
             user.Age = Input.Age;
             user.Birthday = Input.Birthday;
 
