@@ -349,6 +349,7 @@ namespace eSaysay.Controllers
                 .Take(pageSize)
                 .ToList();
 
+            ViewBag.Lessons = _context.Lessons.ToList();
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewBag.CurrentPage = page;
             ViewBag.SearchTerm = searchTerm;
