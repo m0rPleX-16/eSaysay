@@ -3,6 +3,7 @@
     margin-left: 200px;
     transition: margin-left 0.3s ease;
 }
+
 .admin-exercises-topbar { /* header top area*/
     background: #FEF6ED;
     padding: 1rem 1rem;
@@ -13,9 +14,9 @@
     color: #274052;
 }
 
-.admin-exercises-topbar h2 {
-    color: #274052;
-}
+    .admin-exercises-topbar h2 {
+        color: #274052;
+    }
 
 .exercises-span-dashboard {
     font-family: 'Arapey', serif;
@@ -51,16 +52,17 @@
     font-weight: 600;
     width: 150px;
 }
-.btn-exercises-add:hover {
-    background-color: #5A9A3D;
-    color: #fefefe;
-}
+
+    .btn-exercises-add:hover {
+        background-color: #5A9A3D;
+        color: #fefefe;
+    }
 
 .btn-exercises-view-archive {
     background-color: #DFB757;
     color: #274052;
     font-weight: 600;
-    height:38px;
+    height: 38px;
 }
 
     .btn-exercises-view-archive:hover {
@@ -83,6 +85,12 @@
     background-color: #FEF6ED;
     color: #274052;
 }
+
+    .table-exercises-content tbody tr {
+        min-height: 100%;
+        height: 100%;
+    }
+
 
     .table-exercises-content thead tr:first-child th:first-child {
         border-top-left-radius: 10px;
@@ -110,43 +118,45 @@
     }
 
 /*ACTION BUTTON*/
-.btn-exercises-edit {
-    background-color: #488EC3;
+.btn-exercise-edit {
+    background-color: #3D76A2;
     color: #FAF3E2;
     font-weight: 700;
     height: 40px;
     width: 40px;
     margin-right: 10px;
+    margin: 5px;
 }
 
-    .btn-exercises-edit span {
+    .btn-exercise-edit span {
         display: flex;
         align-items: center;
         justify-content: center;
         color: #FAF3E2;
     }
 
-    .btn-exercises-edit:hover {
+    .btn-exercise-edit:hover {
         background-color: #C3DFF4;
         color: #274052;
     }
 
-.btn-exercises-archive {
+.btn-exercise-archive {
     background-color: #808080;
     color: #FAF3E2;
     font-weight: 700;
     height: 40px;
     width: 40px;
+    margin: 5px;
 }
 
-    .btn-exercises-archive span {
+    .btn-exercise-archive span {
         display: flex;
         align-items: center;
         justify-content: center;
         color: #FAF3E2;
     }
 
-    .btn-exercises-archive:hover {
+    .btn-exercise-archive:hover {
         background-color: #DEDEDE;
         color: #274052;
     }
@@ -198,8 +208,8 @@
         width: 120px;
         height: 90px;
     }
-    .exercises-main-btn{
 
+    .exercises-main-btn {
     }
 
     .table-exercises {

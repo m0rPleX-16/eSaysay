@@ -5,15 +5,15 @@
     <table class="table table-exercises-content">
         <thead>
             <tr>
-                <th class="col-2">Content</th>
-                <th class="col-2">Translated Content</th>
-                <th class="col-1">Lesson</th>
-                <th class="col-1">Type</th>
-                <th class="col-1">Correct Answer</th>
-                <th class="col-1">Answer Choices</th>
-                <th class="col-1">Hint</th>
-                <th class="col-1">Difficulty</th>
-                <th class="col-1">Actions</th>
+                <th>Content</th>
+                <th>Translated Content</th>
+                <th>Lesson</th>
+                <th>Type</th>
+                <th>Correct Answer</th>
+                <th>Answer Choices</th>
+                <th>Hint</th>
+                <th>Difficulty</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,11 +28,11 @@
                     <td>@exercise.AnswerChoices</td>
                     <td>@exercise.Hint</td>
                     <td>@exercise.DifficultyLevel</td>
-                    <td class="d-flex justify-content-between">
-                        <button class="btn btn-exercise-edit btn-sm" data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
+                    <td>
+                        <button class="btn btn-exercise-edit " data-bs-toggle="modal" data-bs-target="#editExerciseModal-@exercise.ExerciseID">
                             <span class="material-symbols-rounded">edit</span>
                         </button>
-                        <button class="btn btn-exercise-archive btn-sm" data-bs-toggle="modal" data-bs-target="#archiveExerciseModal-@exercise.ExerciseID">
+                        <button class="btn btn-exercise-archive " data-bs-toggle="modal" data-bs-target="#archiveExerciseModal-@exercise.ExerciseID">
                             <span class="material-symbols-rounded">archive</span>
                         </button>
                     </td>
