@@ -8,37 +8,32 @@
         Layout = "/Areas/Identity/Pages/_IndexLayout.cshtml";
     }
 }
-<div class="sidebar-account-layout">
     @await Html.PartialAsync("_Sidebar")
-</div>
 
 
+<div class="main-content">
+        @await Html.PartialAsync("_NavbarAuthenticated")
+        <div class="account-title mt-3" style="color: #274052;">
+            <h2>Account <span class="account-span-dashboard">settings</span></h2>
+        </div>
 
-<div class="all-manage">
+        <div class="manage-account-page">
 
-    @await Html.PartialAsync("_NavbarAuthenticated")
-
-    <div class="account-title mt-3" style="color: #274052;">
-        <h2>Account <span class="account-span-dashboard">settings</span></h2>
-    </div>
-
-    <div class="manage-account-page">
-
-        <div>
-            <div class="row">
-                <div class="col-md-3">
-                    <partial name="_ManageNav" />
-                </div>
-                <div class="col-md-9 manage-account-content">
-                    @RenderBody()
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <partial name="_ManageNav" />
+                    </div>
+                    <div class="col-md-9 manage-account-content">
+                        @RenderBody()
+                    </div>
                 </div>
             </div>
-        </div>
 
             @section Scripts {
                 @RenderSection("Scripts", required: false)
             }
-  
-    </div>
+
+        </div>
 
 </div>

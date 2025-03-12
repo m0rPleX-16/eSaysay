@@ -450,13 +450,13 @@ namespace eSaysay.Controllers
             {
                 _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Beginner lessons. Unlocking Intermediate.");
                 user.LanguageExperience = "Intermediate";
-                await SendNotification(userId, "Congratulations! You have unlocked Intermediate lessons.", "Lesson Unlocked");
+                await SendNotification(userId, "Congratulations! You have unlocked Intermediate lessons.", "UTC");
             }
             else if (previousLevel == "Intermediate" && intermediateLessons.All(l => completedLessons.Contains(l)))
             {
                 _logger.LogInformation($"[UpdateLanguageExperience] Student {userId} completed all Intermediate lessons. Unlocking Advanced.");
                 user.LanguageExperience = "Advanced";
-                await SendNotification(userId, "Great work! You have unlocked Advanced lessons.", "Lesson Unlocked");
+                await SendNotification(userId, "Great work! You have unlocked Advanced lessons.", "UTC");
             }
             else
             {

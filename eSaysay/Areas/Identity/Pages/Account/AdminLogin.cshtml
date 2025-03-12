@@ -10,9 +10,8 @@
         <div class="admin-login-content col-lg-6 col-md-8 mx-auto " style="font-family: var(--default-font);">
             <div class="text-center mb-4">
                 <h2 class="fw-bold" style="color: var(--heading-color);">Admin Login</h2>
-                <p>Access your account</p>
             </div>
-            <form id="account" method="post" asp-route-returnUrl="@Url.Action("Index","Admin")">
+            <form id="account" class="admin-login-forms" method="post" asp-route-returnUrl="@Url.Action("Index","Admin")">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-floating mb-3">
                     <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" required />

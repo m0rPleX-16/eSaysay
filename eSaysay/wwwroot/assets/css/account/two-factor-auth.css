@@ -70,6 +70,19 @@
         background-color: #E58080;
         color: #fff;
     }
+.btn-download-data {
+    background-color: #3D76A2;
+    font-weight: 500;
+    color: #FFF;
+    font-size: 1rem;
+    border-radius: 26px;
+    width: 120px;
+}
+
+    .btn-download-data:hover {
+        background-color: #629CC7;
+        color: #FFF;
+    }
 
 /* ----------------- LOGIN TWO FACTOR AUTH ------------------------*/
 
