@@ -53,6 +53,14 @@
     color: #5D4940;
 }
 
+.register-user-form input{
+    border-radius: 36px;
+}
+
+.register-user-form .form-control {
+    border-radius: 36px;
+}
+
 .email-input label {
     color: #5D4940;
 }
@@ -87,16 +95,16 @@
 
 .btn-register-page {
     border-radius: 36px;
-    color: #5D4940;
+    color: #274052;
     font-weight: 600;
     background-color: #DFB757;
 }
 
     .btn-register-page:hover {
         border-radius: 36px;
-        color: #5D4940;
+        color: #274052;
         font-weight: 600;
-        background-color: #FFDE8D;
+        background-color: #FFDE8D !important;
     }
 
 .register-inputs .text-center a {
@@ -109,10 +117,18 @@
         color: #DFB757;
     }
 
+.btn-captcha{
+    border: none;
+    border-radius: 26px;
+    width: 25px;
+    background: none;
+}
+    .btn-captcha:hover {
+        background-color: #F9E7BD;
+    }
 
-
-@media (max-width: 768px) {
-    .register-page .container .register-inputs {
+    @media (max-width: 768px) {
+        .register-page .container .register-inputs {
         border-radius: 36px;
     }
 }

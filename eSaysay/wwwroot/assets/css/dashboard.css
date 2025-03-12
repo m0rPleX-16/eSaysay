@@ -24,7 +24,7 @@ body {
 }
 
 .sidebar.collapsed ~ .main-content {
-    margin-left: 115px; 
+    margin-left: 115px !important; 
 }
 
 .non-avail {
@@ -206,7 +206,7 @@ body {
     }
 
     .sidebar.collapsed ~ .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
 
     .lesson-cards {

@@ -16,37 +16,32 @@
             </div>
             <div class="col-lg-6 register-inputs col-md-8 mx-auto p-4 ">
                 <div class="text-center mb-4">
-                    <h2 class="fw-bold" style="color: var(--heading-color);">Register</h2>
-                    <p>Create your account</p>
+                    <h2 class="fw-bold">Register</h2>
                 </div>
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" autocomplete="off">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" required />
-                                <label asp-for="Input.FirstName">First Name</label>
-                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input asp-for="Input.MiddleName" class="form-control" placeholder="Middle Name" required />
-                                <label asp-for="Input.MiddleName">Middle Name</label>
-                                <span asp-validation-for="Input.MiddleName" class="text-danger"></span>
-                            </div>
-                        </div>
+                    <div class="form-floating mb-3 register-user-form">
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" required />
+                        <label asp-for="Input.FirstName">First Name</label>
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+
+                    </div>
+                    <div class="form-floating mb-3 register-user-form">
+                        <input asp-for="Input.MiddleName" class="form-control" placeholder="Middle Name" required />
+                        <label asp-for="Input.MiddleName">Middle Name</label>
+                        <span asp-validation-for="Input.MiddleName" class="text-danger"></span>
+
+                    </div>
+                    <div class="form-floating mb-3 register-user-form">
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" required />
+                        <label asp-for="Input.LastName">Last Name</label>
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" required />
-                                <label asp-for="Input.LastName">Last Name</label>
-                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
-                            </div>
-                        </div>
+
+                    <div class="row register-user-form">
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
                                 <select asp-for="Input.Gender" class="form-control" required>
@@ -59,16 +54,6 @@
                                 <span asp-validation-for="Input.Gender" class="text-danger"></span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input asp-for="Input.Age" type="number" class="form-control" placeholder="Age" required min="1" max="80" />
-                                <label asp-for="Input.Age">Age</label>
-                                <span asp-validation-for="Input.Age" class="text-danger"></span>
-                            </div>
-                        </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
                                 <input asp-for="Input.Birthday" type="date" class="form-control" required max="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -78,19 +63,19 @@
                         </div>
                     </div>
 
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-3 register-user-form">
                         <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" required autocomplete="email" />
                         <label asp-for="Input.Email">Email</label>
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
 
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-3 register-user-form">
                         <input asp-for="Input.Password" type="password" class="form-control" placeholder="Password" required autocomplete="new-password" />
                         <label asp-for="Input.Password">Password</label>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
 
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-3 register-user-form">
                         <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" required autocomplete="new-password" />
                         <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
@@ -99,15 +84,15 @@
                     <!-- Custom CAPTCHA -->
                     <div class="mb-3 text-center">
                         <img id="captchaImage" src="/Captcha/Generate" alt="CAPTCHA" />
-                        <button type="button" onclick="reloadCaptcha()">↻</button>
+                        <button type="button" class="btn-captcha" onclick="reloadCaptcha()" title="Reload CAPTCHA">↻</button>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-3 register-user-form">
                         <input asp-for="Input.CaptchaCode" class="form-control" placeholder="Enter CAPTCHA" required />
                         <label asp-for="Input.CaptchaCode">Enter CAPTCHA</label>
                         <span asp-validation-for="Input.CaptchaCode" class="text-danger"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2" style="background: var(--accent-color); border: none;">
+                    <button type="submit" class="btn btn-register-page w-100 py-2" style="background: var(--accent-color); border: none;">
                         Register
                     </button>
 
