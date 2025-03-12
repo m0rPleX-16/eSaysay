@@ -1,10 +1,7 @@
-﻿.all-manage {
-    margin-left: 220px;
-    padding: 20px 20px 20px 20px;
+﻿
+.main-content {
     transition: margin-left 0.4s ease;
 }
-
-
 .account-title { /* header top area*/
     background: #FEF6ED;
     padding: 0.1rem 1rem;
@@ -13,6 +10,7 @@
     align-items: center;
     color: #274052;
 }
+
 
     .account-title h2 {
         color: #274052;
@@ -34,10 +32,8 @@
     background-color: #FFFAF3;
 }
 
-
-
-.sidebar.collapsed ~ .all-manage {
-    margin-left: 100px;
+.manage-account-content {
+    border-left: 1px dotted #274052;
 }
 
 /* -------------- ACCOUNT SETTINGS SIDEBAR */
@@ -64,12 +60,6 @@
 
     /* ------------------- CONTENT */
 
-.manage-account-content{
-    color: #274052;
-    border-left: 1px dotted #274052;
-    padding-left: 40px;
-}
-
 .btn-register-confirm-acc {
     background-color: #DFB757;
     color: #274052;
@@ -82,14 +72,7 @@
         color: #274052;
     }
 
-    @media (max-width: 768px) {
-        .all-manage {
-            margin-left: 0;
-        }
 
-        .sidebar.collapsed ~ .all-manage {
-            margin-left: 0;
-        }
-
-
+.sidebar.collapsed ~ .main-content {
+    margin-left: 115px !important;
 }

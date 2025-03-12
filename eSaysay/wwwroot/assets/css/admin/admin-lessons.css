@@ -105,7 +105,7 @@
     }
 
 /*ACTION BUTTON*/
-.btn-lessons-edit {
+.btn-lesson-edit {
     background-color: #488EC3;
     color: #FAF3E2;
     font-weight: 700;
@@ -113,19 +113,19 @@
     width: 40px;
 }
 
-    .btn-lessons-edit span {
+    .btn-lesson-edit span {
         display: flex;
         align-items: center;
         justify-content: center;
         color: #FAF3E2;
     }
 
-    .btn-lessons-edit:hover {
+    .btn-lesson-edit:hover {
         background-color: #C3DFF4;
         color: #274052;
     }
 
-.btn-lessons-archive {
+.btn-lesson-archive {
     background-color: #808080;
     color: #FAF3E2;
     font-weight: 700;
@@ -133,14 +133,14 @@
     width: 40px;
 }
 
-    .btn-lessons-archive span {
+    .btn-lesson-archive span {
         display: flex;
         align-items: center;
         justify-content: center;
         color: #FAF3E2;
     }
 
-    .btn-lessons-archive:hover {
+    .btn-lesson-archive:hover {
         background-color: #DEDEDE;
         color: #274052;
     }
