@@ -1,4 +1,8 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using eSaysay.Configuration
+@inject IOptions<AppSettings> AppSettings
+@{
     ViewData["Title"] = "Translator";
 }
 
@@ -63,8 +67,16 @@
 </div>
 
 @section Scripts {
+    <script src="@AppSettings.Value.ResponsiveVoice.ScriptUrl?key=@AppSettings.Value.ResponsiveVoice.ApiKey"></script>
+
     <script>
-               const fromInput = document.querySelector(".from-text");
+        // Configuration from appsettings
+        const translationConfig = {
+            apiBaseUrl: '@AppSettings.Value.TranslationApi.BaseUrl',
+            defaultLangPair: '@AppSettings.Value.TranslationApi.DefaultLangPair'
+        };
+
+        const fromInput = document.querySelector(".from-text");
         const toInput = document.querySelector(".to-text");
         const translateButton = document.querySelector("#translator-button");
         const speakFrom = document.querySelector("#speak-from");
@@ -75,31 +87,48 @@
 
         async function fetchTranslation(text, fromLang, toLang) {
             if (!text) return;
-            let API_URL = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
+
             try {
-                let response = await fetch(API_URL);
-                let data = await response.json();
-                return data.responseData.translatedText;
+                const response = await fetch(
+                    `${translationConfig.apiBaseUrl}?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`
+                );
+
+                if (!response.ok) throw new Error('Translation failed');
+
+                const data = await response.json();
+                return data.responseData?.translatedText || 'Translation error';
             } catch (error) {
-                console.error("Translation API error:", error);
+                console.error("Translation error:", error);
+                return 'Translation service unavailable';
             }
         }
 
         translateButton.addEventListener("click", async () => {
-            let text = fromInput.value.trim();
+            const text = fromInput.value.trim();
             if (!text) return;
-            let fromLang = fromInput.placeholder.includes("English") ? "en" : "ko";
-            let toLang = fromLang === "en" ? "ko" : "en";
-            let translatedText = await fetchTranslation(text, fromLang, toLang);
-            toInput.value = translatedText || "Translation error";
+
+            const fromLang = fromInput.placeholder.includes("English") ? "en" : "ko";
+            const toLang = fromLang === "en" ? "ko" : "en";
+            
+            translateButton.disabled = true;
+            try {
+                const translatedText = await fetchTranslation(text, fromLang, toLang);
+                toInput.value = translatedText;
+            } finally {
+                translateButton.disabled = false;
+            }
         });
 
         function speakText(text, lang) {
-            if (!text) return;
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            speechSynthesis.speak(utterance);
-        }
+                    if (!text) return;
+                    try {
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.lang = lang;
+                        speechSynthesis.speak(utterance);
+                    } catch (error) {
+                        console.error("Speech synthesis error:", error);
+                    }
+                }
 
         speakFrom.addEventListener("click", () => {
             let lang = fromInput.placeholder.includes("English") ? "en-US" : "ko-KR";
@@ -129,5 +158,4 @@
             toInput.placeholder = tempPlaceholder;
         });
     </script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }

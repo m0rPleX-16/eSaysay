@@ -1,5 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using eSaysay.Configuration
 @inject UserManager<ApplicationUser> UserManager
+@inject IOptions<AppSettings> AppSettings
 @model eSaysay.Models.Entities.InteractiveExercise
 @{
     ViewData["Title"] = "Listening Exercise";
@@ -80,7 +83,7 @@
 </div>
 
 
-<script src="https://code.responsivevoice.org/responsivevoice.js?key=OEKkx4ur"></script>
+<script src="@AppSettings.Value.ResponsiveVoice.ScriptUrl?key=@AppSettings.Value.ResponsiveVoice.ApiKey"></script>
 <script>
     function playAudio() {
         const text = document.getElementById("content-text").innerText;

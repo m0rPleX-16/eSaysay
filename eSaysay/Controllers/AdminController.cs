@@ -8,9 +8,12 @@ using eSaysay.Models.Entities;
 using eSaysay.Data;
 using eSaysay.Services;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using System.Net.Http;
 using eSaysay.Views.User.Admin;
 using eSaysay.Models.ViewModels;
+using eSaysay.Configuration;
+using System.Security.Policy;
 
 namespace eSaysay.Controllers
 {
@@ -24,13 +27,15 @@ namespace eSaysay.Controllers
         private readonly SecurityLogService _logService;
         private readonly HttpClient _httpClient;
         private readonly EncryptionService _encryptionService;
+        private readonly AppSettings _appSettings;
         public AdminController(ILogger<AdminController> logger,
                                UserManager<ApplicationUser> userManager,
                                RoleManager<IdentityRole> roleManager,
                                ApplicationDbContext context,
                                SecurityLogService logService,
                                HttpClient httpClient,
-                               EncryptionService encryptionService)
+                               EncryptionService encryptionService,
+                               IOptions <AppSettings> appSettings)
         {
             _logger = logger;
             _userManager = userManager;
@@ -39,6 +44,7 @@ namespace eSaysay.Controllers
             _logService = logService;
             _httpClient = httpClient;
             _encryptionService = encryptionService;
+            _appSettings = appSettings.Value;
         }
 
         public async Task<IActionResult> Index()
@@ -518,26 +524,47 @@ namespace eSaysay.Controllers
         {
             if (string.IsNullOrWhiteSpace(text)) return text;
 
-            string url = $"https://api.mymemory.translated.net/get?q={Uri.EscapeDataString(text)}&langpair=en|ko";
-
-            var response = await _httpClient.GetAsync(url);
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                _logger.LogError($"Translation API error: {response.StatusCode}");
+                // Build URL from configuration
+                var url = $"{_appSettings.TranslationApi.BaseUrl}?" +
+                $"q={Uri.EscapeDataString(text)}&" +
+                         $"langpair={_appSettings.TranslationApi.DefaultLangPair}";
+
+                var response = await _httpClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                using var jsonDoc = JsonDocument.Parse(jsonResponse);
+
+                if (jsonDoc.RootElement.TryGetProperty("responseData", out var responseData) &&
+                    responseData.TryGetProperty("translatedText", out var translatedText))
+                {
+                    return translatedText.GetString() ?? text;
+                }
+
+                _logger.LogWarning("Translation succeeded but response format was unexpected");
                 return text;
             }
-
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var jsonDoc = JsonDocument.Parse(jsonResponse);
-
-            if (jsonDoc.RootElement.TryGetProperty("responseData", out var responseData) &&
-                responseData.TryGetProperty("translatedText", out var translatedText))
+            catch (HttpRequestException ex)
             {
-                return translatedText.GetString() ?? text;
+                var url = $"{_appSettings.TranslationApi.BaseUrl}?" +
+                                  $"q={Uri.EscapeDataString(text)}&" +
+                                  $"langpair={_appSettings.TranslationApi.DefaultLangPair}";
+                _logger.LogError(ex, "Translation API request failed. URL: {Url}", url);
+                return text;
             }
-
-            return text;
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "Failed to parse translation API response");
+                return text;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error during translation");
+                return text;
+            }
         }
         // POST: Admin/ArchiveExercise
         [HttpPost]

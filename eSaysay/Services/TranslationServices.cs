@@ -1,34 +1,27 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using eSaysay.Configuration;
 using Newtonsoft.Json.Linq;
 
 public class TranslationService
 {
-    private static readonly HttpClient client = new HttpClient();
+    private readonly AppSettings _appSettings;
 
-    public async Task<string> TranslateText(string text, string fromLang, string toLang)
+    public TranslationService(IOptions<AppSettings> appSettings)
     {
-        try
-        {
-            string encodedText = Uri.EscapeDataString(text);
-            string url = $"https://api.mymemory.translated.net/get?q={encodedText}&langpair={fromLang}|{toLang}&key=75634863867ec2f0994d";
-
-            HttpResponseMessage response = await client.GetAsync(url);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return $"Error: {response.StatusCode}";
-            }
-
-            string responseString = await response.Content.ReadAsStringAsync();
-            JObject jsonResponse = JObject.Parse(responseString);
-
-            return jsonResponse["responseData"]?["translatedText"]?.ToString() ?? "Translation unavailable";
-        }
-        catch (Exception ex)
-        {
-            return $"Translation failed: {ex.Message}";
-        }
+        _appSettings = appSettings.Value;
     }
 
+    public string GetTranslationUrl(string text)
+    {
+        return $"{_appSettings.TranslationApi.BaseUrl}?" +
+               $"q={Uri.EscapeDataString(text)}&" +
+               $"langpair={_appSettings.TranslationApi.DefaultLangPair}";
+    }
+
+    public string GetResponsiveVoiceScriptUrl()
+    {
+        return $"{_appSettings.ResponsiveVoice.ScriptUrl}?key={_appSettings.ResponsiveVoice.ApiKey}";
+    }
 }

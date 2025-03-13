@@ -80,10 +80,6 @@ namespace eSaysay.Areas.Identity.Pages.Account
             public string MiddleName { get; set; }
 
             [Required]
-            [Range(1, 80, ErrorMessage = "Age must be between 1 and 80.")]
-            public int Age { get; set; }
-
-            [Required]
             [Display(Name = "Gender")]
             public string Gender { get; set; }
 
@@ -111,6 +107,19 @@ namespace eSaysay.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "CAPTCHA Code")]
             public string CaptchaCode { get; set; }
+        }
+
+        private int CalculateAge(DateTime birthday)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - birthday.Year;
+
+            if (birthday.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+
+            return age;
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -143,6 +152,7 @@ namespace eSaysay.Areas.Identity.Pages.Account
                 user.MiddleName = _encryptionService.EncryptData(Input.MiddleName);
                 user.Gender = _encryptionService.EncryptData(Input.Gender);
                 user.Birthday = Input.Birthday;
+                user.Age = CalculateAge(Input.Birthday); // Dynamically calculated age
                 user.RegistrationDate = DateTime.UtcNow;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
